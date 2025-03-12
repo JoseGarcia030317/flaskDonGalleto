@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Iniciar Sesión{% endblock %}
+
+{% block content %}
+<div class="w-full flex justify-center text-center"> 
+    <div class="bg-white/90 backdrop-blur-sm p-8 rounded-xl shadow-xl w-full max-w-md transform -translate-x-[0.5px]">
+        <div class="mb-6 flex justify-center">
+            <img src="../../static/images/LogoGalleto.png" alt="" 
+                 class="w-32 object-contain aspect-square">
+        </div>
+
+        <div class="mx-2 mb-4">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="p-4 mb-4 rounded-lg {{ 'bg-green-100 text-green-700' if category == 'success' else 'bg-red-100 text-red-700' }}">
+                            {{ message }}
+                            <button onclick="this.parentElement.remove()" class="float-right font-bold">×</button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <form class="space-y-6" method="POST" action="{{ url_for('auth_bp.login') }}">
+            <!-- Token -->
+            {{ form.csrf_token }}
+            
+            <!-- Campo Usuario -->
+            <div class="mx-2">
+                {{ form.usuario.label(class="block text-[#8A5114] font-medium mb-2") }}
+                {{ form.usuario(
+                    class="w-full px-4 py-3 border border-[#8A5114] rounded-lg focus:ring-2 transition-all",
+                    id="usuario",
+                    value=form.usuario.data if form.usuario.data else ''
+                ) }}
+            </div>
+
+            <!-- Campo Contraseña -->
+            <div class="mx-2">
+                {{ form.contrasenia.label(class="block text-[#8A5114] font-medium mb-2") }}
+                {{ form.contrasenia(
+                    class="w-full px-4 py-3 border border-[#8A5114] rounded-lg focus:ring-2 transition-all",
+                    id="contrasenia"    
+                ) }}
+                {% for error in form.contrasenia.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Checkbox Recuérdame -->
+            <div class="mx-2 flex items-center justify-between">
+                <div class="flex items-center">
+                    {{ form.remember_me(
+                        class="h-4 w-4 text-[#8A5114] border-[#8A5114] rounded focus:ring-[#8A5114]",
+                        id="remember_me"
+                    ) }}
+                    {{ form.remember_me.label(
+                        class="ml-2 block text-sm text-[#8A5114]",
+                        for="remember_me"
+                    ) }}
+                </div>
+            </div>
+
+            <!-- Botón de Submit -->
+            <div class="mx-2 pt-4">
+                <button type="submit" 
+                    class="w-full bg-white text-[#8A5114] font-bold border border-[#8A5114] 
+                           hover:bg-[#8A5114] hover:text-white py-3 px-4 rounded-lg 
+                           transition-all duration-300 shadow-md">
+                    Iniciar Sesión
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

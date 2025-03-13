@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template
 from flask_login import fresh_login_required, login_required
 
-from app.utils.decorators import role_required
+from utils.decorators import role_required
 
 
 main_page_bp = Blueprint("main_page_bp", __name__)

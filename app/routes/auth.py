@@ -1,12 +1,12 @@
-from app.forms.login_form import LoginForm
+from forms.login_form import LoginForm
 from flask import Blueprint, flash, redirect, render_template, url_for
 from flask_login import current_user, fresh_login_required, login_required, login_user, logout_user
 from werkzeug.security import check_password_hash
-from app.extensions import limiter
+from extensions import limiter
 
-from app.models.DummyUser import DummyUser
-from app.models.User import TbUsuario
-from app.utils.connectiondb import get_session
+from models.DummyUser import DummyUser
+from models.User import TbUsuario
+from utils.connectiondb import get_session
 
 auth_bp = Blueprint("auth_bp", __name__)
 

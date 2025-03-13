@@ -1,16 +1,16 @@
 from flask import Flask, jsonify, redirect, request, session, url_for
 from flask_cors import CORS
-from app.extensions import limiter
+from extensions import limiter
 from flask_login import LoginManager, login_required, current_user
 from flask_talisman import Talisman
 from flask_wtf.csrf import CSRFProtect
-from app.config import Config
+from config import Config
 from flasgger import Swagger
-from app.models.DummyUser import DummyUser
+from models.DummyUser import DummyUser
 
 # Blueprints
-from app.routes.main_page_bp import main_page_bp
-from app.routes.auth import auth_bp
+from routes.main_page_bp import main_page_bp
+from routes.auth import auth_bp
 
 # Inicializar extensiones de Flask
 # db = SQLAlchemy()

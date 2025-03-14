@@ -1,0 +1,80 @@
+<div id="proveedores-content" class="space-y-6">
+    <!-- Botón de Agregar -->
+    <div class="flex justify-end">
+        <button onclick="toggleForm()" 
+                class="bg-[#8A5114] text-white px-4 py-2 rounded-lg hover:bg-[#6D3E0F]">
+            + Agregar Proveedor
+        </button>
+    </div>
+
+    <!-- Formulario WTForm (oculto inicialmente) -->
+    <div id="form-proveedor" class="bg-white p-6 rounded-lg shadow-md">
+        <form method="POST" action="{{ url_for('compras_bp.guardar_proveedor') }}">
+            {{ form.hidden_tag() }}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Campo Nombre -->
+                <div>
+                    {{ form.nombre.label(class="block text-sm font-medium text-gray-700") }}
+                    {{ form.nombre(class="mt-1 block w-full rounded-md border border-gray-300 p-2") }}
+                    {% if form.nombre.errors %}
+                        <p class="text-red-500 text-xs mt-1">{{ form.nombre.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Campo Teléfono -->
+                <div>
+                    {{ form.telefono.label(class="block text-sm font-medium text-gray-700") }}
+                    {{ form.telefono(class="mt-1 block w-full rounded-md border border-gray-300 p-2") }}
+                    {% if form.telefono.errors %}
+                        <p class="text-red-500 text-xs mt-1">{{ form.telefono.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Campo Contacto -->
+                <div>
+                    {{ form.contacto.label(class="block text-sm font-medium text-gray-700") }}
+                    {{ form.contacto(class="mt-1 block w-full rounded-md border border-gray-300 p-2") }}
+                </div>
+
+                <!-- Campo Correo -->
+                <div>
+                    {{ form.correo.label(class="block text-sm font-medium text-gray-700") }}
+                    {{ form.correo(class="mt-1 block w-full rounded-md border border-gray-300 p-2") }}
+                    {% if form.correo.errors %}
+                        <p class="text-red-500 text-xs mt-1">{{ form.correo.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Campo Descripción -->
+                <div class="md:col-span-2">
+                    {{ form.descripcion.label(class="block text-sm font-medium text-gray-700") }}
+                    {{ form.descripcion(class="mt-1 block w-full rounded-md border border-gray-300 p-2 h-24") }}
+                </div>
+            </div>
+
+            <!-- Botones del Formulario -->
+            <div class="mt-6 flex justify-end space-x-4">
+                <button type="button" onclick="toggleForm()" 
+                        class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
+                    Cancelar
+                </button>
+                {{ form.submit(class="bg-[#8A5114] text-white px-4 py-2 rounded-lg hover:bg-[#6D3E0F] cursor-pointer") }}
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabla de Proveedores -->
+    <div class="bg-white rounded-lg shadow-md overflow-x-auto">
+        <table class="min-w-full">
+            <!-- Misma estructura de tabla que antes -->
+        </table>
+    </div>
+</div>
+
+<script>
+export function toggleForm() {
+    const form = document.getElementById('form-proveedor');
+    form.classList.toggle('hidden');
+}
+</script>

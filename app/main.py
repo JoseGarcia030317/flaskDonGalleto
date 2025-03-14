@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, redirect, request, session, url_for
 from flask_cors import CORS
 from extensions import limiter
-from flask_login import LoginManager, login_required, current_user
+from flask_login import LoginManager, current_user
 from flask_talisman import Talisman
 from flask_wtf.csrf import CSRFProtect
 from config import Config
@@ -9,14 +9,16 @@ from flasgger import Swagger
 from models.DummyUser import DummyUser
 
 # Blueprints
+from app.routes.auth import auth_bp
+from routes.proveedores_bp import prov_bp
+from routes.compras_bp import compras_bp
 from routes.main_page_bp import main_page_bp
-from routes.auth import auth_bp
-from routes.proveedores import prov_bp
+from app.routes.auth import auth_bp
 
 # Inicializar extensiones de Flask
 # db = SQLAlchemy()
 login_manager = LoginManager()
-#csrf = CSRFProtect()
+csrf = CSRFProtect()
 swagger = Swagger()
 # jwt = JWTManager()
 cors = CORS()
@@ -27,7 +29,7 @@ app.config.from_object(Config)
 
 # db.init_app(app)
 login_manager.init_app(app)
-#csrf.init_app(app)
+csrf.init_app(app)
 swagger.init_app(app)
 # jwt.init_app(app)
 cors.init_app(app)
@@ -54,15 +56,20 @@ login_manager.session_protection = "strong"
 app.register_blueprint(auth_bp)
 app.register_blueprint(main_page_bp)
 app.register_blueprint(prov_bp)
+app.register_blueprint(compras_bp)
 
 # Ruta raíz de la aplicacion
 @app.route("/")
 def inicio():
-    # return redirect(url_for('auth_bp.login'))
     if not current_user.is_authenticated:
         return redirect(url_for('auth_bp.login'))
     else:
-        return redirect(url_for('auth_bp.dashboard'))
+        if current_user.tipo_usuario == 1:
+            return redirect(url_for("main_page_bp.mp_admin"))
+        if current_user.tipo_usuario == 2:
+            return redirect(url_for("main_page_bp.mp_vendedor"))
+        if current_user.tipo_usuario == 3:
+            return redirect(url_for("main_page_bp.mp_cliente"))
 
 @app.before_request
 def make_session_permanent():

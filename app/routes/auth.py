@@ -48,7 +48,7 @@ def login():
         # finally:
         #     session.close()
 
-    return render_template("auth/login.html", form=form)
+    return render_template("modulos/auth/login.html", form=form)
 
 @auth_bp.route("/dashboard", methods=['GET','POST'])
 @login_required

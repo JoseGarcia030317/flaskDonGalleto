@@ -1,12 +1,12 @@
 from forms.login_form import LoginForm
-from flask import Blueprint, flash, redirect, render_template, url_for
+from flask import Blueprint, flash, redirect, render_template, url_for, request
 from flask_login import current_user, fresh_login_required, login_required, login_user, logout_user
 from werkzeug.security import check_password_hash
 from extensions import limiter
 
+from core.logic import login as log
 from models.DummyUser import DummyUser
-from models.User import TbUsuario
-from utils.connectiondb import get_session
+
 
 auth_bp = Blueprint("auth_bp", __name__)
 
@@ -62,3 +62,10 @@ def dashboard():
 def logout():
     logout_user()
     return redirect(url_for('auth_bp.login'))
+
+
+# funcion para autenticar usuario
+@auth_bp.route("/test", methods=['POST'])
+def test():
+    data = request.get_json()
+    return log.autenticar_usuario(data['usuario'], data['contrasenia'])

@@ -11,11 +11,12 @@ from models.DummyUser import DummyUser
 # Blueprints
 from routes.main_page_bp import main_page_bp
 from routes.auth import auth_bp
+from routes.proveedores import prov_bp
 
 # Inicializar extensiones de Flask
 # db = SQLAlchemy()
 login_manager = LoginManager()
-csrf = CSRFProtect()
+#csrf = CSRFProtect()
 swagger = Swagger()
 # jwt = JWTManager()
 cors = CORS()
@@ -26,7 +27,7 @@ app.config.from_object(Config)
 
 # db.init_app(app)
 login_manager.init_app(app)
-csrf.init_app(app)
+#csrf.init_app(app)
 swagger.init_app(app)
 # jwt.init_app(app)
 cors.init_app(app)
@@ -52,6 +53,7 @@ login_manager.session_protection = "strong"
 # Registro de blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(main_page_bp)
+app.register_blueprint(prov_bp)
 
 # Ruta raíz de la aplicacion
 @app.route("/")
@@ -67,7 +69,7 @@ def make_session_permanent():
     session.permanent = True
 
 # Redirigir a login si no está autenticado
-@app.before_request
+# @app.before_request
 def check_authentication():
     if not current_user.is_authenticated and request.endpoint != login_manager.login_view and not request.path.startswith("/static"):
         return redirect(url_for(login_manager.login_view))
@@ -113,4 +115,4 @@ def ratelimit_error(e):
 #     }), 401
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

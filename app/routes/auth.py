@@ -2,8 +2,8 @@ from forms.login_form import LoginForm
 from flask import Blueprint, flash, redirect, render_template, url_for
 from flask_login import current_user, fresh_login_required, login_required, login_user, logout_user
 from werkzeug.security import check_password_hash
-from extensions import limiter
 
+from extensions import limiter
 from models.DummyUser import DummyUser
 from models.User import TbUsuario
 from utils.connectiondb import get_session

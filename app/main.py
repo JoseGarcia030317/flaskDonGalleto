@@ -3,15 +3,17 @@ from flask_cors import CORS
 from extensions import limiter
 from flask_login import LoginManager, current_user
 from flask_talisman import Talisman
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, CSRFError
 from config import Config
 from flasgger import Swagger
 from models.DummyUser import DummyUser
+from core.logic import login
+from core.classes.Tb_usuarios import Usuario
 
 # Blueprints
 from routes.auth import auth_bp
 from routes.proveedores_bp import prov_bp
-from routes.compras_bp import compras_bp
+from routes.mod_compras_bp import compras_bp
 from routes.main_page_bp import main_page_bp
 from routes.auth import auth_bp
 
@@ -64,11 +66,11 @@ def inicio():
     if not current_user.is_authenticated:
         return redirect(url_for('auth_bp.login'))
     else:
-        if current_user.tipo_usuario == 1:
+        if current_user.tipo == 1:
             return redirect(url_for("main_page_bp.mp_admin"))
-        if current_user.tipo_usuario == 2:
+        if current_user.tipo == 2:
             return redirect(url_for("main_page_bp.mp_vendedor"))
-        if current_user.tipo_usuario == 3:
+        if current_user.tipo == 3:
             return redirect(url_for("main_page_bp.mp_cliente"))
 
 @app.before_request
@@ -84,18 +86,28 @@ def check_authentication():
 # Configurar Flask-Login
 @login_manager.user_loader
 def load_user(user_id):
-    if user_id == "1":
-        return DummyUser(1, "pepe", 1)
-    # session = get_session()
-    # try:
-    #     user = session.query(TbUsuario).get(int(user_id))
-    #     return user
-    # except Exception as e:
-    #     return None
-    # finally:
-    #     session.close() 
+    user_data = login.get_user_by_id(user_id)
+    if user_data:
+        # Construir objeto Usuario
+        return Usuario(
+            nombre=user_data['nombre'],
+            apellido_pat=user_data['apellido_pat'],
+            apellido_mat=user_data['apellido_mat'],
+            telefono=user_data['telefono'],
+            tipo=user_data['tipo'],
+            usuario=user_data['usuario'],
+            contrasenia=user_data['contrasenia'],
+            estatus=user_data['estatus'],
+            id_usuario=user_data['id_usuario']
+        )
+    return None
 
 # Manejo de errores personalizados
+@app.errorhandler(CSRFError)
+def handle_csrf_error(e):
+    """Manejo de error CSRFError - Recurso no encontrado."""
+    return jsonify({"code": 400, "error": "CSRF no valido".join(e)}), 400
+
 @app.errorhandler(404)
 def handle_404(error):
     """Manejo de error 404 - Recurso no encontrado."""

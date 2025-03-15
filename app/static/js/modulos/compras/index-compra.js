@@ -1,8 +1,8 @@
 // Funcion para cargar la vista principal de compras en el main
 // Configuración inicial al cargar el módulo
-export function cargarModuloCompras() {
+function cargarModuloCompras() {
     const main_content = document.getElementById("main-content");
-    
+
     fetch("/compras")
         .then(response => response.text())
         .then(html => {
@@ -21,7 +21,7 @@ export function cargarModuloCompras() {
 // Función genérica para cargar cualquier sección de compras dinámicamente
 function cargarContenidoCompras(endpoint) {
     const comprasContent = document.getElementById("compras-contenido");
-    
+
     // Actualiza el tab visualmente
     cambiarTab(endpoint);
 
@@ -29,6 +29,17 @@ function cargarContenidoCompras(endpoint) {
         .then(response => response.text())
         .then(html => {
             comprasContent.innerHTML = html;
+
+            // Cargar el JavaScript específico del submódulo
+            const script = document.createElement('script');
+            script.src = `../../static/js/modulos/compras/${endpoint}.js`;
+            script.onload = () => {
+                console.log(`Script de ${endpoint} cargado correctamente`);
+            };
+            script.onerror = () => {
+                console.error(`Error al cargar el script de ${endpoint}`);
+            };
+            document.body.appendChild(script);
         })
         .catch(err => console.error(`Error cargando ${endpoint}:`, err));
 }
@@ -42,11 +53,11 @@ function cambiarTab(tabId) {
             'bg-[#8A5114]',
             'text-white'
         );
-        
+
         // Aplicar estilos inactivos
         tab.classList.add(
             'text-black',
-            'hover:bg-[#8A5114]/20' // Efecto hover para tabs inactivos
+            'hover:bg-[#8A5114]/20'
         );
     });
 

@@ -20,6 +20,7 @@ class UsuarioCRUD:
             "telefono": usuario.telefono,
             "tipo": usuario.tipo,
             "usuario": usuario.usuario,
+            "contrasenia":usuario.contrasenia,
             # No se retorna la contraseña para mayor seguridad.
             "estatus": usuario.estatus
         }

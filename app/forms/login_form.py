@@ -13,9 +13,9 @@ class LoginForm(FlaskForm):
     
     contrasenia = PasswordField('Contraseña', validators=[
         DataRequired(message='La contraseña es requerida'),
-        Length(min=8, message='La contraseña debe tener al menos 8 caracteres'),
-        Regexp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+', 
-               message='La contraseña debe contener al menos una mayúscula, una minúscula y un número')
+        Length(min=6, message='La contraseña debe tener al menos  caracteres')
+        # Regexp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+', 
+        #        message='La contraseña debe contener al menos una mayúscula, una minúscula y un número')
     ])
     
     remember_me = BooleanField('Recuérdame')

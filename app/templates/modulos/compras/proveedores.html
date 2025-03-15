@@ -1,80 +1,185 @@
-<div id="proveedores-content" class="space-y-6">
-    <!-- Botón de Agregar -->
-    <div class="flex justify-end">
-        <button onclick="toggleForm()" 
-                class="bg-[#8A5114] text-white px-4 py-2 rounded-lg hover:bg-[#6D3E0F]">
-            + Agregar Proveedor
-        </button>
-    </div>
+<div id="proveedores-content" class="p-6">
+    <div class="items-center justify-center w-full">
+        <!-- Barra de búsqueda y botón añadir -->
+        <div class="flex justify-between mb-6 max-w-4xl">
+            <!-- Campo de búsqueda -->
+            <div class="relative w-96 mx-auto"> <!-- Aumenté el ancho a w-96 -->
+                <input type="text" placeholder="Buscar"
+                    class="w-full pl-4 pr-10 py-2 border border-[#7A7A7A] rounded-full">
 
-    <!-- Formulario WTForm (oculto inicialmente) -->
-    <div id="form-proveedor" class="bg-white p-6 rounded-lg shadow-md">
-        <form method="POST" action="{{ url_for('compras_bp.guardar_proveedor') }}">
-            {{ form.hidden_tag() }}
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Campo Nombre -->
-                <div>
-                    {{ form.nombre.label(class="block text-sm font-medium text-gray-700") }}
-                    {{ form.nombre(class="mt-1 block w-full rounded-md border border-gray-300 p-2") }}
-                    {% if form.nombre.errors %}
-                        <p class="text-red-500 text-xs mt-1">{{ form.nombre.errors[0] }}</p>
-                    {% endif %}
-                </div>
-
-                <!-- Campo Teléfono -->
-                <div>
-                    {{ form.telefono.label(class="block text-sm font-medium text-gray-700") }}
-                    {{ form.telefono(class="mt-1 block w-full rounded-md border border-gray-300 p-2") }}
-                    {% if form.telefono.errors %}
-                        <p class="text-red-500 text-xs mt-1">{{ form.telefono.errors[0] }}</p>
-                    {% endif %}
-                </div>
-
-                <!-- Campo Contacto -->
-                <div>
-                    {{ form.contacto.label(class="block text-sm font-medium text-gray-700") }}
-                    {{ form.contacto(class="mt-1 block w-full rounded-md border border-gray-300 p-2") }}
-                </div>
-
-                <!-- Campo Correo -->
-                <div>
-                    {{ form.correo.label(class="block text-sm font-medium text-gray-700") }}
-                    {{ form.correo(class="mt-1 block w-full rounded-md border border-gray-300 p-2") }}
-                    {% if form.correo.errors %}
-                        <p class="text-red-500 text-xs mt-1">{{ form.correo.errors[0] }}</p>
-                    {% endif %}
-                </div>
-
-                <!-- Campo Descripción -->
-                <div class="md:col-span-2">
-                    {{ form.descripcion.label(class="block text-sm font-medium text-gray-700") }}
-                    {{ form.descripcion(class="mt-1 block w-full rounded-md border border-gray-300 p-2 h-24") }}
+                <!-- Icono de lupa -->
+                <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <img src="./../../../static/images/magnifying glass.png" class="w-6 h-6">
                 </div>
             </div>
 
-            <!-- Botones del Formulario -->
-            <div class="mt-6 flex justify-end space-x-4">
-                <button type="button" onclick="toggleForm()" 
-                        class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
-                    Cancelar
+            <!-- Botón para añadir -->
+            <button onclick="abrirModal('añadir')" class="text-white p-2 rounded-full">
+                <img src="../../../static/images/plus.png" class="w-7 h-7">
+            </button>
+        </div>
+
+        <!-- Tabla de proveedores -->
+        <div class="overflow-x-auto overflow-y-auto">
+            <table class="w-full table-auto">
+                <thead>
+                    <tr class="bg-[#DBC659] align-middle">
+                        <th class="p-3 text-center text-[#915A17] border">NOMBRE</th>
+                        <th class="p-3 text-center text-[#915A17] border">TELÉFONO</th>
+                        <th class="p-3 text-center text-[#915A17] border">ESTATUS</th>
+                        <th class="p-3 text-center text-[#915A17] border">ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody_proveedores">
+                    <!-- Datos dinámicos -->
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3 text-center">Leche León</td>
+                        <td class="p-3 text-center">477-709-6354</td>
+                        <td class="p-3 text-center">Activo</td>
+                        <td class="p-3 flex justify-center">
+                            <button onclick="abrirModal('editar')" class="align-middle">
+                                <img src="../../../static/images/lapiz.png" class="w-7 h-7">
+                            </button>
+                            <button onclick="abrirModal('eliminar')" class="align-middle">
+                                <img src="../../../static/images/bote basura.png" class="w-7 h-7">
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modales -->
+    <div id="modalBackdrop" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+        <!-- Modal Añadir/Editar -->
+        <div id="modalForm"
+            class="hidden bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[40rem]">
+            <!-- Encabezado del modal -->
+            <div class="bg-[#EACD5A] rounded-t-lg p-4 -m-6 mb-4 flex justify-center items-center relative">
+                <h2 id="modalTitulo" class="text-black font-semibold text-center">Añadir proveedor</h2>
+                <button onclick="cerrarModal()" class="text-black hover:text-gray-700 absolute right-4">
+                    <img src="../../../static/images/cerrar.png" class="w-6 h-6">
                 </button>
-                {{ form.submit(class="bg-[#8A5114] text-white px-4 py-2 rounded-lg hover:bg-[#6D3E0F] cursor-pointer") }}
             </div>
-        </form>
-    </div>
 
-    <!-- Tabla de Proveedores -->
-    <div class="bg-white rounded-lg shadow-md overflow-x-auto">
-        <table class="min-w-full">
-            <!-- Misma estructura de tabla que antes -->
-        </table>
+            <!-- Formulario -->
+            <form id="proveedorForm" class="space-y-4">
+                <!-- Campo CSRF Token (Agregado aquí) -->
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <!-- Campo para id de proveedor -->
+                <input type="hidden" id="proveedor_id" value="0">
+
+                <!-- Primera fila: Nombre y Teléfono -->
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Campo Nombre -->
+                    <div>
+                        <label class="block text-black mb-2">Nombre</label>
+                        <input type="text" name="nombre" class="w-full p-3 border border-[#8A5114] rounded-full"
+                            required>
+                    </div>
+
+                    <!-- Campo Teléfono -->
+                    <div>
+                        <label class="block text-black mb-2">Teléfono</label>
+                        <input type="tel" name="telefono" class="w-full p-3 border border-[#8A5114] rounded-full"
+                            required>
+                    </div>
+                </div>
+
+                <!-- Segunda fila: Contacto y Correo Electrónico -->
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Campo Contacto -->
+                    <div>
+                        <label class="block text-black mb-2">Contacto</label>
+                        <input type="text" name="contacto" class="w-full p-3 border border-[#8A5114] rounded-full"
+                            required>
+                    </div>
+
+                    <!-- Campo Correo Electrónico -->
+                    <div>
+                        <label class="block text-black mb-2">Correo Electrónico</label>
+                        <input type="email" name="email" class="w-full p-3 border border-[#8A5114] rounded-full"
+                            required>
+                    </div>
+                </div>
+
+                <!-- Tercera fila: Descripción del Servicio -->
+                <div>
+                    <label class="block text-black mb-2">Descripción del Servicio</label>
+                    <textarea name="descripcion" class="w-full p-3 border border-[#8A5114] rounded-2xl h-24"
+                        required></textarea>
+                </div>
+
+                <!-- Botón Guardar -->
+                <button type="submit"
+                    class="w-full py-3 bg-[#ffffff] text-[#6d3e0f] rounded-full border border-[#8A5114] font-medium flex items-center justify-center gap-2 hover:bg-gray-50">
+                    <img src="../../../static/images/guardar.png" class="w-5 h-5">
+                    Guardar
+                </button>
+            </form>
+        </div>
+
+        <!-- Modal Eliminar -->
+        <div id="modalEliminar"
+            class="hidden bg-white rounded-lg p-8 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[30rem]">
+            <div class="text-center space-y-8">
+                <!-- Icono de advertencia -->
+                <div class="flex justify-center">
+                    <img src="../../../static/images/warning.png" class="w-32 h-32">
+                </div>
+
+                <!-- Texto de confirmación -->
+                <div class="mb-6">
+                    <h1 class="text-2xl text-gray-700 font-medium">
+                        ¿Estás seguro que deseas eliminar el registro?
+                    </h1>
+                </div>
+
+                <!-- Botones -->
+                <div class="flex gap-6 justify-center">
+                    <!-- Botón Aceptar -->
+                    <button onclick="confirmarEliminar()"
+                        class="px-6 py-3 border-2 border-[#8A5114] bg-white text-[#8A5114] rounded-full hover:bg-[#f5f5f5] transition-colors flex items-center gap-3">
+                        <img src="../../../static/images/aceptar.png" class="w-6 h-6">
+                        <span class="text-lg font-medium">Aceptar</span>
+                    </button>
+
+                    <!-- Botón Cancelar -->
+                    <button onclick="cerrarModal()"
+                        class="px-6 py-3 border-2 border-[#DAA520] bg-white text-[#DAA520] rounded-full hover:bg-[#f5f5f5] transition-colors flex items-center gap-3">
+                        <img src="../../../static/images/cancelar.png" class="w-6 h-6">
+                        <span class="text-lg font-medium">Cancelar</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Exito -->
+        <div id="modalExito"
+            class="hidden bg-white rounded-lg p-8 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[30rem]">
+            <div class="text-center space-y-6">
+                <!-- Icono de éxito -->
+                <div class="flex justify-center">
+                    <img src="../../../static/images/aceptar verde.png" class="w-32 h-32 animate-bounce">
+                </div>
+
+                <!-- Mensaje -->
+                <div class="mb-4">
+                    <h1 class="text-2xl font-semibold">
+                        ¡Proceso finalizado con éxito!
+                    </h1>
+                </div>
+                <!-- Botón de cierre -->
+                <!-- <div class="flex justify-center">
+                    <button onclick="cerrarModal()"
+                        class="px-8 py-3 bg-[#8A5114] text-white rounded-full hover:bg-[#6d3e0f] transition-colors flex items-center gap-2">
+                        <img src="../../../static/images/aceptar.png" class="w-5 h-5">
+                        <span class="text-lg">Aceptar</span>
+                    </button>
+                </div> -->
+            </div>
+        </div>
     </div>
 </div>
-
-<script>
-export function toggleForm() {
-    const form = document.getElementById('form-proveedor');
-    form.classList.toggle('hidden');
-}
-</script>

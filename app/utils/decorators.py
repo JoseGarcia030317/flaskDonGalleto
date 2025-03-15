@@ -10,8 +10,8 @@ def role_required(required_role):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            if not current_user.is_authenticated or current_user.tipo_usuario != required_role:
-                abort(403)  # O puedes redirigir a una página de error personalizada
+            if not current_user.is_authenticated or current_user.tipo != required_role:
+                abort(403)
             return f(*args, **kwargs)
         return decorated_function
     return decorator

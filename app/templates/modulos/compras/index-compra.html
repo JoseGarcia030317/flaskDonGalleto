@@ -1,0 +1,28 @@
+<!-- Tabs -->
+<div class="border-b border-gray-200 mb-4">
+    <ul class="flex space-x-4" id="tabs-container">
+        <li data-target="proveedores" 
+            class="tab-item active cursor-pointer py-2 px-4 bg-[#8A5114] text-white font-medium rounded-t-lg transition-colors duration-200"
+            onclick="cargarProveedores()">
+            Proveedores
+        </li>
+        <li data-target="insumos" 
+            class="tab-item cursor-pointer py-2 px-4 text-black hover:bg-[#8A5114]/20 font-medium rounded-t-lg transition-colors duration-200"
+            onclick="cargarInsumos()">
+            Insumos
+        </li>
+        <li data-target="compras" 
+            class="tab-item cursor-pointer py-2 px-4 text-black hover:bg-[#8A5114]/20 font-medium rounded-t-lg transition-colors duration-200"
+            onclick="cargarCompras()">
+            Compras
+        </li>
+        <li data-target="almacen" 
+            class="tab-item cursor-pointer py-2 px-4 text-black hover:bg-[#8A5114]/20 font-medium rounded-t-lg transition-colors duration-200"
+            onclick="cargarAlmacen()">
+            Almacen
+        </li>
+    </ul>
+</div>
+
+<!-- Contenedor único para todo el contenido -->
+<div id="compras-contenido" class="border border-yellow-500 p-4 rounded-lg mt-2 min-h-screen"></div>

@@ -17,8 +17,8 @@ class Config:
     SESSION_COOKIE_SAMESITE = os.getenv("SESSION_COOKIE_SAMESITE")
     CSRF_ENABLED = os.getenv("CSRF_ENABLED")
     
-    PERMANENT_SESSION_LIFETIME = timedelta(hours=2)
-    REMEMBER_COOKIE_DURATION = timedelta(hours=2)
+    PERMANENT_SESSION_LIFETIME = timedelta(hours=3)
+    REMEMBER_COOKIE_DURATION = timedelta(hours=3)
     
     SERVER = os.getenv("SERVER")
     DATABASE = os.getenv("DATABASE")

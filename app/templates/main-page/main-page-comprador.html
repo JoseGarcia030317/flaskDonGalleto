@@ -1,6 +1,6 @@
 {% extends "main-page-base.html" %}
 
-{% block title %}Administrador{% endblock %}
+{% block title %}Comprador{% endblock %}
 
 {% block side_var %}
 <div>
@@ -11,7 +11,7 @@
     <a onclick="" class="block px-4 py-2 text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
       Catálogos
     </a>
-    <a onclick="cargarModuloCompras()" class="block px-4 py-2 text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
+    <a class="block px-4 py-2 text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
       Compras
     </a>
     <a class="block px-4 py-2 text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
@@ -28,14 +28,9 @@
       sesión</a>
   </nav>
 </div>
+<script src="../../static/js/main-page-controller.js"></script>
 {% endblock %}
 
-{% block scripts %}
-<script src="../../static/js/modulos/compras/index-compra.js"></script>
-<!-- <script type="module" src="../../static/js/modulos/compras/index-.js"></script>
-<script type="module" src="../../static/js/modulos/compras/index-.js"></script>
-<script type="module" src="../../static/js/modulos/compras/index-.js"></script>
-<script type="module" src="../../static/js/modulos/compras/index-.js"></script>
-<script type="module" src="../../static/js/modulos/compras/index-.js"></script>
-<script type="module" src="../../static/js/modulos/compras/index-.js"></script> -->
+{% block content %}
+<h1>Comprador works!</h1>
 {% endblock %}

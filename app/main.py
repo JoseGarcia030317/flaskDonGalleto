@@ -1,16 +1,21 @@
 from flask import Flask, jsonify, redirect, request, session, url_for
 from flask_cors import CORS
-from app.extensions import limiter
-from flask_login import LoginManager, login_required, current_user
+from extensions import limiter
+from flask_login import LoginManager, current_user
 from flask_talisman import Talisman
-from flask_wtf.csrf import CSRFProtect
-from app.config import Config
+from flask_wtf.csrf import CSRFProtect, CSRFError
+from config import Config
 from flasgger import Swagger
-from app.models.DummyUser import DummyUser
+from models.DummyUser import DummyUser
+from core.logic import login
+from core.classes.Tb_usuarios import Usuario
 
 # Blueprints
-from app.routes.main_page_bp import main_page_bp
-from app.routes.auth import auth_bp
+from routes.auth import auth_bp
+from routes.proveedores_bp import prov_bp
+from routes.mod_compras_bp import compras_bp
+from routes.main_page_bp import main_page_bp
+from routes.auth import auth_bp
 
 # Inicializar extensiones de Flask
 # db = SQLAlchemy()
@@ -52,22 +57,28 @@ login_manager.session_protection = "strong"
 # Registro de blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(main_page_bp)
+app.register_blueprint(prov_bp)
+app.register_blueprint(compras_bp)
 
 # Ruta raíz de la aplicacion
 @app.route("/")
 def inicio():
-    # return redirect(url_for('auth_bp.login'))
     if not current_user.is_authenticated:
         return redirect(url_for('auth_bp.login'))
     else:
-        return redirect(url_for('auth_bp.dashboard'))
+        if current_user.tipo == 1:
+            return redirect(url_for("main_page_bp.mp_admin"))
+        if current_user.tipo == 2:
+            return redirect(url_for("main_page_bp.mp_vendedor"))
+        if current_user.tipo == 3:
+            return redirect(url_for("main_page_bp.mp_cliente"))
 
 @app.before_request
 def make_session_permanent():
     session.permanent = True
 
 # Redirigir a login si no está autenticado
-@app.before_request
+# @app.before_request
 def check_authentication():
     if not current_user.is_authenticated and request.endpoint != login_manager.login_view and not request.path.startswith("/static"):
         return redirect(url_for(login_manager.login_view))
@@ -75,18 +86,28 @@ def check_authentication():
 # Configurar Flask-Login
 @login_manager.user_loader
 def load_user(user_id):
-    if user_id == "1":
-        return DummyUser(1, "pepe", 1)
-    # session = get_session()
-    # try:
-    #     user = session.query(TbUsuario).get(int(user_id))
-    #     return user
-    # except Exception as e:
-    #     return None
-    # finally:
-    #     session.close() 
+    user_data = login.get_user_by_id(user_id)
+    if user_data:
+        # Construir objeto Usuario
+        return Usuario(
+            nombre=user_data['nombre'],
+            apellido_pat=user_data['apellido_pat'],
+            apellido_mat=user_data['apellido_mat'],
+            telefono=user_data['telefono'],
+            tipo=user_data['tipo'],
+            usuario=user_data['usuario'],
+            contrasenia=user_data['contrasenia'],
+            estatus=user_data['estatus'],
+            id_usuario=user_data['id_usuario']
+        )
+    return None
 
 # Manejo de errores personalizados
+@app.errorhandler(CSRFError)
+def handle_csrf_error(e):
+    """Manejo de error CSRFError - Recurso no encontrado."""
+    return jsonify({"code": 400, "error": "CSRF no valido".join(e)}), 400
+
 @app.errorhandler(404)
 def handle_404(error):
     """Manejo de error 404 - Recurso no encontrado."""
@@ -113,4 +134,4 @@ def ratelimit_error(e):
 #     }), 401
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

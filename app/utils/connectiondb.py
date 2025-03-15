@@ -1,49 +1,61 @@
+import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import logging
-from app.config import Config
-import urllib
+from config import Config
 
-
-# Configurar el logger
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
+class DatabaseConnector:
+    """
+    Clase para gestionar la conexión a una base de datos MySQL usando SQLAlchemy.
+    """
 
-def get_engine():
-    try:
+    def __init__(self):
+        self.engine = self._create_engine()
+        self.Session = sessionmaker(bind=self.engine)
+
+    def _create_engine(self):
         # Validar si los parámetros de conexión están configurados
         required_fields = ['SERVER', 'DATABASE', 'USER', 'PASSWORD']
         for field in required_fields:
-            if not getattr(Config, field):
+            if not getattr(Config, field, None):
                 raise ValueError(f"La configuración '{field}' no está establecida.")
 
-        # Construir la cadena de conexión
+        # Usar el puerto definido o el puerto por defecto de MySQL (3306)
+        port = getattr(Config, 'PORT', 3306)
+
         connection_string = (
-            f"DRIVER={{ODBC Driver 17 for SQL Server}};"
-            f"SERVER={Config.SERVER};"
-            f"DATABASE={Config.DATABASE};"
-            f"UID={Config.USER};"
-            f"PWD={Config.PASSWORD};"
-            f"Encrypt=yes;"
-            f"TrustServerCertificate=yes;"  # Ignorar validación del certificado del servidor
-            f"Connection Timeout=30;"
+            f"mysql+pymysql://{Config.USER}:{Config.PASSWORD}"
+            f"@{Config.SERVER}:{port}/{Config.DATABASE}?charset=utf8mb4"
         )
-        encoded_connection_string = urllib.parse.quote_plus(connection_string)
 
-        # Crear el motor SQLAlchemy
-        engine = create_engine(f"mssql+pyodbc:///?odbc_connect={encoded_connection_string}")
+        try:
+            engine = create_engine(
+                connection_string,
+                echo=False,            # Desactivar el log de SQL (puedes activarlo para depuración)
+                pool_recycle=3600      # Reciclar conexiones para evitar problemas de timeout
+            )
+            logger.info("Conexión a la base de datos MySQL establecida exitosamente.")
+            return engine
+        except Exception as e:
+            logger.error(f"Error al conectar a la base de datos MySQL: {e}")
+            raise
 
-        return engine
+    def get_session(self):
+        """
+        Crea y retorna una nueva sesión de SQLAlchemy para interactuar con la base de datos.
+        Se recomienda usar el bloque 'with' para asegurar el cierre adecuado de la sesión.
+        Ejemplo:
+            with db_connector.get_session() as session:
+                # operaciones con la sesión
+        """
+        return self.Session()
 
-    except ValueError as ve:
-        logger.error(f"Error en los parámetros de conexión: {ve}")
-    except Exception as e:
-        logger.error(f"Error al conectar a la base de datos: {e}")
-    
-    return None
-
-
-def get_session():
-    Session = sessionmaker(bind=get_engine())
-    return Session()
+    def dispose(self):
+        """
+        Cierra todas las conexiones del engine.
+        """
+        if self.engine:
+            self.engine.dispose()
+            logger.info("Engine descartado y conexiones cerradas.")

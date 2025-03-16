@@ -16,15 +16,14 @@ class Config:
     SESSION_COOKIE_HTTPONLY = os.getenv("SESSION_COOKIE_HTTPONLY")
     SESSION_COOKIE_SAMESITE = os.getenv("SESSION_COOKIE_SAMESITE")
     # CSRF_ENABLED = os.getenv("CSRF_ENABLED")
-    WTF_CSRF_ENABLED = os.getenv("WTF_CSRF_ENABLED")
-    WTF_CSRF_HEADERS = os.getenv("WTF_CSRF_HEADERS", "X-CSRFToken").split(',')
+    # WTF_CSRF_ENABLED = os.getenv("WTF_CSRF_ENABLED")
+    # WTF_CSRF_HEADERS = os.getenv("WTF_CSRF_HEADERS", "X-CSRFToken").split(',')
     
-    PERMANENT_SESSION_LIFETIME = timedelta(hours=3)
-    REMEMBER_COOKIE_DURATION = timedelta(hours=3)
+    PERMANENT_SESSION_LIFETIME = timedelta(hours=1)
+    REMEMBER_COOKIE_DURATION = timedelta(hours=1)
     
     SERVER = os.getenv("SERVER")
     DATABASE = os.getenv("DATABASE")
     USER = os.getenv("USER")
     PASSWORD = os.getenv("PASSWORD")
-    
     PORT = os.getenv("PORT")

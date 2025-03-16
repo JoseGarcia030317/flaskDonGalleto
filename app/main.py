@@ -6,16 +6,17 @@ from flask_talisman import Talisman
 from flask_wtf.csrf import CSRFProtect, CSRF, CSRFError
 from config import Config
 from flasgger import Swagger
-from models.DummyUser import DummyUser
 from core.logic import login
 from core.classes.Tb_usuarios import Usuario
 
 # Blueprints
 from routes.auth import auth_bp
 from routes.proveedores_bp import prov_bp
-from routes.mod_compras_bp import compras_bp
+from routes.mod_compras_bp import mod_compras_bp
 from routes.main_page_bp import main_page_bp
 from routes.auth import auth_bp
+from routes.insumos_bp import insumos_bp
+from routes.unidad_bp import unidad_bp
 
 # Inicializar extensiones de Flask
 # db = SQLAlchemy()
@@ -38,8 +39,8 @@ cors.init_app(app)
 limiter.init_app(app)
 
 # Definición de ruta para usuario no autenticados, cuando se inicia la aplicacion
-login_manager.login_view = "auth_bp.login"
-login_manager.session_protection = "strong"
+# login_manager.login_view = "auth_bp.login"
+# login_manager.session_protection = "strong"
 
 # Headers de seguridad, restringue recursos externos, en
 # este caso solo permite recursos de la aplicacion y
@@ -58,20 +59,23 @@ login_manager.session_protection = "strong"
 app.register_blueprint(auth_bp)
 app.register_blueprint(main_page_bp)
 app.register_blueprint(prov_bp)
-app.register_blueprint(compras_bp)
+app.register_blueprint(mod_compras_bp)
+app.register_blueprint(insumos_bp)
+app.register_blueprint(unidad_bp)
 
 # Ruta raíz de la aplicacion
 @app.route("/")
 def inicio():
-    if not current_user.is_authenticated:
-        return redirect(url_for('auth_bp.login'))
-    else:
-        if current_user.tipo == 1:
-            return redirect(url_for("main_page_bp.mp_admin"))
-        if current_user.tipo == 2:
-            return redirect(url_for("main_page_bp.mp_vendedor"))
-        if current_user.tipo == 3:
-            return redirect(url_for("main_page_bp.mp_cliente"))
+    print()
+    # if not current_user.is_authenticated:
+    #     return redirect(url_for('auth_bp.login'))
+    # else:
+    #     if current_user.tipo == 1:
+    #         return redirect(url_for("main_page_bp.mp_admin"))
+    #     if current_user.tipo == 2:
+    #         return redirect(url_for("main_page_bp.mp_vendedor"))
+    #     if current_user.tipo == 3:
+    #         return redirect(url_for("main_page_bp.mp_cliente"))
 
 @app.before_request
 def make_session_permanent():
@@ -88,18 +92,7 @@ def check_authentication():
 def load_user(user_id):
     user_data = login.get_user_by_id(user_id)
     if user_data:
-        # Construir objeto Usuario
-        return Usuario(
-            nombre=user_data['nombre'],
-            apellido_pat=user_data['apellido_pat'],
-            apellido_mat=user_data['apellido_mat'],
-            telefono=user_data['telefono'],
-            tipo=user_data['tipo'],
-            usuario=user_data['usuario'],
-            contrasenia=user_data['contrasenia'],
-            estatus=user_data['estatus'],
-            id_usuario=user_data['id_usuario']
-        )
+        return Usuario(**user_data)
     return None
 
 # Manejo de errores personalizados

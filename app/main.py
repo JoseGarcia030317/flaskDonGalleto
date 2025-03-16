@@ -3,7 +3,7 @@ from flask_cors import CORS
 from extensions import limiter
 from flask_login import LoginManager, current_user
 from flask_talisman import Talisman
-from flask_wtf.csrf import CSRFProtect, CSRFError
+from flask_wtf.csrf import CSRFProtect, CSRF, CSRFError
 from config import Config
 from flasgger import Swagger
 from models.DummyUser import DummyUser
@@ -20,7 +20,7 @@ from routes.auth import auth_bp
 # Inicializar extensiones de Flask
 # db = SQLAlchemy()
 login_manager = LoginManager()
-csrf = CSRFProtect()
+# csrf = CSRFProtect()
 swagger = Swagger()
 # jwt = JWTManager()
 cors = CORS()
@@ -31,7 +31,7 @@ app.config.from_object(Config)
 
 # db.init_app(app)
 login_manager.init_app(app)
-csrf.init_app(app)
+# csrf.init_app(app)
 swagger.init_app(app)
 # jwt.init_app(app)
 cors.init_app(app)
@@ -103,10 +103,10 @@ def load_user(user_id):
     return None
 
 # Manejo de errores personalizados
-@app.errorhandler(CSRFError)
-def handle_csrf_error(e):
-    """Manejo de error CSRFError - Recurso no encontrado."""
-    return jsonify({"code": 400, "error": "CSRF no valido".join(e)}), 400
+# @app.errorhandler(CSRFError)
+# def handle_csrf_error(e):
+#     """Manejo de error CSRFError - Recurso no encontrado."""
+#     return jsonify({"error": "Token CSRF inválido", "detalle": str(e)}), 400
 
 @app.errorhandler(404)
 def handle_404(error):

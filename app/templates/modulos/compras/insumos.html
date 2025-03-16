@@ -1,44 +1,140 @@
-<div id="insumos-content" class="space-y-6">
-    <div class="flex justify-end">
-        <button onclick="toggleForm()" 
-                class="bg-[#8A5114] text-white px-4 py-2 rounded-lg hover:bg-[#6D3E0F]">
-            + Agregar Insumo
-        </button>
-    </div>
-    <div id="form-insumos" class="bg-white p-6 rounded-lg shadow-md hidden">
-        <form method="POST">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label for="nombre_insumo" class="block text-sm font-medium text-gray-700">Nombre:</label>
-                <input id="nombre_insumo" type="text" class="mt-1 block w-full rounded-md border border-gray-300 p-2">
+<div id="insumos-content" class="p-6">
+    <div class="items-center justify-center w-full">
+        <div class="flex justify-between mb-6 max-w-4xl">
+            <!-- Campo de búsqueda -->
+            <div class="relative w-96 mx-auto"> <!-- Aumenté el ancho a w-96 -->
+                <input type="text" placeholder="Buscar"
+                    class="w-full pl-4 pr-10 py-2 border border-[#7A7A7A] rounded-full">
+
+                <!-- Icono de lupa -->
+                <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <img src="./../../../static/images/magnifying glass.png" class="w-6 h-6">
+                </div>
             </div>
-            <div>
-                <label for="descripcion_insumo" class="block text-sm font-medium text-gray-700">Descripci&oacute;n:</label>
-                <input id="descripcion_insumo" type="text" class="mt-1 block w-full rounded-md border border-gray-300 p-2">
-            </div>
-            <div>
-                <label for="unidad_insumo" class="block text-sm font-medium text-gray-700">Unidad:</label>
-                <select id="unidad_insumo" class="mt-1 block w-full rounded-md border border-gray-300 p-2">
-                    <option value="kg">Kilogramos (kg)</option>
-                    <option value="g">Gramos (g)</option>
-                    <option value="lb">Libras (lb)</option>
-                    <option value="oz">Onzas (oz)</option>
-                </select>
-            </div>
-            <div>
-                <label for="estatus_insumo" class="block text-sm font-medium text-gray-700">Estatus:</label>
-                <select id="estatus_insumo" class="mt-1 block w-full rounded-md border border-gray-300 p-2">
-                    <option value="1">Activo</option>
-                    <option value="0">Inactivo</option>
-                </select>
-            </div>
-        </div>
-        <div class="mt-6 flex justify-end space-x-4">
-            <button type="button" onclick="toggleForm()" 
-                    class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
-                Cancelar
+
+            <!-- Botón para añadir -->
+            <button onclick="abrirModal('añadir')" class="text-white p-2 rounded-full">
+                <img src="../../../static/images/plus.png" class="w-7 h-7">
             </button>
-            <button class="bg-[#8A5114] text-white px-4 py-2 rounded-lg hover:bg-[#6D3E0F] cursor-pointer">Guardar</button>
         </div>
-        </form>
+
+        <div class="overflow-x-auto overflow-y-auto">
+            <table class="w-full table-auto">
+                <thead>
+                    <tr class="bg-[#DBC659] align-middle">
+                        <th class="p-3 text-center text-[#915A17] border">NOMBRE</th>
+                        <th class="p-3 text-center text-[#915A17] border">DESCRIPCI&Oacute;N</th>
+                        <th class="p-3 text-center text-[#915A17] border">UNIDAD DE MEDIDA</th>
+                        <th class="p-3 text-center text-[#915A17] border">ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody_insumos">
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3 text-center">Leche</td>
+                        <td class="p-3 text-center">Producto l&aacute;cteo</td>
+                        <td class="p-3 text-center">Litro</td>
+                        <td class="p-3 flex justify-center">
+                            <button onclick="abrirModal('editar')" class="align-middle">
+                                <img src="../../../static/images/lapiz.png" class="w-7 h-7">
+                            </button>
+                            <button onclick="abrirModal('eliminar')" class="align-middle">
+                                <img src="../../../static/images/bote basura.png" class="w-7 h-7">
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="modalBackdropInsumo" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+        <div id="modalFormInsumo"
+            class="hidden bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[40rem]">
+            <div class="bg-[#EACD5A] rounded-t-lg p-4 -m-6 mb-4 flex justify-center items-center relative">
+                <h2 id="modalTituloInsumo" class="text-black font-semibold text-center">Añadir insumo</h2>
+                <button onclick="cerrarModal()" class="text-black hover:text-gray-700 absolute right-4">
+                    <img src="../../../static/images/cerrar.png" class="w-6 h-6">
+                </button>
+            </div>
+            <form id="insumoForm" class="space-y-4">
+                <input type="hidden" name="csrf_token">
+                <input type="hidden" id="proveedor_id" value="0">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-black mb-2">Nombre</label>
+                        <input type="text" name="nombre" class="w-full p-3 border border-[#8A5114] rounded-full" required>
+                    </div>
+                    <div>
+                        <label class="block text-black mb-2">Descripci&oacute;n</label>
+                        <input type="text" name="descripcion" class="w-full p-3 border border-[#8A5114] rounded-full" required>
+                    </div>
+                    <div>
+                        <label class="block text-black mb-2">Unidad</label>
+                        <select type="text" name="unidad" class="w-full p-3 border border-[#8A5114] rounded-full" required>
+                            <option value="kg">Kilogramos (kg)</option>
+                            <option value="g">Gramos (g)</option>
+                            <option value="lb">Libras (lb)</option>
+                            <option value="oz">Onzas (oz)</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3 bg-[#ffffff] text-[#6d3e0f] rounded-full border border-[#8A5114] font-medium flex items-center justify-center gap-2 hover:bg-gray-50">
+                <img src="../../../static/images/guardar.png" class="w-5 h-5">
+                    Guardar
+                </button>
+            </form>
+        </div>
+
+        <div id="modalEliminarInsumo"
+            class="hidden bg-white rounded-lg p-8 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[30rem]">
+            <div class="text-center space-y-8">
+                <!-- Icono de advertencia -->
+                <div class="flex justify-center">
+                    <img src="../../../static/images/warning.png" class="w-32 h-32">
+                </div>
+
+                <!-- Texto de confirmación -->
+                <div class="mb-6">
+                    <h1 class="text-2xl text-gray-700 font-medium">
+                        ¿Estás seguro que deseas eliminar el registro?
+                    </h1>
+                </div>
+
+                <!-- Botones -->
+                <div class="flex gap-6 justify-center">
+                    <!-- Botón Aceptar -->
+                    <button onclick="confirmarEliminar()"
+                        class="px-6 py-3 border-2 border-[#8A5114] bg-white text-[#8A5114] rounded-full hover:bg-[#f5f5f5] transition-colors flex items-center gap-3">
+                        <img src="../../../static/images/aceptar.png" class="w-6 h-6">
+                        <span class="text-lg font-medium">Aceptar</span>
+                    </button>
+
+                    <!-- Botón Cancelar -->
+                    <button onclick="cerrarModal()"
+                        class="px-6 py-3 border-2 border-[#DAA520] bg-white text-[#DAA520] rounded-full hover:bg-[#f5f5f5] transition-colors flex items-center gap-3">
+                        <img src="../../../static/images/cancelar.png" class="w-6 h-6">
+                        <span class="text-lg font-medium">Cancelar</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Exito -->
+        <div id="modalExitoInsumo"
+            class="hidden bg-white rounded-lg p-8 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[30rem]">
+            <div class="text-center space-y-6">
+                <!-- Icono de éxito -->
+                <div class="flex justify-center">
+                    <img src="../../../static/images/aceptar verde.png" class="w-32 h-32 animate-bounce">
+                </div>
+
+                <!-- Mensaje -->
+                <div class="mb-4">
+                    <h1 class="text-2xl font-semibold">
+                        ¡Proceso finalizado con éxito!
+                    </h1>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

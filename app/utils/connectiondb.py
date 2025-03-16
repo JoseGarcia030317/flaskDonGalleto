@@ -24,10 +24,12 @@ class DatabaseConnector:
 
         # Usar el puerto definido o el puerto por defecto de MySQL (3306)
         port = getattr(Config, 'PORT', 3306)
+        logger.info(f"server: {Config.SERVER}")
+        logger.info(f"puerto: {port}")
 
         connection_string = (
             f"mysql+pymysql://{Config.USER}:{Config.PASSWORD}"
-            f"@{Config.SERVER}:{port}/{Config.DATABASE}?charset=utf8mb4"
+            f"@{Config.SERVER}/{Config.DATABASE}?charset=utf8mb4"
         )
 
         try:

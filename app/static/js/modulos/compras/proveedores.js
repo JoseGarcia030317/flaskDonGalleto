@@ -1,8 +1,8 @@
 // Llamar a cargarProveedores al cargar la página
-document.addEventListener('DOMContentLoaded', cargarProveedores());
+// document.addEventListener('DOMContentLoaded', cargarProveedores());
 
 // Asignar el evento al campo de búsqueda
-document.querySelector('input[name="buscar"]').addEventListener('input', filtrarTabla);
+// document.querySelector('input[name="buscar"]').addEventListener('input', filtrarTabla());
 
 // ====================================================================
 // Funciones para manejar el DOM y mostrar modales
@@ -19,7 +19,7 @@ function abrirModal(tipo) {
 }
 
 function confirmarEliminar() {
-    Swal.fire({
+    return Swal.fire({
         title: "¿Estás seguro que deseas eliminar el registro?",
         imageUrl: "../../../static/images/warning.png",
         imageWidth: 128,
@@ -30,13 +30,6 @@ function confirmarEliminar() {
         customClass: {
             confirmButton: "flex items-center gap-3 px-6 py-3 border-2 border-[#8A5114] bg-white text-[#8A5114] rounded-full hover:bg-[#f5f5f5] transition-colors",
             cancelButton: "flex items-center gap-3 px-6 py-3 border-2 border-[#DAA520] bg-white text-[#DAA520] rounded-full hover:bg-[#f5f5f5] transition-colors"
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            return true;
-        }
-        else {
-            return false;
         }
     });
 
@@ -177,8 +170,12 @@ function guardarProveedor() {
 }
 
 // Funcion para eliminar de manera logica un proveedor
-function eliminarProveedor(id_proveedor) {
-    if (confirmarEliminar() == false) { return; }
+async function eliminarProveedor(id_proveedor) {
+    const resultado = await confirmarEliminar();
+
+    if (!resultado.isConfirmed) {
+        return;
+    }
 
     fetch('/provedores/delete_proveedor', {
         method: 'POST',
@@ -252,3 +249,6 @@ function validarCampos(data) {
     // Implementar validaciones específicas
     return Object.values(data).every(value => value.trim() !== '');
 }
+
+// Exponer la función globalmente
+window.cargarProveedores = cargarProveedores;

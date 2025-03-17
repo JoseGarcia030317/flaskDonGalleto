@@ -28,9 +28,9 @@ def get_insumo_byId():
     return insumos.get_insumo(data.get('id_insumo'))
 
 @insumos_bp.route("/insumos/get_insumo_unidad_byId", methods=['POST'])
-# @login_required
-# @fresh_login_required
-# @role_required(1)
+@login_required
+@fresh_login_required
+@role_required(1)
 def get_insumo_unidad_byId():
     data = request.get_json()
     return insumos.get_insumo_unidad(data.get('id_insumo'))

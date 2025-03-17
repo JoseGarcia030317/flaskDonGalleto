@@ -7,13 +7,17 @@ function cargarModuloCompras() {
         .then(response => response.text())
         .then(html => {
             main_content.innerHTML = html;
+
+            document.getElementById("tabs-container").addEventListener("click", (e) => {
+                const tab = e.target.closest(".tab-item");
+                if (!tab) return;
+
+                const endpoint = tab.dataset.target;
+                cargarContenidoCompras(endpoint);
+            });
+
             // Carga el contenido inicial
             cargarContenidoCompras("proveedores");
-
-            window.cargarProveedores = () => cargarContenidoCompras("proveedores");
-            window.cargarInsumos = () => cargarContenidoCompras("insumos");
-            window.cargarAlmacen = () => cargarContenidoCompras("almacen");
-            window.cargarCompras = () => cargarContenidoCompras("compras");
         })
         .catch(err => console.error("Error cargando el módulo de compras: ", err));
 }
@@ -21,24 +25,30 @@ function cargarModuloCompras() {
 // Función genérica para cargar cualquier sección de compras dinámicamente
 function cargarContenidoCompras(endpoint) {
     const comprasContent = document.getElementById("compras-contenido");
+    comprasContent.innerHTML = '';
 
-    // Actualiza el tab visualmente
     cambiarTab(endpoint);
 
-    fetch(`/compras/${endpoint}`)
+    const timestamp = Date.now();
+    fetch(`/compras/${endpoint}?_=${timestamp}`)
         .then(response => response.text())
         .then(html => {
             comprasContent.innerHTML = html;
 
-            // Cargar el JavaScript específico del submódulo
+            // Eliminar scripts antiguos
+            document.querySelectorAll('script[data-submodule]').forEach(script => script.remove());
+
+            // Cargar script del submódulo
             const script = document.createElement('script');
-            script.src = `../../static/js/modulos/compras/${endpoint}.js`;
+            script.src = `../../static/js/modulos/compras/${endpoint}.js?_=${timestamp}`;
+            script.setAttribute('data-submodule', endpoint);
+
             script.onload = () => {
-                console.log(`Script de ${endpoint} cargado correctamente`);
+                console.log(`Script de ${endpoint} cargado`);
+                if (endpoint === 'proveedores') window.cargarProveedores();
+                if (endpoint === 'insumos') window.cargarInsumos();
             };
-            script.onerror = () => {
-                console.error(`Error al cargar el script de ${endpoint}`);
-            };
+
             document.body.appendChild(script);
         })
         .catch(err => console.error(`Error cargando ${endpoint}:`, err));

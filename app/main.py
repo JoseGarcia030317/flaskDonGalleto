@@ -39,8 +39,8 @@ cors.init_app(app)
 limiter.init_app(app)
 
 # Definición de ruta para usuario no autenticados, cuando se inicia la aplicacion
-# login_manager.login_view = "auth_bp.login"
-# login_manager.session_protection = "strong"
+login_manager.login_view = "auth_bp.login"
+login_manager.session_protection = "strong"
 
 # Headers de seguridad, restringue recursos externos, en
 # este caso solo permite recursos de la aplicacion y
@@ -66,16 +66,15 @@ app.register_blueprint(unidad_bp)
 # Ruta raíz de la aplicacion
 @app.route("/")
 def inicio():
-    print()
-    # if not current_user.is_authenticated:
-    #     return redirect(url_for('auth_bp.login'))
-    # else:
-    #     if current_user.tipo == 1:
-    #         return redirect(url_for("main_page_bp.mp_admin"))
-    #     if current_user.tipo == 2:
-    #         return redirect(url_for("main_page_bp.mp_vendedor"))
-    #     if current_user.tipo == 3:
-    #         return redirect(url_for("main_page_bp.mp_cliente"))
+    if not current_user.is_authenticated:
+        return redirect(url_for('auth_bp.login'))
+    else:
+        if current_user.tipo == 1:
+            return redirect(url_for("main_page_bp.mp_admin"))
+        if current_user.tipo == 2:
+            return redirect(url_for("main_page_bp.mp_vendedor"))
+        if current_user.tipo == 3:
+            return redirect(url_for("main_page_bp.mp_cliente"))
 
 @app.before_request
 def make_session_permanent():

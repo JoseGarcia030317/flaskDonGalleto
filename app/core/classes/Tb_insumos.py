@@ -10,12 +10,11 @@ class Insumo(Base):
     id_insumo = Column(Integer, primary_key=True, autoincrement=True)
     nombre = Column(String(25), nullable=True)
     descripcion = Column(String(10), nullable=True)
-    unidad_id = Column(Integer, ForeignKey(
-        'TB_CatalogoUnidad.id_unidad'), nullable=False)
+    unidad_id = Column(Integer, nullable=False)
     estatus = Column(Integer, nullable=False, default = 1)
     precio_unitario = Column(DOUBLE, nullable=True)
 
-    def __init__(self, id_insumo, nombre, descripcion, unidad_id, estatus = 1, precio_unitario=None):
+    def __init__(self, nombre, descripcion, unidad_id, estatus = 1, id_insumo = None, precio_unitario=None):
         self.id_insumo = id_insumo
         self.nombre = nombre
         self.descripcion = descripcion

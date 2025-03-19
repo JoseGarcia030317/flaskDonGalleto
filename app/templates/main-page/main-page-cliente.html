@@ -5,13 +5,8 @@
 {% block side_var %}
 <div>
     <nav class="space-y-2 bg-[#ECCA58] border-0 w-full">
-        <a href="#"
-            class="block px-4 py-2 text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
-            Pedido
-        </a>
-        <a href="#"
-            class="block px-4 py-2 text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
-            Historial
+        <a onclick="cargarModuloPortalCliente()" class="block px-4 py-2 text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
+            Portal del cliente
         </a>
         <a href="/logout"
             class="block px-4 py-2 mt-[200px] text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">Cerrar
@@ -20,6 +15,6 @@
 </div>
 {% endblock %}
 
-{% block content %}
-<h1>Cliente works!</h1>
+{% block scripts %}
+<script src="../../static/js/modulos/portalCliente/index-portal-cliente.js"></script>
 {% endblock %}

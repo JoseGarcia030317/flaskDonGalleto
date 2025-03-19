@@ -9,37 +9,32 @@ from core.classes.Tb_usuarios import Usuario
 
 auth_bp = Blueprint("auth_bp", __name__)
 
+
 @auth_bp.route("/login", methods=["GET", "POST"])
 @limiter.limit("10/minute")
 def login():
     if current_user.is_authenticated:
         endpoint = retornarUsuario(current_user.tipo)
         return redirect(url_for(endpoint))
+
     form = LoginForm()
     if request.method == 'POST' and form.validate_on_submit():
         user_data = log.autenticar_usuario(
             form.usuario.data, form.contrasenia.data)
-        if user_data.get('usuario') and user_data.get('contrasenia'):
+        if user_data.get('id_usuario') and user_data.get('usuario'):
 
             user = Usuario(**user_data)
             login_user(user, remember=form.remember_me.data)
-            
+
             endpoint = retornarUsuario(user.tipo)
             return redirect(url_for(endpoint))
         else:
             flash("Usuario y/o contraseña incorrectos", "danger")
-    elif form.form_errors:
+
+    if request.method == 'POST' and not form.validate_on_submit():
         flash("Hubo un error en el formulario, por favor intente de nuevo", "danger")
 
     return render_template("modulos/auth/login.html", form=form)
-
-
-@auth_bp.route("/dashboard", methods=['GET', 'POST'])
-@login_required
-@fresh_login_required
-def dashboard():
-    return "<h1>ya estas dentro</h1>"
-
 
 @auth_bp.route("/logout", methods=['GET'])
 @login_required
@@ -59,7 +54,11 @@ def test():
 def retornarUsuario(tipo_usuario):
     if tipo_usuario == 1:
        return "main_page_bp.mp_admin"
-    elif tipo_usuario == 2:
+    if tipo_usuario == 2:
        return "main_page_bp.mp_vendedor"
-    elif tipo_usuario == 3:
+    if tipo_usuario == 3:
        return "main_page_bp.mp_cliente"
+    if tipo_usuario == 4:
+        return "main_page_bp.mp_cocinero"
+    if tipo_usuario == 5:
+        return "main_page_bp.mp_almacenista"

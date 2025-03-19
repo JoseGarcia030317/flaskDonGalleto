@@ -9,11 +9,11 @@ from flasgger import Swagger
 from models.DummyUser import DummyUser
 
 # Blueprints
-from app.routes.auth import auth_bp
+from routes.auth import auth_bp
 from routes.proveedores_bp import prov_bp
 from routes.compras_bp import compras_bp
 from routes.main_page_bp import main_page_bp
-from app.routes.auth import auth_bp
+from routes.auth import auth_bp
 
 # Inicializar extensiones de Flask
 # db = SQLAlchemy()

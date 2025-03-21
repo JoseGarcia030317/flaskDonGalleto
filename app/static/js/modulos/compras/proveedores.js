@@ -1,11 +1,8 @@
-// Llamar a cargarProveedores al cargar la página
-// document.addEventListener('DOMContentLoaded', cargarProveedores());
-
-// Asignar el evento al campo de búsqueda
-// document.querySelector('input[name="buscar"]').addEventListener('input', filtrarTabla());
+import { api } from '../../utils/api.js'
+import { tabs } from '../../utils/tabs.js';
 
 // ====================================================================
-// Funciones para manejar el DOM y mostrar modales
+// Funciones para manejar el DOM y mostrar modales y alertas
 // ====================================================================
 // Funcion generica para abrir un modal en base a la clase hidden
 function abrirModal(tipo) {
@@ -61,12 +58,12 @@ function filtrarTabla() {
 }
 
 // Cerrar modal al hacer clic fuera
-document.getElementById('modalBackdrop').addEventListener('click', (e) => {
-    if (e.target === document.getElementById('modalBackdrop')) {
-        cerrarModal();
-        limpiarFormulario();
-    }
-});
+// document.getElementById('modalBackdrop').addEventListener('click', (e) => {
+//     if (e.target === document.getElementById('modalBackdrop')) {
+//         cerrarModal();
+//         limpiarFormulario();
+//     }
+// });
 
 // Funcino para cerrar los distintos modales
 function cerrarModal() {
@@ -78,39 +75,14 @@ function cerrarModal() {
 // ====================================================================
 // Funciones para hacer las conexiones con la aplicaion Flak
 // ====================================================================
-// Obtener CSRF Token del formulario
-function getCSRFToken() {
-    alert(document.querySelector('input[name="csrf_token"]').value)
-    return document.querySelector('input[name="csrf_token"]').value;
-}
-
 // Funcion para cargar los proveedores al iniciar la aplicacion
 function cargarProveedores() {
-    fetch('/provedores/get_all_proveedores', {
-        headers: {
-            'Accept': 'application/json'
-        }
-    })
-        .then(response => {
-            if (response.status === 403) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Acceso denegado',
-                    text: 'No tienes permisos para ver este recurso',
-                    showConfirmButton: true
-                }).then(() => {
-                    window.location.href = "/login";
-                });
-                
-                return Promise.reject("Acceso denegado");
-            }
-            if (!response.ok) throw new Error('Error en la red');
-            return response.json();
-        })
+    const tbody = document.getElementById('tbody_proveedores');
+    tabs.mostrarEsqueletoTabla(tbody);
+    
+    api.getJSON('/provedores/get_all_proveedores')
         .then(data => {
-            const tbody = document.getElementById('tbody_proveedores');
             tbody.innerHTML = '';
-
             data.forEach(proveedor => {
                 tbody.innerHTML += `
                 <tr data-id="${proveedor.id_proveedor}" class="hover:bg-gray-50">
@@ -131,8 +103,8 @@ function cargarProveedores() {
             limpiarFormulario();
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert('Error al cargar proveedores');
+            console.error('Error:', error.message);
+            Swal.fire('Error', error.message, 'error');
         });
 }
 
@@ -149,26 +121,10 @@ function guardarProveedor() {
 
     // Si es modificar
     const id_proveedor = document.querySelector('input[name="proveedor_id"]').value;
-    let endpoint = '/provedores/create_proveedor';
-    let method = 'POST';
+    let endpoint = id_proveedor != 0 ? '/provedores/update_proveedor' : '/provedores/create_proveedor';
+    let payload = id_proveedor != 0 ? {...formData, id_proveedor} : formData;
 
-    if (id_proveedor != 0) {
-        endpoint = '/provedores/update_proveedor';
-        formData.id_proveedor = id_proveedor;
-    }
-
-    fetch(endpoint, {
-        method: 'POST',
-        // credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json'
-            // 'X-CSRFToken': getCSRFToken()
-        },
-        body: JSON.stringify(formData)
-    })
-        .then(response => {
-            return response.json();
-        })
+    api.postJSON(endpoint, payload)
         .then(data => {
             if (data.id_proveedor) {
                 cerrarModal();
@@ -186,66 +142,48 @@ function guardarProveedor() {
 }
 
 // Funcion para eliminar de manera logica un proveedor
-async function eliminarProveedor(id_proveedor) {
-    const resultado = await confirmarEliminar();
-
-    if (!resultado.isConfirmed) {
-        return;
-    }
-
-    fetch('/provedores/delete_proveedor', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-            // 'X-CSRFToken': getCSRFToken()
-        },
-        body: JSON.stringify({ id_proveedor: id_proveedor })
+function eliminarProveedor(id_proveedor) {
+    confirmarEliminar()
+    .then(resultado => {
+        if (!resultado.isConfirmed) {
+            return Promise.reject('cancelado');
+        }
+        return api.postJSON('/provedores/delete_proveedor', {id_proveedor : id_proveedor});
     })
-        .then(response => {
-            if (!response) throw new Error('Error en la red');
-            return response.json();
-        })
-        .then(data => {
-            if (data.id_proveedor) {
-                procesoTerminadoExito()
-                cargarProveedores();
-                limpiarFormulario();
-            } else {
-                alert('Error al eliminar proveedor: ' + data.error);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error al eliminar proveedor');
-        });
+    .then(data => {
+        if (data.id_proveedor) {
+            procesoTerminadoExito()
+            cargarProveedores();
+            limpiarFormulario();
+        } else {
+            Swal.fire('Error', data.error || 'Error al eliminar proveedor', 'error');
+        }
+    })
+    .catch(error => {
+        if (error !== 'cancelado') {
+            console.error('Error:', error.message || error);
+            Swal.fire('Error', error.message || 'Error al eliminar', 'error');
+        }
+    });
 }
 
 function buscarProveedorId(id_proveedor) {
-    fetch('/provedores/get_proveedor_byId', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-            // 'X-CSRFToken': getCSRFToken()
-        },
-        body: JSON.stringify({ id_proveedor: id_proveedor })
-    })
-        .then(response => {
-            if (!response.ok) throw new Error('Error al obtener los datos del proveedor');
-            return response.json();
-        })
-        .then(data => {
+    api.postJSON('/provedores/get_proveedor_byId', {id_proveedor : id_proveedor})
+    .then(data => {
+        if (data) {
+            abrirModal('editar');
             document.querySelector('input[name="proveedor_id"').value = data.id_proveedor;
             document.querySelector('input[name="nombre"]').value = data.nombre;
             document.querySelector('input[name="telefono"]').value = data.telefono;
             document.querySelector('input[name="contacto"]').value = data.contacto;
             document.querySelector('input[name="email"]').value = data.correo_electronico;
             document.querySelector('textarea[name="descripcion"]').value = data.descripcion_servicio;
-            abrirModal('editar');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error al cargar los datos del proveedor');
-        });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error.message);
+        Swal.fire('Error', error.message || 'Error al cargar insumo', 'error');
+    });
 }
 
 function limpiarFormulario() {
@@ -261,10 +199,12 @@ function limpiarFormulario() {
 // ====================================================================
 // Funciones para realizar validaciones del lado del Cliente
 // ====================================================================
-function validarCampos(data) {
-    // Implementar validaciones específicas
-    return Object.values(data).every(value => value.trim() !== '');
-}
 
-// Exponer la función globalmente
+// Exponer la función globalmente para poder ser usada en html
 window.cargarProveedores = cargarProveedores;
+window.abrirModal = abrirModal;
+window.cerrarModal = cerrarModal;
+window.guardarProveedor = guardarProveedor;
+window.filtrarTabla = filtrarTabla;
+window.eliminarProveedor = eliminarProveedor;
+window.buscarProveedorId = buscarProveedorId;

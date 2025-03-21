@@ -4,26 +4,26 @@ function cambiarTab(tabId) {
         // Remover estilos activos
         tab.classList.remove(
             'active',
-            'bg-[#8A5114]',
+            'bg-[#301e1a]',
             'text-white'
         );
 
         // Aplicar estilos inactivos
         tab.classList.add(
             'text-black',
-            'hover:bg-[#8A5114]/20'
+            'hover:bg-[#301e1a]/20'
         );
     });
 
     // Aplicar estilos al tab activo
     const activeTab = document.querySelector(`[data-target="${tabId}"]`);
     activeTab.classList.add(
-        'bg-[#8A5114]',
+        'bg-[#301e1a]',
         'text-white'
     );
     activeTab.classList.remove(
         'text-black',
-        'hover:bg-[#8A5114]/20'
+        'hover:bg-[#301e1a]/20'
     );
 }
 
@@ -48,7 +48,27 @@ function mostrarEsqueletoTabla(tbody, rows = 5) {
     `).join('');
 }
 
+// Función para mostrar el loader
+function mostrarLoader() {
+    const loader = document.getElementById('loader');
+    if (loader) {
+        loader.hidden = false;
+        document.body.classList.add('overflow-hidden'); // Bloquear scroll
+    }
+}
+
+// Función para ocultar el loader
+function ocultarLoader() {
+    const loader = document.getElementById('loader');
+    if (loader) {
+        loader.hidden = true;
+        document.body.classList.remove('overflow-hidden'); // Restaurar scroll
+    }
+}
+
 export const tabs = {
     cambiarTab : (endpoint) => cambiarTab(endpoint),
-    mostrarEsqueletoTabla : (tbody) => mostrarEsqueletoTabla(tbody, 5)
+    mostrarEsqueletoTabla : (tbody) => mostrarEsqueletoTabla(tbody, 5),
+    mostrarLoader : () => mostrarLoader(),
+    ocultarLoader : () => ocultarLoader()
 }

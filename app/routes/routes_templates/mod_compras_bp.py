@@ -9,7 +9,7 @@ mod_compras_bp = Blueprint("mod_compras_bp", __name__)
 @mod_compras_bp.route("/compras")
 @login_required
 @fresh_login_required
-@role_required(1)
+@role_required(5)
 def compras_index():
     return render_template("modulos/compras/index-compra.html")
 
@@ -17,7 +17,7 @@ def compras_index():
 @mod_compras_bp.route("/compras/proveedores")
 @login_required
 @fresh_login_required
-@role_required(1)
+@role_required(5)
 def compras_proveedores():
     return render_template("modulos/compras/proveedores.html")
 
@@ -25,7 +25,7 @@ def compras_proveedores():
 @mod_compras_bp.route("/compras/insumos")
 @login_required
 @fresh_login_required
-@role_required(1)
+@role_required(5)
 def compras_insumos():
     return render_template("modulos/compras/insumos.html")
 
@@ -33,7 +33,7 @@ def compras_insumos():
 @mod_compras_bp.route("/compras/almacen")
 @login_required
 @fresh_login_required
-@role_required(1)
+@role_required(5)
 def compras_almacen():
     return render_template("modulos/compras/almacen.html")
 
@@ -41,6 +41,6 @@ def compras_almacen():
 @mod_compras_bp.route("/compras/compras")
 @login_required
 @fresh_login_required
-@role_required(1)
+@role_required(5)
 def compras_compras():
     return render_template("modulos/compras/compras.html")

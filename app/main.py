@@ -1,7 +1,8 @@
-from flask import Flask, jsonify, redirect, request, session, url_for
+from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_cors import CORS
+from forms.login_form import LoginForm
 from extensions import limiter
-from flask_login import LoginManager, current_user
+from flask_login import LoginManager, current_user, logout_user
 from flask_talisman import Talisman
 from flask_wtf.csrf import CSRFProtect, CSRF, CSRFError
 from config import Config
@@ -9,12 +10,19 @@ from flasgger import Swagger
 from core.logic import login
 from core.classes.Tb_usuarios import Usuario
 
-# Blueprints
-from routes.auth import auth_bp
+# Blueprints para renderizar HTML
+from routes.routes_templates.auth import auth_bp
+from routes.routes_templates.main_page_bp import main_page_bp
+from routes.routes_templates.mod_compras_bp import mod_compras_bp
+from routes.routes_templates.mod_dashboard_bp import mod_dashboard_bp
+from routes.routes_templates.mod_galletas_bp import mod_galletas_bp
+from routes.routes_templates.mod_horneados_bp import mod_horneados_bp
+from routes.routes_templates.mod_mermas_bp import mod_mermas_bp
+from routes.routes_templates.mod_portalCliente_bp import mod_portalCliente_bp
+from routes.routes_templates.mod_seguridad_bp import mod_seguridad_bp
+from routes.routes_templates.mod_ventas_bp import mod_ventas_bp
+# Blueprints para comunicarse con la BD
 from routes.proveedores_bp import prov_bp
-from routes.mod_compras_bp import mod_compras_bp
-from routes.main_page_bp import main_page_bp
-from routes.auth import auth_bp
 from routes.insumos_bp import insumos_bp
 from routes.unidad_bp import unidad_bp
 
@@ -55,11 +63,19 @@ login_manager.session_protection = "strong"
 #     force_https=False
 # )
 
-# Registro de blueprints
+# Registro de blueprints para renderizar HTML
 app.register_blueprint(auth_bp)
 app.register_blueprint(main_page_bp)
-app.register_blueprint(prov_bp)
 app.register_blueprint(mod_compras_bp)
+app.register_blueprint(mod_dashboard_bp)
+app.register_blueprint(mod_galletas_bp)
+app.register_blueprint(mod_horneados_bp)
+app.register_blueprint(mod_mermas_bp)
+app.register_blueprint(mod_portalCliente_bp)
+app.register_blueprint(mod_seguridad_bp)
+app.register_blueprint(mod_ventas_bp)
+# Registro de blueprints para comunicarse con la BD
+app.register_blueprint(prov_bp)
 app.register_blueprint(insumos_bp)
 app.register_blueprint(unidad_bp)
 
@@ -75,6 +91,10 @@ def inicio():
             return redirect(url_for("main_page_bp.mp_vendedor"))
         if current_user.tipo == 3:
             return redirect(url_for("main_page_bp.mp_cliente"))
+        if current_user.tipo == 4:
+            return redirect(url_for("main_page_bp.mp_cocinero"))
+        if current_user.tipo == 5:
+            return redirect(url_for("main_page_bp.mp_almacenista"))
 
 @app.before_request
 def make_session_permanent():
@@ -103,7 +123,7 @@ def load_user(user_id):
 @app.errorhandler(404)
 def handle_404(error):
     """Manejo de error 404 - Recurso no encontrado."""
-    return jsonify({"code": 404, "error": "Resource not found"}), 404
+    return render_template('errores/404.html'), 404
 
 @app.errorhandler(500)
 def handle_500(error):
@@ -111,12 +131,32 @@ def handle_500(error):
     return jsonify({"code": 500, "error": "Internal server error"}), 500
 
 @app.errorhandler(403)
-def ratelimit_error(e):
-    return jsonify({"error": "No puedes acceder a esa ruta, mejor vuelve."}), 403
+def forbidden_error(e):
+    logout_user()  # Siempre cierra la sesión
+
+    # Si el cliente pide algun JSON, devuelve JSON
+    if request.accept_mimetypes.accept_json:
+        return jsonify({
+            "error": "Acceso denegado",
+            "message": "No tienes permisos para este recurso",
+        }), 403
+
+    # Si no, es una ruta normal que ha solicitado HTML
+    flash("Tu sesión ha expirado o no tienes permisos. Vuelve a ingresar", "danger")
+    return redirect(url_for('auth_bp.login'))
+    # return jsonify({"error": "No puedes acceder a esa ruta, mejor vuelve."}), 403
 
 @app.errorhandler(429)
 def ratelimit_error(e):
-    return jsonify({"error": "Demasiados intentos, intenta mas tarde."}), 429
+    # Verificar si el error ocurrió en la ruta de login
+    if request.path == url_for('auth_bp.login'):
+        # Mostrar mensaje directamente sin redirección
+        return render_template("errores/429.html"), 429
+    else:
+        # Cerrar sesión y redirigir al login si es otra ruta
+        flash("Vuelve a iniciar sesión en unos momentos por favor", "danger")
+        logout_user()
+        return redirect(url_for('auth_bp.login'))
 
 # @jwt.unauthorized_loader
 # def unauthorized_response(callback):

@@ -86,8 +86,24 @@ function getCSRFToken() {
 
 // Funcion para cargar los proveedores al iniciar la aplicacion
 function cargarProveedores() {
-    fetch('/provedores/get_all_proveedores')
+    fetch('/provedores/get_all_proveedores', {
+        headers: {
+            'Accept': 'application/json'
+        }
+    })
         .then(response => {
+            if (response.status === 403) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Acceso denegado',
+                    text: 'No tienes permisos para ver este recurso',
+                    showConfirmButton: true
+                }).then(() => {
+                    window.location.href = "/login";
+                });
+                
+                return Promise.reject("Acceso denegado");
+            }
             if (!response.ok) throw new Error('Error en la red');
             return response.json();
         })

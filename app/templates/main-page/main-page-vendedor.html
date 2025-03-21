@@ -1,18 +1,13 @@
 {% extends "main-page-base.html" %}
 
-{% block title %}Cliente{% endblock %}
+{% block title %}Vendedor{% endblock %}
 
 {% block side_var %}
 <div>
     <div>
         <nav class="space-y-2 bg-[#ECCA58] border-0 w-full">
-            <a href="#"
-                class="block px-4 py-2 text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
-                Inicio
-            </a>
-            <a href="#"
-                class="block px-4 py-2 text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
-                Catálogos
+            <a onclick="cargarModuloVentas()" class="block px-4 py-2 text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
+                Ventas
             </a>
             <a href="/logout"
                 class="block px-4 py-2 mt-[200px] text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">Cerrar
@@ -22,6 +17,6 @@
 </div>
 {% endblock %}
 
-{% block content %}
-<h1>Vendedor works!</h1>
+{% block scripts %}
+<script src="../../static/js/modulos/ventas/index-ventas.js"></script>
 {% endblock %}

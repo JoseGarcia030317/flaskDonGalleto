@@ -5,23 +5,11 @@
 {% block side_var %}
 <div>
   <nav class="space-y-2 bg-[#ECCA58] border-0 w-full">
-    <a class="font-poppins block px-6 text-lg py-2 text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
-      Inicio
+    <a onclick="cargarModuloDashboard()" class="block px-4 py-2 text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
+      Dashboard
     </a>
-    <a onclick="" class="block px-6 text-lg py-2 text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
-      Catálogos
-    </a>
-    <a onclick="cargarModuloCompras()" class="block px-6 text-lg py-2 text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
-      Compras
-    </a>
-    <a class="block px-6 text-lg py-2 text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
-      Horneados
-    </a>
-    <a class="block px-6 text-lg py-2 text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
-      Ventas
-    </a>
-    <a class="block px-6 text-lg py-2 text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
-      Mermas
+    <a onclick="cargarModuloSeguridad()" class="block px-4 py-2 text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
+      Seguridad
     </a>
     <div class="absolute bottom-0 left-0 w-full text-center">
       <a href="/logout" class="flex items-center justify-center px-6 text-lg py-2 mt-[200px] text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black font-medium">
@@ -37,4 +25,6 @@
 
 {% block scripts %}
 <script src="../../static/js/modulos/compras/index-compra.js"></script>
+<script type="module" src="../../static/js/modulos/dashboard/index-dashboard.js"></script>
+<script src="../../static/js/modulos/seguridad/index-seguridad.js"></script>
 {% endblock %}

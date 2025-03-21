@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Recurso no encontrado</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-gray-100 min-h-screen flex items-center justify-center">
+    
+    <!-- Contenido de respaldo por si JavaScript está deshabilitado -->
+    <div class="hidden js-disabled">
+        <div class="bg-white p-8 rounded-lg shadow-xl text-center max-w-md mx-auto">
+            <div class="mb-6">
+                <span class="text-9xl text-blue-500 font-bold">404</span>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800 mb-4">¡Ups! Página no encontrada</h1>
+            <p class="text-gray-600 mb-6">
+                La página que estás buscando no existe o ha sido movida.
+            </p>
+            <button onclick="window.history.back()" 
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg transition duration-300">
+                Regresar
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Mostrar SweetAlert al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'error',
+                title: '404 - No encontrado',
+                html: `
+                    <div class="text-left">
+                        <p class="text-gray-700 mb-4">La página solicitada no existe.</p>
+                        <ul class="list-disc pl-5 text-gray-600">
+                            <li>Verifica la URL</li>
+                            <li>Recarga la página</li>
+                            <li>Usa el buscador</li>
+                        </ul>
+                    </div>
+                `,
+                showConfirmButton: true,
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#3B82F6',
+                customClass: {
+                    popup: 'rounded-xl',
+                    title: 'text-2xl font-bold text-gray-800',
+                    content: 'text-gray-600',
+                },
+                showCancelButton: true,
+                cancelButtonText: 'Volver',
+                cancelButtonColor: '#6B7280',
+                focusCancel: true
+            }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.cancel) {
+                    window.history.back();
+                }
+            });
+            
+            // Ocultar contenido de respaldo
+            document.querySelector('.js-disabled').classList.add('hidden');
+        });
+    </script>
+</body>
+</html>

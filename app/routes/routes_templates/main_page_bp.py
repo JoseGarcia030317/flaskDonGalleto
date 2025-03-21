@@ -25,3 +25,17 @@ def mp_vendedor():
 @role_required(3)
 def mp_cliente():
     return render_template("main-page/main-page-cliente.html", tipo_user='Cliente: ', user=current_user.usuario)
+
+@main_page_bp.route("/cocinero",  methods=['GET'])
+@login_required
+@fresh_login_required
+@role_required(4)
+def mp_cocinero():
+    return render_template("main-page/main-page-cocinero.html", tipo_user='Cocinero: ', user=current_user.usuario)
+
+@main_page_bp.route("/almacenista",  methods=['GET'])
+@login_required
+@fresh_login_required
+@role_required(5)
+def mp_almacenista():
+    return render_template("main-page/main-page-almacenista.html", tipo_user='Almacenista: ', user=current_user.usuario)

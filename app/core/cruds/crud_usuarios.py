@@ -20,8 +20,7 @@ class UsuarioCRUD:
             "telefono": usuario.telefono,
             "tipo": usuario.tipo,
             "usuario": usuario.usuario,
-            "contrasenia":usuario.contrasenia,
-            # No se retorna la contraseña para mayor seguridad.
+            "contrasenia": usuario.contrasenia,  # Se recomienda no retornar la contraseña en producción.
             "estatus": usuario.estatus
         }
 
@@ -45,15 +44,18 @@ class UsuarioCRUD:
                 raise e
 
     def read(self, id_usuario):
-        """Recupera un usuario por su id, retornándolo como dict. Si no existe, retorna {}."""
+        """
+        Recupera un usuario activo por su id, retornándolo como dict.
+        Si no existe o no está activo, retorna {}.
+        """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            usuario = session.query(Usuario).filter_by(id_usuario=id_usuario).first()
+            usuario = session.query(Usuario).filter_by(id_usuario=id_usuario, estatus=1).first()
             return self._usuario_to_dict(usuario)
 
     def update(self, id_usuario, usuario_json):
         """
-        Actualiza los datos del usuario a partir de un JSON.
+        Actualiza los datos de un usuario activo a partir de un JSON.
         Si se actualiza la contraseña, se vuelve a cifrar.
         Retorna el usuario actualizado como dict o {} si no se encuentra.
         """
@@ -64,7 +66,7 @@ class UsuarioCRUD:
         
         Session = DatabaseConnector().get_session
         with Session() as session:
-            usuario = session.query(Usuario).filter_by(id_usuario=id_usuario).first()
+            usuario = session.query(Usuario).filter_by(id_usuario=id_usuario, estatus=1).first()
             if usuario:
                 for key, value in data.items():
                     if key == 'contrasenia':
@@ -79,15 +81,15 @@ class UsuarioCRUD:
 
     def delete(self, id_usuario):
         """
-        Elimina un usuario por su id.
-        Retorna un dict con la información del usuario eliminado, o {} si no existe.
+        Realiza una baja lógica de un usuario por su id, cambiando el campo 'estatus' a 0.
+        Retorna un dict con la información del usuario actualizado o {} si no se encuentra.
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            usuario = session.query(Usuario).filter_by(id_usuario=id_usuario).first()
+            usuario = session.query(Usuario).filter_by(id_usuario=id_usuario, estatus=1).first()
             if usuario:
                 try:
-                    session.delete(usuario)
+                    usuario.estatus = 0  # Baja lógica
                     session.commit()
                 except Exception as e:
                     session.rollback()
@@ -96,27 +98,26 @@ class UsuarioCRUD:
 
     def list_all(self):
         """
-        Obtiene el listado completo de usuarios y los retorna como lista de dicts.
+        Obtiene el listado completo de usuarios activos y los retorna como lista de dicts.
         Si no hay registros, retorna una lista vacía.
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            usuarios = session.query(Usuario).all()
+            usuarios = session.query(Usuario).filter_by(estatus=1).all()
             return [self._usuario_to_dict(u) for u in usuarios]
 
     def authenticate(self, username, plain_password):
         """
-        Autentica a un usuario.
+        Autentica a un usuario activo.
+        Retorna el usuario como dict si la autenticación es correcta, o {} en caso contrario.
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            usuario = session.query(Usuario).filter_by(usuario=username).first()
+            usuario = session.query(Usuario).filter_by(usuario=username, estatus=1).first()
             
-            # Verificar que el usuario exista y que tenga estatus activo
-            if not usuario or usuario.estatus != 1:
+            if not usuario:
                 return {}
             
-            # Verificar la contraseña
             if not bcrypt.checkpw(plain_password.encode('utf-8'), usuario.contrasenia.encode('utf-8')):
                 return {}
             

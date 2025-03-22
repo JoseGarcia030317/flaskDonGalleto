@@ -5,7 +5,7 @@ import { tabs } from '../../utils/tabs.js';
 // Funcion para cargar la vista principal de compras en el main
 function cargarModuloCompras() {
     const main_content = document.getElementById("main-content");
-    main_content.innerHTML = '';
+    main_content.innerHTML = tabs.mostrarEsqueletoMainContent();
 
     api.getHTML('/compras')
     .then(html => {
@@ -20,7 +20,7 @@ function cargarModuloCompras() {
         cargarContenidoCompras("proveedores");
     })
     .catch(error => {
-        console.error("Error cargando el módulo de compras: ", err);
+        console.error("Error cargando el módulo de compras: ", error);
         Swal.fire('Error', 'No se pudo cargar el módulo de compras', 'error');
     });
 }
@@ -29,12 +29,7 @@ function cargarModuloCompras() {
 function cargarContenidoCompras(endpoint) {
     const comprasContent = document.getElementById("compras-contenido");
     // Mostrar esqueleto de carga
-    comprasContent.innerHTML = `
-        <div class="skeleton-loading animate-pulse">
-            <div class="h-12 bg-gray-200 mb-4 rounded"></div>
-            <div class="h-32 bg-gray-200 rounded"></div>
-        </div>
-    `;
+    comprasContent.innerHTML = tabs.mostrarEsqueletoModuloContent();
 
     tabs.cambiarTab(endpoint);
 

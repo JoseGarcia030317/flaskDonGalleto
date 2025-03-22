@@ -32,7 +32,6 @@ class InsumoCRUD:
         """
         if not insumo:
             return {}
-        crud_unidad = UnidadCRUD()
         return {
             "id_insumo": insumo.id_insumo,
             "nombre": insumo.nombre,
@@ -63,33 +62,32 @@ class InsumoCRUD:
 
     def readWithUnidad(self, id_insumo):
         """
-        Recupera un proveedor por su id, retornandolo como dict. Si no existe, retorna {}.
-        Tambien incluye su dict de unidad
+        Recupera un insumo activo por su id, retornándolo como dict.
+        Incluye el diccionario de unidad si existe.
+        Si no se encuentra o no está activo, retorna {}.
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            insumo = session.query(Insumo).filter_by(
-                id_insumo=id_insumo).first()
-            unidad = session.query(Unidad).filter_by(
-                id_unidad=insumo.unidad_id).first()
-
+            insumo = session.query(Insumo).filter_by(id_insumo=id_insumo, estatus=1).first()
+            if not insumo:
+                return {}
+            unidad = session.query(Unidad).filter_by(id_unidad=insumo.unidad_id, estatus=1).first()
             return self._insumo_unidad_to_dict(insumo, unidad)
 
     def read(self, id_insumo):
         """
-        Recupera un proveedor por su id, retornandolo como dict. Si no existe, retorna {}.
+        Recupera un insumo activo por su id, retornándolo como dict.
+        Si no existe o no está activo, retorna {}.
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            insumo = session.query(Insumo).filter_by(
-                id_insumo=id_insumo).first()
-
+            insumo = session.query(Insumo).filter_by(id_insumo=id_insumo, estatus=1).first()
             return self._insumo_to_dict(insumo)
 
     def update(self, id_insumo, insumo_json):
         """
-        Actualiza los datos de un insumo a pastir de un JSON.
-        Retorna el proveedor actualizado como dict o {} si no se encuentra
+        Actualiza los datos de un insumo activo a partir de un JSON.
+        Retorna el insumo actualizado como dict o {} si no se encuentra.
         """
         if isinstance(insumo_json, str):
             data = json.loads(insumo_json)
@@ -98,8 +96,8 @@ class InsumoCRUD:
 
         Session = DatabaseConnector().get_session
         with Session() as session:
-            insumo = session.query(Insumo).filter_by(
-                id_insumo=id_insumo).first()
+            # Solo se actualizan insumos activos
+            insumo = session.query(Insumo).filter_by(id_insumo=id_insumo, estatus=1).first()
             if insumo:
                 for key, value in data.items():
                     setattr(insumo, key, value)
@@ -112,16 +110,16 @@ class InsumoCRUD:
 
     def delete(self, id_insumo):
         """
-        Elimina un insumo por su id
-        Retorna un dict con el insumo eliminado o {} si no existe
+        Realiza una baja lógica de un insumo por su id, cambiando el campo 'estatus' a 0.
+        Retorna un dict con el insumo actualizado o {} si no se encuentra.
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            insumo = session.query(Insumo).filter_by(
-                id_insumo=id_insumo).first()
+            # Solo se considera el insumo si está activo
+            insumo = session.query(Insumo).filter_by(id_insumo=id_insumo, estatus=1).first()
             if insumo:
                 try:
-                    session.delete(insumo)
+                    insumo.estatus = 0  # Baja lógica
                     session.commit()
                 except Exception as e:
                     session.rollback()
@@ -130,23 +128,25 @@ class InsumoCRUD:
 
     def list_all(self):
         """
-        Obtiene el listado completo de insumos y los retorna como lista de dicts.
-        Si nohay registros, retorna una lista vacia
+        Obtiene el listado completo de insumos activos y los retorna como lista de dicts.
+        Si no hay registros, retorna una lista vacía.
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            insumos = session.query(Insumo).all()
+            insumos = session.query(Insumo).filter_by(estatus=1).all()
             return [self._insumo_to_dict(i) for i in insumos]
 
     def list_all_insumo_unidad(self):
         """
-        Obtiene el listado completo de insumos y su respectiva unidad y los retorna como lista de dicts.
-        si no hay registros, retorna una lista vacia
+        Obtiene el listado completo de insumos activos y su respectiva unidad,
+        retornándolos como lista de dicts.
+        Si no hay registros, retorna una lista vacía.
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            insumos = session.query(Insumo).all()
-            unidades = session.query(Unidad).all()
+            insumos = session.query(Insumo).filter_by(estatus=1).all()
+            # Asumiendo que la unidad también tiene campo 'estatus'
+            unidades = session.query(Unidad).filter_by(estatus=1).all()
             unidades_dict = {unidad.id_unidad: unidad for unidad in unidades}
 
             listado = []

@@ -40,10 +40,13 @@ class ProveedorCRUD:
                 raise e
 
     def read(self, id_proveedor):
-        """Recupera un proveedor por su id, retornándolo como dict. Si no existe, retorna {}."""
+        """
+        Recupera un proveedor activo por su id, retornándolo como dict.
+        Si no existe o el proveedor no está activo, retorna {}.
+        """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            proveedor = session.query(Proveedor).filter_by(id_proveedor=id_proveedor).first()
+            proveedor = session.query(Proveedor).filter_by(id_proveedor=id_proveedor, estatus=1).first()
             return self._proveedor_to_dict(proveedor)
 
     def update(self, id_proveedor, proveedor_json):
@@ -71,15 +74,15 @@ class ProveedorCRUD:
 
     def delete(self, id_proveedor):
         """
-        Elimina un proveedor por su id.
-        Retorna un dict con la información del proveedor eliminado o {} si no existe.
+        Realiza una baja lógica cambiando el campo 'estatus' a 0.
+        Retorna un dict con la información del proveedor actualizado o {} si no existe.
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
             proveedor = session.query(Proveedor).filter_by(id_proveedor=id_proveedor).first()
             if proveedor:
                 try:
-                    session.delete(proveedor)
+                    proveedor.estatus = 0
                     session.commit()
                 except Exception as e:
                     session.rollback()
@@ -88,10 +91,10 @@ class ProveedorCRUD:
 
     def list_all(self):
         """
-        Obtiene el listado completo de proveedores y los retorna como lista de dicts.
-        Si no hay registros, retorna una lista vacía.
+        Obtiene el listado completo de proveedores activos y los retorna como lista de dicts.
+        Si no hay registros activos, retorna una lista vacía.
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            proveedores = session.query(Proveedor).all()
+            proveedores = session.query(Proveedor).filter_by(estatus=1).all()
             return [self._proveedor_to_dict(p) for p in proveedores]

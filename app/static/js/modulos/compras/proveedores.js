@@ -47,7 +47,7 @@ function cerrarModal() {
 }
 
 // ====================================================================
-// Funciones para hacer las conexiones con la aplicaion Flak
+// Funciones para hacer las conexiones con la aplicaion Flask
 // ====================================================================
 // Funcion para cargar los proveedores al iniciar la aplicacion
 function cargarProveedores() {  

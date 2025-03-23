@@ -81,6 +81,35 @@ function mostrarEsqueletoModuloContent() {
     `;
 }
 
+function mostrarEsqueletoCardGalleta(container, cantidad = 10) {
+    let esqueleto = '';
+    
+    for(let i = 0; i < cantidad; i++) {
+        esqueleto += `
+            <div class="rounded-xl shadow-md overflow-hidden border border-gray-200 animate-pulse">
+                <div class="flex p-4">
+                    <div class="w-1/3 flex items-center justify-center">
+                        <div class="h-24 w-24 rounded-2xl bg-gray-300"></div>
+                    </div>
+            
+                    <div class="w-2/3 pl-4 space-y-3">
+                        <div class="h-4 bg-gray-300 rounded w-3/4"></div>
+                        <div class="h-3 bg-gray-300 rounded w-1/2"></div>
+                        <div class="h-4 bg-gray-300 rounded w-1/3"></div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center border-t border-gray-200 p-2 gap-4">
+                    <div class="w-7 h-7 bg-gray-300 rounded-full"></div>
+                    <div class="w-7 h-7 bg-gray-300 rounded-full"></div>
+                </div>
+            </div>
+        `;
+    }
+    
+    container.innerHTML = esqueleto;
+}
+
 function bloquearTabs() {
     document.querySelectorAll('.tab-item').forEach(tab => {
         tab.classList.add('pointer-events-none');
@@ -106,6 +135,7 @@ export const tabs = {
     mostrarEsqueletoTabla: (tbody) => mostrarEsqueletoTabla(tbody, 5),
     mostrarEsqueletoMainContent: () => mostrarEsqueletoMainContent(),
     mostrarEsqueletoModuloContent: () => mostrarEsqueletoModuloContent(),
+    mostrarEsqueletoCardGalleta : (container, cantidad = 10) => mostrarEsqueletoCardGalleta(container),
     bloquearTabs: () => bloquearTabs(),
     desbloquearTabs: () => desbloquearTabs(),
     mostrarLoader: () => mostrarLoader(),

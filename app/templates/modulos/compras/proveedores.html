@@ -14,19 +14,20 @@
             </div>
 
             <!-- Botón para añadir -->
-            <button onclick="abrirModal('añadir')" class="text-white p-2 rounded-full">
+            <button id="btn-agregar" onclick="abrirModal('añadir')" class="text-white p-2 rounded-full cursor-pointer"
+                disabled>
                 <img src="../../../static/images/plus.png" class="w-7 h-7">
             </button>
         </div>
 
         <!-- Tabla de proveedores -->
         <div class="overflow-x-auto overflow-y-auto">
-            <table class="w-full table-auto">
+            <table class="w-full table-auto border-collapse  rounded-t-lg">
                 <thead>
                     <tr class="bg-[#efe6dc] align-middle">
                         <th class="p-2 text-center text-[#915A17]">NOMBRE</th>
                         <th class="p-2 text-center text-[#915A17]">TELÉFONO</th>
-                        <th class="p-2 text-center text-[#915A17]">ESTATUS</th>
+                        <th class="p-2 text-center text-[#915A17]">CORREO</th>
                         <th class="p-2 text-center text-[#915A17]">ACCIONES</th>
                     </tr>
                 </thead>
@@ -37,14 +38,14 @@
     </div>
 
     <!-- Modales -->
-    <div id="modalBackdrop" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+    <div id="modalBackdrop" class="hidden fixed inset-0 bg-black/50 z-50">
         <!-- Modal Añadir/Editar -->
         <div id="modalForm"
             class="hidden bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[40rem]">
             <!-- Encabezado del modal -->
             <div class="bg-[#efe6dc] rounded-t-lg p-4 -m-6 mb-4 flex justify-center items-center relative">
-                <h2 id="modalTitulo" class="text-black font-semibold text-center">Añadir proveedor</h2>
-                <button onclick="cerrarModal()" class="text-black hover:text-gray-700 absolute right-4">
+                <h2 id="modalTitulo" class="text-[#3C1D0C] font-semibold text-center">Añadir proveedor</h2>
+                <button onclick="cerrarModal()" class="text-black hover:text-gray-700 absolute right-4 cursor-pointer">
                     <img src="../../../static/images/cerrar.png" class="w-6 h-6">
                 </button>
             </div>
@@ -58,15 +59,15 @@
                 <div class="grid grid-cols-2 gap-4">
                     <!-- Campo Nombre -->
                     <div>
-                        <label class="block text-black mb-1">Nombre</label>
-                        <input type="text" name="nombre" class="w-full p-2 border border-[#8A5114] rounded-full"
+                        <label class="block text-[#895645] mb-1">Nombre</label>
+                        <input type="text" name="nombre" class="w-full p-2 border border-[#895645] rounded-full"
                             required>
                     </div>
 
                     <!-- Campo Teléfono -->
                     <div>
-                        <label class="block text-black mb-1">Teléfono</label>
-                        <input type="tel" name="telefono" class="w-full p-2 border border-[#8A5114] rounded-full"
+                        <label class="block text-[#895645] mb-1">Teléfono</label>
+                        <input type="tel" name="telefono" class="w-full p-2 border border-[#895645] rounded-full"
                             required>
                     </div>
                 </div>
@@ -75,85 +76,40 @@
                 <div class="grid grid-cols-2 gap-4">
                     <!-- Campo Contacto -->
                     <div>
-                        <label class="block text-black mb-1">Contacto</label>
-                        <input type="text" name="contacto" class="w-full p-2 border border-[#8A5114] rounded-full"
+                        <label class="block text-[#895645] mb-1">Contacto</label>
+                        <input type="text" name="contacto" class="w-full p-2 border border-[#895645] rounded-full"
                             required>
                     </div>
 
                     <!-- Campo Correo Electrónico -->
                     <div>
-                        <label class="block text-black mb-1">Correo Electrónico</label>
-                        <input type="email" name="email" class="w-full p-2 border border-[#8A5114] rounded-full"
+                        <label class="block text-[#895645] mb-1">Correo Electrónico</label>
+                        <input type="email" name="email" class="w-full p-2 border border-[#895645] rounded-full"
                             required>
                     </div>
                 </div>
 
                 <!-- Tercera fila: Descripción del Servicio -->
                 <div>
-                    <label class="block text-black mb-1">Descripción del Servicio</label>
-                    <textarea name="descripcion" class="w-full p-2 mb-2 border border-[#8A5114] rounded-2xl h-24"
+                    <label class="block text-[#895645] mb-1">Descripción del Servicio</label>
+                    <textarea name="descripcion" class="w-full p-2 mb-2 border border-[#895645] rounded-2xl h-24"
                         required></textarea>
                 </div>
             </form>
             <!-- Botón Guardar -->
             <button type="submit" onclick="guardarProveedor()"
-                class="w-full py-2 bg-[#ffffff] text-[#6d3e0f] rounded-full border border-[#8A5114] font-medium flex items-center justify-center gap-2 hover:bg-gray-50">
-                <img src="../../../static/images/guardar.png" class="w-5 h-5">
+                class="w-full py-2 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#895645] font-semibold flex items-center justify-center gap-2 hover:bg-[#a46a52] cursor-pointer">
+                <img src="../../../static/images/guardar 3C1D0C.png" class="w-5 h-5">
                 Guardar
             </button>
         </div>
+    </div>
 
-        <!-- Modal Eliminar -->
-        <div id="modalEliminar"
-            class="hidden bg-white rounded-lg p-8 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[30rem]">
-            <div class="text-center space-y-8">
-                <!-- Icono de advertencia -->
-                <div class="flex justify-center">
-                    <img src="../../../static/images/warning.png" class="w-32 h-32">
-                </div>
-
-                <!-- Texto de confirmación -->
-                <div class="mb-6">
-                    <h1 class="text-2xl text-gray-700 font-medium">
-                        ¿Estás seguro que deseas eliminar el registro?
-                    </h1>
-                </div>
-
-                <!-- Botones -->
-                <div class="flex gap-6 justify-center">
-                    <!-- Botón Aceptar -->
-                    <button onclick="confirmarEliminar()"
-                        class="px-6 py-3 border-2 border-[#8A5114] bg-white text-[#8A5114] rounded-full hover:bg-[#f5f5f5] transition-colors flex items-center gap-3">
-                        <img src="../../../static/images/aceptar.png" class="w-6 h-6">
-                        <span class="text-lg font-medium">Aceptar</span>
-                    </button>
-
-                    <!-- Botón Cancelar -->
-                    <button onclick="cerrarModal()"
-                        class="px-6 py-3 border-2 border-[#DAA520] bg-white text-[#DAA520] rounded-full hover:bg-[#f5f5f5] transition-colors flex items-center gap-3">
-                        <img src="../../../static/images/cancelar.png" class="w-6 h-6">
-                        <span class="text-lg font-medium">Cancelar</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal Exito -->
-        <div id="modalExito"
-            class="hidden bg-white rounded-lg p-8 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[30rem]">
-            <div class="text-center space-y-6">
-                <!-- Icono de éxito -->
-                <div class="flex justify-center">
-                    <img src="../../../static/images/aceptar verde.png" class="w-32 h-32 animate-bounce">
-                </div>
-
-                <!-- Mensaje -->
-                <div class="mb-4">
-                    <h1 class="text-2xl font-semibold">
-                        ¡Proceso finalizado con éxito!
-                    </h1>
-                </div>
-            </div>
+    <!-- loader -->
+    <div id="loader" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" hidden>
+        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
+            <img src="../../../static/images/LogoGalleto.png" alt="Cargando..." class="h-16 w-16 animate-spin">
+            <span class="mt-4 text-gray-700 font-semibold">Cargando...</span>
         </div>
     </div>
 </div>

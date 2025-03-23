@@ -1,1 +1,101 @@
-<h1>Mermas producto ya esta funcionando</h1>
+<div id="mermas-content" class="p-2">
+    <div class="items-center justify-center w-full">
+        <!-- Barra de búsqueda y botón añadir -->
+        <div class="flex justify-between mb-2 max-w-4xl">
+            <!-- Campo de búsqueda -->
+            <div class="relative w-96 mx-auto">
+                <input type="text" name="buscar" placeholder="Buscar..." oninput="filtrarTabla()"
+                    class="w-full pl-4 pr-10 py-1 border border-[#8A5114] rounded-full">
+
+                <!-- Icono de lupa -->
+                <div class="absolute right-3 top-1/3 pt-1 transform -translate-y-1/2">
+                    <img src="./../../../static/images/magnifying glass.png" class="w-6 h-6">
+                </div>
+            </div>
+
+            <!-- Botón para añadir -->
+            <button id="btn-agregar" onclick="abrirModal('añadir')" class="text-white p-2 rounded-full cursor-pointer"
+                disabled>
+                <img src="../../../static/images/plus.png" class="w-7 h-7">
+            </button>
+        </div>
+
+        <!-- Tabla de proveedores -->
+        <div class="overflow-x-auto overflow-y-auto">
+            <table class="w-full table-auto border-collapse  rounded-t-lg">
+                <thead>
+                    <tr class="bg-[#efe6dc] align-middle">
+                        <th class="p-2 text-center text-[#915A17]">FECHA</th>
+                        <th class="p-2 text-center text-[#915A17]">TIPO</th>
+                        <th class="p-2 text-center text-[#915A17]">PRODUCTO</th>
+                        <th class="p-2 text-center text-[#915A17]">CANTIDAD</th>
+                        <th class="p-2 text-center text-[#915A17]">ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody_merma_producto">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modales -->
+    <div id="modalBackdrop" class="hidden fixed inset-0 bg-black/50 z-50">
+        <!-- Modal Añadir/Editar -->
+        <div id="modalForm"
+            class="hidden bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[40rem]">
+            <!-- Encabezado del modal -->
+            <div class="bg-[#efe6dc] rounded-t-lg p-4 -m-6 mb-4 flex justify-center items-center relative">
+                <h2 id="modalTitulo" class="text-black font-semibold text-center">Añadir merma</h2>
+                <button onclick="cerrarModal()" class="text-black hover:text-gray-700 absolute right-4 cursor-pointer">
+                    <img src="../../../static/images/cerrar.png" class="w-6 h-6">
+                </button>
+            </div>
+
+            <!-- Formulario -->
+            <form id="mermaProductoForm" class="space-y-4">
+                <!-- Campo para id de merma de producto -->
+                <input type="number" name="merma_producto_id" value="0" hidden>
+
+                <!-- Producto -->
+                <div>
+                    <label class="block text-[#895645] mb-1">Producto</label>
+                    <select type="text" id="cmb_producto" name="producto" class="w-full p-2 border border-[#895645] rounded-full"
+                        required>
+                    </select>
+                </div>
+
+                <!-- Tipo de merma -->
+                <div>
+                    <label class="block text-[#895645] mb-1">Tipo de merma</label>
+                    <select type="text" id="cmb_tipo_merma" name="tipo_merma" class="w-full p-2 border border-[#895645] rounded-full"
+                        required>
+                        <option value="">Selecciona una opción</option>
+                        <option value="1">Dañado</option>
+                        <option value="2">Caducado</option>
+                    </select>
+                </div>
+
+                <!-- Cantidad (pzas) -->
+                <div>
+                    <label class="block text-[#895645] mb-1">Cantidad (pzas)</label>
+                    <input type="number" min="1" name="cantidad" class="w-full p-2 mb-3 border border-[#895645] rounded-full"
+                        required></input>
+                </div>
+            </form>
+            <!-- Botón Guardar -->
+            <button type="submit" onclick="guardarMermaProducto()"
+                class="w-full py-2 bg-[#895645] text-[#ffffff] rounded-full border border-[#301e1a] font-medium flex items-center justify-center gap-2 hover:bg-[#a46a52] cursor-pointer">
+                <img src="../../../static/images/guardar.png" class="w-5 h-5">
+                Guardar
+            </button>
+        </div>
+    </div>
+
+    <!-- loader -->
+    <div id="loader" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" hidden>
+        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
+            <img src="../../../static/images/LogoGalleto.png" alt="Cargando..." class="h-16 w-16 animate-spin">
+            <span class="mt-4 text-gray-700 font-semibold">Cargando...</span>
+        </div>
+    </div>
+</div>

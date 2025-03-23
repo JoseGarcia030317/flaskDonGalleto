@@ -1,45 +1,19 @@
 import { api } from '../../utils/api.js'
 import { tabs } from '../../utils/tabs.js'
+import { alertas } from '../../utils/alertas.js';
 
 // ====================================================================
 // Funciones para manejar el DOM y mostrar modales
 // ====================================================================
 function abrirModal(tipo) {
-    const backdrop = document.getElementById('modalBackdropInsumo');
-    const modalForm = document.getElementById('modalFormInsumo');
+    const backdrop = document.getElementById('modalBackdrop');
+    const modalForm = document.getElementById('modalForm');
 
     backdrop.classList.remove('hidden');
 
-    document.getElementById('modalTituloInsumo').textContent =
+    document.getElementById('modalTitulo').textContent =
         tipo === 'editar' ? 'Editar insumo' : 'Añadir insumo';
     modalForm.classList.remove('hidden')
-}
-
-function confirmarEliminar() {
-    return Swal.fire({
-        title: "¿Estás seguro que deseas eliminar el registro?",
-        imageUrl: "../../../static/images/warning.png",
-        imageWidth: 128,
-        imageHeight: 128,
-        showCancelButton: true,
-        confirmButtonText: '<span class="text-lg font-medium">Aceptar</span>',
-        cancelButtonText: '<span class="text-lg font-medium">Cancelar</span>',
-        customClass: {
-            confirmButton: "flex items-center gap-3 px-6 py-3 border-2 border-[#8A5114] bg-white text-[#8A5114] rounded-full hover:bg-[#f5f5f5] transition-colors",
-            cancelButton: "flex items-center gap-3 px-6 py-3 border-2 border-[#DAA520] bg-white text-[#DAA520] rounded-full hover:bg-[#f5f5f5] transition-colors"
-        }
-    });
-
-}
-
-function procesoTerminadoExito() {
-    Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Proceso realizado con exito",
-        showConfirmButton: false,
-        timer: 1500
-    });
 }
 
 // Función para filtrar la tabla
@@ -66,8 +40,8 @@ function filtrarTabla() {
 
 // Funcino para cerrar los distintos modales
 function cerrarModal() {
-    document.getElementById('modalBackdropInsumo').classList.add('hidden');
-    document.getElementById('modalFormInsumo').classList.add('hidden');
+    document.getElementById('modalBackdrop').classList.add('hidden');
+    document.getElementById('modalForm').classList.add('hidden');
     limpiarFormulario();
 }
 
@@ -97,32 +71,36 @@ function cargarInsumos() {
     const tbody = document.getElementById('tbody_insumos');
     tabs.mostrarEsqueletoTabla(tbody)
     cargarSelectUnidad()
+
     api.getJSON('/insumos/get_all_insumos_unidad')
     .then(data => {
         tbody.innerHTML = '';
 
         data.forEach(insumo => {
             tbody.innerHTML += `
-            <tr data-id="${insumo.id_insumo}" class="hover:bg-gray-50">
+            <tr data-id="${insumo.id_insumo}" class="hover:bg-gray-100">
                 <td class="p-3 text-center">${insumo.nombre}</td>
                 <td class="p-3 text-center">${insumo.descripcion}</td>
                 <td class="p-3 text-center">${insumo.unidad.nombre + ' (' + insumo.unidad.simbolo + ')'}</td>
                 <td class="p-3 flex justify-center">
-                    <button onclick="buscarInsumoId(${insumo.id_insumo})" class="align-middle">
+                    <button onclick="buscarInsumoId(${insumo.id_insumo})" class="align-middle cursor-pointer">
                         <img src="../../../static/images/lapiz.png" class="w-7 h-7">
                     </button>
-                    <button onclick="eliminarInsumo(${insumo.id_insumo})" class="align-middle">
+                    <button onclick="eliminarInsumo(${insumo.id_insumo})" class="align-middle cursor-pointer">
                         <img src="../../../static/images/bote basura.png" class="w-7 h-7">
                     </button>
                 </td>
             </tr>
         `;
         });
+        limpiarFormulario();
+        document.getElementById('btn-agregar').disabled = false;
     })
     .catch(error => {
         console.error('Error:', error.message);
         Swal.fire('Error', error.message || 'Error al cargar insumos', 'error');
-    });
+    })
+    .finally(() => tabs.desbloquearTabs());
 
 }
 
@@ -138,11 +116,12 @@ function guardarInsumo() {
     const endpoint = id_insumo != 0 ? '/insumos/update_insumo' : '/insumos/create_insumo';
     let payload = id_insumo != 0 ? {...formData, id_insumo} : formData;
 
+    tabs.mostrarLoader();
     api.postJSON(endpoint, payload)
     .then(data => {
         if (data.id_insumo) {
             cerrarModal();
-            procesoTerminadoExito();
+            alertas.procesoTerminadoExito();
             cargarInsumos();
             limpiarFormulario();
         } else {
@@ -152,20 +131,22 @@ function guardarInsumo() {
     .catch(error => {
         console.error('Error:', error.message);
         Swal.fire('Error', error.message || 'Error al guardar insumo', 'error');
-    });
+    })
+    .finally(() => tabs.ocultarLoader());
 }
 
 function eliminarInsumo(id_insumo) {
-    confirmarEliminar()
+    alertas.confirmarEliminar()
     .then(resultado => {
         if (!resultado.isConfirmed) {
             return Promise.reject('cancelado');
         }
+        tabs.mostrarLoader();
         return api.postJSON('/insumos/delete_insumo', {id_insumo : id_insumo});
     })
     .then(data => {
         if (data.id_insumo) {
-            procesoTerminadoExito()
+            alertas.procesoTerminadoExito()
             cargarInsumos();
             limpiarFormulario();
         } else {
@@ -178,10 +159,12 @@ function eliminarInsumo(id_insumo) {
             Swal.fire('Error', error.message || 'Error al eliminar', 'error');
         }
     })
+    .finally(() => tabs.ocultarLoader());
 
 }
 
 function buscarInsumoId(id_insumo) {
+    tabs.mostrarLoader();
     api.postJSON('/insumos/get_insumo_unidad_byId', {id_insumo})
     .then(data => {
         if(data) {
@@ -200,7 +183,8 @@ function buscarInsumoId(id_insumo) {
     .catch(error => {
         console.error('Error:', error.message);
         Swal.fire('Error', error.message || 'Error al cargar insumo', 'error');
-    });
+    })
+    .finally(() => tabs.ocultarLoader());
 }
 
 function limpiarFormulario() {

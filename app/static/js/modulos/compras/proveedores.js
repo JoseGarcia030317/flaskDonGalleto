@@ -1,5 +1,6 @@
-import { api } from '../../utils/api.js'
+import { api } from '../../utils/api.js';
 import { tabs } from '../../utils/tabs.js';
+import { alertas } from '../../utils/alertas.js';
 
 // ====================================================================
 // Funciones para manejar el DOM y mostrar modales y alertas
@@ -13,33 +14,6 @@ function abrirModal(tipo) {
     document.getElementById('modalTitulo').textContent =
         tipo === 'editar' ? 'Editar proveedor' : 'Añadir proveedor';
     modalForm.classList.remove('hidden');
-}
-
-function confirmarEliminar() {
-    return Swal.fire({
-        title: "¿Estás seguro que deseas eliminar el registro?",
-        imageUrl: "../../../static/images/warning.png",
-        imageWidth: 128,
-        imageHeight: 128,
-        showCancelButton: true,
-        confirmButtonText: '<span class="text-lg font-medium">Aceptar</span>',
-        cancelButtonText: '<span class="text-lg font-medium">Cancelar</span>',
-        customClass: {
-            confirmButton: "flex items-center gap-3 px-6 py-3 border-2 border-[#8A5114] bg-white text-[#8A5114] rounded-full hover:bg-[#f5f5f5] transition-colors",
-            cancelButton: "flex items-center gap-3 px-6 py-3 border-2 border-[#DAA520] bg-white text-[#DAA520] rounded-full hover:bg-[#f5f5f5] transition-colors"
-        }
-    });
-
-}
-
-function procesoTerminadoExito() {
-    Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Proceso realizado con exito",
-        showConfirmButton: false,
-        timer: 1500
-    });
 }
 
 // Función para filtrar la tabla
@@ -76,7 +50,7 @@ function cerrarModal() {
 // Funciones para hacer las conexiones con la aplicaion Flak
 // ====================================================================
 // Funcion para cargar los proveedores al iniciar la aplicacion
-function cargarProveedores() {
+function cargarProveedores() {  
     const tbody = document.getElementById('tbody_proveedores');
     tabs.mostrarEsqueletoTabla(tbody);
     
@@ -85,15 +59,15 @@ function cargarProveedores() {
             tbody.innerHTML = '';
             data.forEach(proveedor => {
                 tbody.innerHTML += `
-                <tr data-id="${proveedor.id_proveedor}" class="hover:bg-gray-50">
-                    <td class="p-3 text-center">${proveedor.nombre}</td>
-                    <td class="p-3 text-center">${proveedor.telefono}</td>
-                    <td class="p-3 text-center">${proveedor.estatus == 1 ? 'Activo' : 'Inactivo'}</td>
-                    <td class="p-3 flex justify-center">
-                        <button onclick="buscarProveedorId(${proveedor.id_proveedor})" class="align-middle">
+                <tr data-id="${proveedor.id_proveedor}" class="hover:bg-gray-100">
+                    <td class="p-3 text-[#301e1a] text-center">${proveedor.nombre}</td>
+                    <td class="p-3 text-[#301e1a] text-center">${proveedor.telefono}</td>
+                    <td class="p-3 text-[#301e1a] text-center">${proveedor.correo_electronico}</td>
+                    <td class="p-3 text-[#301e1a] flex justify-center">
+                        <button onclick="buscarProveedorId(${proveedor.id_proveedor})" class="align-middle cursor-pointer">
                             <img src="../../../static/images/lapiz.png" class="w-7 h-7">
                         </button>
-                        <button onclick="eliminarProveedor(${proveedor.id_proveedor})" class="align-middle">
+                        <button onclick="eliminarProveedor(${proveedor.id_proveedor})" class="align-middle cursor-pointer">
                             <img src="../../../static/images/bote basura.png" class="w-7 h-7">
                         </button>
                     </td>
@@ -101,11 +75,13 @@ function cargarProveedores() {
             `;
             });
             limpiarFormulario();
+            document.getElementById('btn-agregar').disabled = false;
         })
         .catch(error => {
             console.error('Error:', error.message);
-            Swal.fire('Error', error.message, 'error');
-        });
+            Swal.fire('Error', error.message || 'Error al cargar proveedores', 'error');
+        })
+        .finally(() => tabs.desbloquearTabs());
 }
 
 // Funcion para crear o modificar un proveedor
@@ -124,11 +100,12 @@ function guardarProveedor() {
     let endpoint = id_proveedor != 0 ? '/provedores/update_proveedor' : '/provedores/create_proveedor';
     let payload = id_proveedor != 0 ? {...formData, id_proveedor} : formData;
 
+    tabs.mostrarLoader();
     api.postJSON(endpoint, payload)
         .then(data => {
             if (data.id_proveedor) {
                 cerrarModal();
-                procesoTerminadoExito();
+                alertas.procesoTerminadoExito();
                 cargarProveedores();
                 limpiarFormulario();
             } else {
@@ -136,23 +113,25 @@ function guardarProveedor() {
             }
         })
         .catch(error => {
-            console.error('Error en la petición:', error);
-            alert('Error al crear proveedor');
-        });
+            console.error('Error:', error.message);
+        Swal.fire('Error', error.message || 'Error al guardar proveedor', 'error');
+        })
+        .finally(() => tabs.ocultarLoader());
 }
 
 // Funcion para eliminar de manera logica un proveedor
 function eliminarProveedor(id_proveedor) {
-    confirmarEliminar()
+    alertas.confirmarEliminar()
     .then(resultado => {
         if (!resultado.isConfirmed) {
             return Promise.reject('cancelado');
         }
+        tabs.mostrarLoader();
         return api.postJSON('/provedores/delete_proveedor', {id_proveedor : id_proveedor});
     })
     .then(data => {
         if (data.id_proveedor) {
-            procesoTerminadoExito()
+            alertas.procesoTerminadoExito()
             cargarProveedores();
             limpiarFormulario();
         } else {
@@ -164,10 +143,12 @@ function eliminarProveedor(id_proveedor) {
             console.error('Error:', error.message || error);
             Swal.fire('Error', error.message || 'Error al eliminar', 'error');
         }
-    });
+    })
+    .finally(() => tabs.ocultarLoader());
 }
 
 function buscarProveedorId(id_proveedor) {
+    tabs.mostrarLoader();
     api.postJSON('/provedores/get_proveedor_byId', {id_proveedor : id_proveedor})
     .then(data => {
         if (data) {
@@ -183,7 +164,8 @@ function buscarProveedorId(id_proveedor) {
     .catch(error => {
         console.error('Error:', error.message);
         Swal.fire('Error', error.message || 'Error al cargar insumo', 'error');
-    });
+    })
+    .finally(() => tabs.ocultarLoader());
 }
 
 function limpiarFormulario() {

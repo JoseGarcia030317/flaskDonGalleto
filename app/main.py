@@ -133,9 +133,9 @@ def handle_500(error):
 
 @app.errorhandler(403)
 def forbidden_error(e):
-    logout_user()  # Siempre cierra la sesión
+    logout_user()
 
-    # Si el cliente pide algun JSON, devuelve JSON
+    # Si el cliente pide algun JSON, devuelve JSON para que puedar una respuesta en el frontend
     if request.accept_mimetypes.accept_json:
         return jsonify({
             "error": "Acceso denegado",

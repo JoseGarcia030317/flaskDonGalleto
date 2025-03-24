@@ -1,36 +1,36 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% endblock %} - Don Galleto</title>
-    <link rel="icon" href="../static/images/LogoGalletaPequeña.png">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{% endblock %} - Don Galleto</title>
+  <link rel="icon" href="../static/images/LogoGalletaPequeña.png">
+  <link rel="stylesheet" href="../static/src/output.css">
+  <link rel="stylesheet" href="../static/css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+<body class="min-h-screen">
+  <!-- Sidebar -->
+  <aside class="bg-[#efe6dc] text-[#8A5114] w-[260px] fixed flex flex-col rounded-nav shadow-lg overflow-hidden">
+    <div>
+      <div class="flex flex-col items-center mb-8 mt-7">
+        <img src="../../static/images/LogoGalleto.png" alt="Logo" class="w-[100px] block mx-auto my-2">
+        <h1 class="text-[#3C1D0C] text-2xl font-semibold font-poppins">Don Galleto</h1>
+        <h2 class="text-[#8A5114]">{{ tipo_user }} {{ user }}</h2>
+      </div>
+      {% block side_var %}
+      {% endblock %}
+    </div>
+  </aside>
 
-<body class="bg-gray-100 min-h-screen">
-    <!-- Sidebar -->
-    <aside
-        class="bg-[#ECCA58] text-[#8A5114] w-[260px] h-screen fixed left-0 top-0 flex flex-col rounded-r-[7%] shadow-lg overflow-hidden">
-        <div>
-            <div class="flex flex-col items-center mb-8">
-                <img src="../../static/images/LogoGalleto.png" alt="Logo" class="w-[120px] block mx-auto my-2">
-                <h1 class="text-[#3C1D0C] text-2xl font-bold mb-2">Don Galleto</h1>
-                <h2 class="text-[#8A5114] text-sm">{{ tipo_user }} {{ user }}</h2>
-            </div>
-            {% block side_var %}
-            {% endblock %}
-        </div>
-    </aside>
+  <!-- Contenido principal -->
+  <main id="main-content" class="ml-[275px] p-2 min-h-screen">
+    <p class="font-poppins">
+      Este párrafo utiliza la fuente Poppins.
+    </p>
+  </main>
 
-    <!-- Contenido principal -->
-    <main id="main-content" class="ml-[260px] p-2 min-h-screen">
-    </main>
-
-    {% block scripts %}
-    {% endblock %}
+  {% block scripts %}
+  {% endblock %}
 </body>
-
 </html>

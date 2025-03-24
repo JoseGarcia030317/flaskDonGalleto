@@ -1,52 +1,19 @@
-// Llamar a cargaInsumos el cargar la pagina
-// document.addEventListener('DOMContentLoaded', cargarInsumos());
-
-// Asignar evento al campo de busqueda
-// document.querySelector('input[name="buscar"]').addEventListener('input', filtrarTabla());
+import { api } from '../../utils/api.js'
+import { tabs } from '../../utils/tabs.js'
+import { alertas } from '../../utils/alertas.js';
 
 // ====================================================================
 // Funciones para manejar el DOM y mostrar modales
 // ====================================================================
 function abrirModal(tipo) {
-    const backdrop = document.getElementById('modalBackdropInsumo');
-    const modalForm = document.getElementById('modalFormInsumo');
+    const backdrop = document.getElementById('modalBackdrop');
+    const modalForm = document.getElementById('modalForm');
 
     backdrop.classList.remove('hidden');
 
-    if (tipo !== 'editar') {
-        cargarSelectUnidad()
-    }
-
-    document.getElementById('modalTituloInsumo').textContent =
+    document.getElementById('modalTitulo').textContent =
         tipo === 'editar' ? 'Editar insumo' : 'Añadir insumo';
     modalForm.classList.remove('hidden')
-}
-
-function confirmarEliminar() {
-    return Swal.fire({
-        title: "¿Estás seguro que deseas eliminar el registro?",
-        imageUrl: "../../../static/images/warning.png",
-        imageWidth: 128,
-        imageHeight: 128,
-        showCancelButton: true,
-        confirmButtonText: '<span class="text-lg font-medium">Aceptar</span>',
-        cancelButtonText: '<span class="text-lg font-medium">Cancelar</span>',
-        customClass: {
-            confirmButton: "flex items-center gap-3 px-6 py-3 border-2 border-[#8A5114] bg-white text-[#8A5114] rounded-full hover:bg-[#f5f5f5] transition-colors",
-            cancelButton: "flex items-center gap-3 px-6 py-3 border-2 border-[#DAA520] bg-white text-[#DAA520] rounded-full hover:bg-[#f5f5f5] transition-colors"
-        }
-    });
-
-}
-
-function procesoTerminadoExito() {
-    Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Proceso realizado con exito",
-        showConfirmButton: false,
-        timer: 1500
-    });
 }
 
 // Función para filtrar la tabla
@@ -65,90 +32,76 @@ function filtrarTabla() {
 }
 
 // Cerrar modal al hacer clic fuera
-// document.getElementById('modalBackdropInsumo').addEventListener('click', (e) => {
-//     if (e.target === document.getElementById('modalBackdropInsumo')) {
+// document.getElementById('modalBackdrop').addEventListener('click', (e) => {
+//     if (e.target === document.getElementById('modalBackdrop')) {
 //         cerrarModal();
 //     }
 // });
 
 // Funcino para cerrar los distintos modales
 function cerrarModal() {
-    document.getElementById('modalBackdropInsumo').classList.add('hidden');
-    document.getElementById('modalFormInsumo').classList.add('hidden');
+    document.getElementById('modalBackdrop').classList.add('hidden');
+    document.getElementById('modalForm').classList.add('hidden');
     limpiarFormulario();
 }
 
 // ====================================================================
 // Funciones para hacer las conexiones con la aplicaion Flak
 // ====================================================================
-// Obtener CSRF Token del formulario
-function getCSRFToken() {
-    alert(document.querySelector('input[name="csrf_token"]').value)
-    return document.querySelector('input[name="csrf_token"]').value;
-}
-
 function cargarSelectUnidad() {
     const select = document.getElementById('cmb_unidad')
 
-    fetch('/unidad/get_all_unidad')
-        .then(response => {
-            if (!response) throw new Error('Error al obtener los tipos de unidad');
-            return response.json();
+    api.getJSON('/unidad/get_all_unidad')
+    .then(data => {
+        select.innerHTML = '<option value="">Seleccione una unidad</option>';
+        data.forEach(tipo => {
+            select.innerHTML += `
+                    <option value="${tipo.id_unidad}">
+                        ${tipo.nombre} (${tipo.simbolo})
+                    </option>`;
         })
-        .then(data => {
-            select.innerHTML = '';
-
-            const optionDefault = document.createElement('option');
-            optionDefault.value = '';
-            optionDefault.textContent = 'Seleccione una unidad';
-            select.appendChild(optionDefault);
-
-            data.forEach(tipo => {
-                const option = document.createElement('option');
-                option.value = tipo.id_unidad;
-                option.textContent = tipo.nombre + ' (' + tipo.simbolo + ')';
-                select.appendChild(option);
-            });
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error al cargar los tipos de unidad');
-        });
+    })
+    .catch(error => {
+        console.error('Error:', error.message);
+        Swal.fire('Error', error.message || 'Error al cargar unidades', 'error');
+    })
 }
 
 function cargarInsumos() {
-    fetch('/insumos/get_all_insumos_unidad')
-        .then(response => {
-            if (!response.ok) throw new Error('Error en la red');
-            return response.json();
-        })
-        .then(data => {
-            const tbody = document.getElementById('tbody_insumos');
-            tbody.innerHTML = '';
+    const tbody = document.getElementById('tbody_insumos');
+    tabs.mostrarEsqueletoTabla(tbody)
+    cargarSelectUnidad()
 
-            data.forEach(insumo => {
-                tbody.innerHTML += `
-                <tr data-id="${insumo.id_insumo}" class="hover:bg-gray-50">
-                    <td class="p-3 text-center">${insumo.nombre}</td>
-                    <td class="p-3 text-center">${insumo.descripcion}</td>
-                    <td class="p-3 text-center">${insumo.unidad.nombre + ' (' + insumo.unidad.simbolo + ')'}</td>
-                    <td class="p-3 flex justify-center">
-                        <button onclick="buscarInsumoId(${insumo.id_insumo})" class="align-middle">
-                            <img src="../../../static/images/lapiz.png" class="w-7 h-7">
-                        </button>
-                        <button onclick="eliminarInsumo(${insumo.id_insumo})" class="align-middle">
-                            <img src="../../../static/images/bote basura.png" class="w-7 h-7">
-                        </button>
-                    </td>
-                </tr>
-            `;
-            });
-            limpiarFormulario();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error al cargar insumos');
+    api.getJSON('/insumos/get_all_insumos_unidad')
+    .then(data => {
+        tbody.innerHTML = '';
+
+        data.forEach(insumo => {
+            tbody.innerHTML += `
+            <tr data-id="${insumo.id_insumo}" class="hover:bg-gray-100">
+                <td class="p-3 text-center">${insumo.nombre}</td>
+                <td class="p-3 text-center">${insumo.descripcion}</td>
+                <td class="p-3 text-center">${insumo.unidad.nombre + ' (' + insumo.unidad.simbolo + ')'}</td>
+                <td class="p-3 flex justify-center">
+                    <button onclick="buscarInsumoId(${insumo.id_insumo})" class="align-middle cursor-pointer">
+                        <img src="../../../static/images/lapiz.png" class="w-7 h-7">
+                    </button>
+                    <button onclick="eliminarInsumo(${insumo.id_insumo})" class="align-middle cursor-pointer">
+                        <img src="../../../static/images/bote basura.png" class="w-7 h-7">
+                    </button>
+                </td>
+            </tr>
+        `;
         });
+        limpiarFormulario();
+        document.getElementById('btn-agregar').disabled = false;
+    })
+    .catch(error => {
+        console.error('Error:', error.message);
+        Swal.fire('Error', error.message || 'Error al cargar insumos', 'error');
+    })
+    .finally(() => tabs.desbloquearTabs());
+
 }
 
 function guardarInsumo() {
@@ -160,109 +113,78 @@ function guardarInsumo() {
 
     // Si es modificar
     const id_insumo = document.getElementById('insumo_id').value;
-    let endpoint = '/insumos/create_insumo';
+    const endpoint = id_insumo != 0 ? '/insumos/update_insumo' : '/insumos/create_insumo';
+    let payload = id_insumo != 0 ? {...formData, id_insumo} : formData;
 
-    if (id_insumo != 0) {
-        endpoint = '/insumos/update_insumo';
-        formData.id_insumo = id_insumo;
-    }
-
-    fetch(endpoint, {
-        method: 'POST',
-        // credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json'
-            // 'X-CSRFToken': getCSRFToken()
-        },
-        body: JSON.stringify(formData)
+    tabs.mostrarLoader();
+    api.postJSON(endpoint, payload)
+    .then(data => {
+        if (data.id_insumo) {
+            cerrarModal();
+            alertas.procesoTerminadoExito();
+            cargarInsumos();
+            limpiarFormulario();
+        } else {
+            alert('Error al guardar el insumo: ' + (data.error || 'Error desconocido'));
+        }
     })
-        .then(response => {
-            return response.json();
-        })
-        .then(data => {
-            if (data.id_insumo) {
-                cerrarModal();
-                procesoTerminadoExito();
-                cargarInsumos();
-                limpiarFormulario();
-            } else {
-                alert('Error al guardar el insumo: ' + (data.error || 'Error desconocido'));
-            }
-        })
-        .catch(error => {
-            console.error('Error en la petición:', error);
-            alert('Error al guardar al insumo');
-        });
+    .catch(error => {
+        console.error('Error:', error.message);
+        Swal.fire('Error', error.message || 'Error al guardar insumo', 'error');
+    })
+    .finally(() => tabs.ocultarLoader());
 }
 
-async function eliminarInsumo(id_insumo) {
-    const resultado = await confirmarEliminar();
-
-    if (!resultado.isConfirmed) {
-        return;
-    }
-
-    fetch('/insumos/delete_insumo', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-            // 'X-CSRFToken': getCSRFToken()
-        },
-        body: JSON.stringify({ id_insumo: id_insumo })
+function eliminarInsumo(id_insumo) {
+    alertas.confirmarEliminar()
+    .then(resultado => {
+        if (!resultado.isConfirmed) {
+            return Promise.reject('cancelado');
+        }
+        tabs.mostrarLoader();
+        return api.postJSON('/insumos/delete_insumo', {id_insumo : id_insumo});
     })
-        .then(response => {
-            if (!response) throw new Error('Error en la red');
-            return response.json();
-        })
-        .then(data => {
-            if (data.id_insumo) {
-                procesoTerminadoExito()
-                cargarInsumos();
-                limpiarFormulario();
-            } else {
-                alert('Error al eliminar insumo: ' + data.error);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error al eliminar el insumo');
-        });
+    .then(data => {
+        if (data.id_insumo) {
+            alertas.procesoTerminadoExito()
+            cargarInsumos();
+            limpiarFormulario();
+        } else {
+            Swal.fire('Error', data.error || 'Error al eliminar insumo', 'error');
+        }
+    })
+    .catch(error => {
+        if (error !== 'cancelado') {
+            console.error('Error:', error.message || error);
+            Swal.fire('Error', error.message || 'Error al eliminar', 'error');
+        }
+    })
+    .finally(() => tabs.ocultarLoader());
+
 }
 
 function buscarInsumoId(id_insumo) {
-    fetch('/insumos/get_insumo_unidad_byId', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-            // 'X-CSRFToken': getCSRFToken()
-        },
-        body: JSON.stringify({ id_insumo : id_insumo })
+    tabs.mostrarLoader();
+    api.postJSON('/insumos/get_insumo_unidad_byId', {id_insumo})
+    .then(data => {
+        if(data) {
+            abrirModal('editar');
+            const select = document.getElementById('cmb_unidad');
+            select.innerHTML = `<option value="${data.unidad.id_unidad}">
+                                  ${data.unidad.nombre} (${data.unidad.simbolo})
+                               </option>`;
+
+            document.getElementById('insumo_id').value = data.id_insumo;
+            document.querySelector('input[name="nombre"]').value = data.nombre;
+            document.querySelector('input[name="descripcion"]').value = data.descripcion;
+        }
+
     })
-        .then(response => {
-            if (!response) throw new Error('Error al obtener los datos del insumo');
-            return response.json();
-        })
-        .then(data => {
-            if(data) {
-                const select = document.getElementById('cmb_unidad');
-                select.innerHTML = '';
-
-                document.getElementById('insumo_id').value = data.id_insumo;
-                document.querySelector('input[name="nombre"]').value = data.nombre;
-                document.querySelector('input[name="descripcion"]').value = data.descripcion;
-
-                const option = document.createElement('option');
-                option.value = data.unidad.id_unidad;
-                option.textContent = data.unidad.nombre + ' (' + data.unidad.simbolo + ')';
-                select.appendChild(option);
-
-                abrirModal('editar');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error al cargar los datos del insumo');
-        });
+    .catch(error => {
+        console.error('Error:', error.message);
+        Swal.fire('Error', error.message || 'Error al cargar insumo', 'error');
+    })
+    .finally(() => tabs.ocultarLoader());
 }
 
 function limpiarFormulario() {
@@ -276,3 +198,9 @@ function limpiarFormulario() {
 
 // Exponer la función globalmente
 window.cargarInsumos = cargarInsumos;
+window.abrirModal = abrirModal;
+window.cerrarModal = cerrarModal;
+window.guardarInsumo = guardarInsumo;
+window.filtrarTabla = filtrarTabla;
+window.eliminarInsumo = eliminarInsumo;
+window.buscarInsumoId = buscarInsumoId;

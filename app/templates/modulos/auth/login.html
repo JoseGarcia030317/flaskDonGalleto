@@ -3,74 +3,110 @@
 {% block title %}Iniciar Sesión{% endblock %}
 
 {% block content %}
-<div class="w-full flex justify-center text-center">
-    <div class="bg-white/90 backdrop-blur-sm p-8 rounded-xl shadow-xl w-full max-w-md transform -translate-x-[0.5px]">
-        <div class="mb-6 flex justify-center">
-            <img src="../../static/images/LogoGalleto.png" alt="" class="w-32 object-contain aspect-square">
-        </div>
-
-        <div class="mx-2 mb-4">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-            {% for category, message in messages %}
-            <div
-                class="p-4 mb-4 rounded-lg {{ 'bg-green-100 text-green-700' if category == 'success' else 'bg-red-100 text-red-700' }}">
-                {{ message }}
-                <button onclick="this.parentElement.remove()" class="float-right font-bold">×</button>
-            </div>
-            {% endfor %}
-            {% endif %}
-            {% endwith %}
-        </div>
-
-        <form id="loginForm" class="space-y-6" method="POST" action="{{ url_for('auth_bp.login') }}">
-            <!-- Token -->
-            {{ form.csrf_token }}
-
-            <!-- Campo Usuario -->
-            <div class="mx-2">
-                {{ form.usuario.label(class="block text-[#8A5114] font-medium mb-2") }}
-                {{ form.usuario(
-                class="w-full px-4 py-3 border border-[#8A5114] rounded-lg focus:ring-2 transition-all",
-                id="usuario",
-                value=form.usuario.data if form.usuario.data else ''
-                ) }}
-            </div>
-
-            <!-- Campo Contraseña -->
-            <div class="mx-2">
-                {{ form.contrasenia.label(class="block text-[#8A5114] font-medium mb-2") }}
-                {{ form.contrasenia(
-                class="w-full px-4 py-3 border border-[#8A5114] rounded-lg focus:ring-2 transition-all",
-                id="contrasenia"
-                ) }}
-                {% for error in form.contrasenia.errors %}
-                <p class="text-red-500 text-sm mt-1">{{ error }}</p>
-                {% endfor %}
-            </div>
-
-            <!-- Checkbox Recuérdame -->
-            <div class="mx-2 flex items-center justify-between">
-                <div class="flex items-center">
-                    {{ form.remember_me(
-                    class="h-4 w-4 text-[#8A5114] border-[#8A5114] rounded focus:ring-[#8A5114]",
-                    id="remember_me"
-                    ) }}
-                    {{ form.remember_me.label(
-                    class="ml-2 block text-sm text-[#8A5114]",
-                    for="remember_me"
-                    ) }}
-                </div>
-            </div>
-            <!-- Botón de Submit -->
-            <div class="mx-2 pt-4">
-                <button type="submit" class="w-full bg-white text-[#8A5114] font-bold border border-[#8A5114] 
-                       hover:bg-[#8A5114] hover:text-white py-3 px-4 rounded-lg 
-                       transition-all duration-300 shadow-md">
-                    Iniciar Sesión
-                </button>
-            </div>
-        </form>
+<div class="container" id="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div
+        class="p-4 mb-4 rounded-lg {{ 'bg-green-100 text-green-700' if category == 'success' else 'bg-red-100 text-red-700' }}">
+        {{ message }}
+        <button onclick="this.parentElement.remove()" class="float-right font-bold">×</button>
     </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+  <div class="form-container sign-in-container">
+    <form id="loginForm" class="login-form"  method="POST" action="{{ url_for('auth_bp.login') }}">
+            <!-- Token -->
+              {{ form.csrf_token }}  
+          
+                <!-- INICIAR SESIÓN -->
+                  <form action="#" class="login-form">
+                    <h1 class="title-log">Iniciar sesión</h1>
+                      <span>Ingresa y comienza a disfrutar</span>
+                        <div class="login-card">
+                          <!-- Input usuario -->
+                            <label for="Usuario">Usuario</label>
+                              {{ form.usuario(
+                                  class="inputs",
+                                  id="usuario",
+                                  value=form.usuario.data if form.usuario.data else ''
+                              )}}
+                          <!-- Input Password-->
+                            <label for="Password">Password</label>
+                              {{ form.contrasenia(
+                                  class="inputs", 
+                                  id="contrasenia"
+                              )}}
+                                {% for error in form.contrasenia.errors %}
+                                <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                                {% endfor %}
+
+                            <div>
+                              {{ form.remember_me(
+                                class="h-4 w-4 text-[#8A5114] border-[#8A5114] rounded focus:ring-[#8A5114]",
+                                id="remember_me"
+                              )}}
+                                <span class="remember">Recuerdame</span>
+                            </div>
+                        </div>
+                            <div class="btn-login">
+                              <button class="buttons">Iniciar sesión</button>
+                            </div>
+                  </form>
+                </div>
+
+                          <!-- REGISTRARSE-->
+                          <div class="form-container sign-up-container">
+                              <form action="#" class="login-form">
+                                <h1 class="title-log">Crea una cuenta</h1>
+                                  <span>Es tan sencillo como hornear</span>
+                                    <div class="login-card2">
+                                      <label for="">Nombre</label>
+                                      <input class="inputs" type="text" placeholder="Name" />
+                                      <label for="">Correo electrónico</label>
+                                      <input class="inputs" type="email" placeholder="Email" />
+                                      <label for="">Password</label>
+                                      <input class="inputs" type="password" placeholder="Password" />
+                                    </div>
+                                <button class="buttons">Registrarse</button>
+                              </form>
+                          </div>
+
+                        
+
+                          <!-- CARD DE DISEÑO -->
+                          <div class="overlay-container">
+                            <div class="overlay">
+                                <div class="overlay-panel overlay-left">
+                                  <div class="img-over">
+                                    <img src="../../../static/images/fondo3.png" alt="">
+                                  </div>
+                                    <h1 class="title-g">Don galleto</h1>
+                                      <h1 class="title-over2">¿Tienes una cuenta?</h1>
+                                        <p class="msj-registro" >Inicia sesión con tus credenciales</p>
+                                          <button class="btn-ghost" id="signIn">Iniciar sesión</button>
+                                </div>
+
+                                <!-- Over login -->
+                                <div class="overlay-panel overlay-right">
+                                  <div class="img-log">
+                                    <img src="../../../static/images/LogoGalleto.png" alt="LogoGalleto">
+                                  </div>
+                                      <h1 class="title-g">Don galleto</h1>
+                                      <h1 class="title-over">Hola ¡Bienvenido!</h1>
+                                      <p class="msj-registro">¿No tienes una cuenta? Registrate gratis</p>
+                                      <button class="btn-ghost" id="signUp">Registrarse</button>
+                                </div>
+                            </div>
+                          </div>    
+    </form>
 </div>
+  <footer>
+    <p>
+      REDATA <i class="fa fa-heart"></i> by
+      - Cada uno creé en lo posible así que, hazlo posible
+    </p>
+  </footer>
 {% endblock %}

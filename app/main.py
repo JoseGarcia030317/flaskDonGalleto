@@ -74,6 +74,7 @@ app.register_blueprint(mod_mermas_bp)
 app.register_blueprint(mod_portalCliente_bp)
 app.register_blueprint(mod_seguridad_bp)
 app.register_blueprint(mod_ventas_bp)
+
 # Registro de blueprints para comunicarse con la BD
 app.register_blueprint(prov_bp)
 app.register_blueprint(insumos_bp)

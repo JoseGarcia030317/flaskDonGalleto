@@ -1,6 +1,105 @@
 import { api } from '../../utils/api.js';
 import { tabs } from '../../utils/tabs.js';
 import { alertas } from '../../utils/alertas.js';
+import { validarLongitud, validarRequerido, validarTelefono, validarEmail, validarSoloTexto, validarCaracteresProhibidos } from '../../utils/validaciones.js';
+
+// ====================================================================
+// Funciones para realizar validaciones del lado del Cliente
+// ====================================================================
+const validacionesProveedor = {
+    nombre: (input) => {
+        const requerido = validarRequerido(input, 'nombre');
+        if (requerido) return requerido;
+        const caracteresProhibidos = validarCaracteresProhibidos(input, 'nombre');
+        if (caracteresProhibidos) return caracteresProhibidos;
+        const soloTexto = validarSoloTexto(input, 'nombre');
+        if (soloTexto) return soloTexto;
+        const longitud = validarLongitud(input, 3, 25);
+        if (longitud) return longitud;
+        return null;
+    },
+    telefono: (input) => {
+        const requerido = validarRequerido(input, 'teléfono');
+        if (requerido) return requerido;
+        const caracteresProhibidos = validarCaracteresProhibidos(input, 'telefono')
+        if (caracteresProhibidos) return caracteresProhibidos;
+        const telefonoValido = validarTelefono(input);
+        if (telefonoValido) return telefonoValido;
+        const longitud = validarLongitud(input, 10, 10);
+        if (longitud) return longitud;
+        return null;
+    },
+    contacto: (input) => {
+        const caracteresProhibidos = validarCaracteresProhibidos(input, 'contacto');
+        if (caracteresProhibidos) return caracteresProhibidos;
+        const soloTexto = validarSoloTexto(input, 'contacto');
+        if (soloTexto) return soloTexto;
+        const longitud = validarLongitud(input, 0, 50);
+        if (longitud) return longitud;
+        return null;
+    },
+    email: (input) => {
+        const caracteresProhibidos = validarCaracteresProhibidos(input, 'correo electrónico');
+        if (caracteresProhibidos) return caracteresProhibidos;
+
+        const requerido = validarRequerido(input, 'correo electrónico');
+        if (requerido) return requerido;
+        
+        const emailValido = validarEmail(input);
+        if (emailValido) return emailValido;
+
+        const longitud = validarLongitud(input, 10, 50);
+        if (longitud) return longitud;
+
+        return null;
+    },
+    descripcion: (input) => {
+        const caracteresProhibidos = validarCaracteresProhibidos(input, 'descripcion');
+        if (caracteresProhibidos) return caracteresProhibidos;
+        const longitud = validarLongitud(input, 0, 100);
+        if (longitud) return longitud;
+        return null;
+    }
+};
+
+function validarFormulario() {
+    const proveedor = {
+        nombre: document.querySelector('input[name="nombre"]').value,
+        telefono: document.querySelector('input[name="telefono"]').value,
+        contacto: document.querySelector('input[name="contacto"]').value,
+        email: document.querySelector('input[name="email"]').value,
+        descripcion: document.querySelector('textarea[name="descripcion"]').value,
+    };
+
+    const errores = {};
+
+    Object.keys(validacionesProveedor).forEach(campo => {
+        const error = validacionesProveedor[campo](proveedor[campo]);
+        if (error) {
+            errores[campo] = error;
+        }
+    });
+
+    return Object.keys(errores).length === 0 ? null : errores;
+}
+
+function mostrarErrores(errores) {
+    document.querySelectorAll('.error-message').forEach(span => span.classList.add('hidden'));
+    Object.keys(errores).forEach(campo => {
+        const input = document.querySelector(`[name="${campo}"]`);
+        if (!input) {
+            console.error(`No se encontró el campo: ${campo}`);
+            return;
+        }
+        const errorSpan = input.nextElementSibling;
+        if (!errorSpan || !errorSpan.classList.contains('error-message')) {
+            console.error(`No se encontró el mensaje de error para el campo: ${campo}`);
+            return;
+        }
+        errorSpan.textContent = errores[campo];
+        errorSpan.classList.remove('hidden');
+    });
+}
 
 // ====================================================================
 // Funciones para manejar el DOM y mostrar modales y alertas
@@ -30,14 +129,6 @@ function filtrarTabla() {
         }
     });
 }
-
-// Cerrar modal al hacer clic fuera
-// document.getElementById('modalBackdrop').addEventListener('click', (e) => {
-//     if (e.target === document.getElementById('modalBackdrop')) {
-//         cerrarModal();
-//         limpiarFormulario();
-//     }
-// });
 
 // Funcino para cerrar los distintos modales
 function cerrarModal() {
@@ -86,6 +177,12 @@ function cargarProveedores() {
 
 // Funcion para crear o modificar un proveedor
 function guardarProveedor() {
+    // Validar el formulario
+    const errores = validarFormulario();
+    if (errores) {
+        mostrarErrores(errores);
+        return;
+    }
     const formData = {
         nombre: document.querySelector('input[name="nombre"]').value,
         telefono: document.querySelector('input[name="telefono"]').value,
@@ -177,10 +274,6 @@ function limpiarFormulario() {
 
     document.querySelector('input[name="proveedor_id"]').value = 0;
 }
-
-// ====================================================================
-// Funciones para realizar validaciones del lado del Cliente
-// ====================================================================
 
 // Exponer la función globalmente para poder ser usada en html
 window.cargarProveedores = cargarProveedores;

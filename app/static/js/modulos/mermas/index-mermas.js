@@ -1,46 +1,45 @@
+import { api } from "../../utils/api.js";
+import { tabs } from "../../utils/tabs.js";
+
 // Funcion para cargar la vista principal de dashboard en el main
 function cargarModuloMermas() {
     const main_content = document.getElementById('main-content')
-    main_content.innerHTML = '';
-    fetch('/mermas')
-    .then(response => response.text())
+    main_content.innerHTML = tabs.mostrarEsqueletoMainContent();
+    
+    api.getHTML('/mermas')
     .then(html => {
         main_content.innerHTML = html;
-
         document.getElementById('tabs-container').addEventListener('click', (e) => {
             const tab = e.target.closest('.tab-item');
-
             if(!tab) return;
-
             const endpoint = tab.dataset.target;
             cargarContenidoMermas(endpoint);
         });
-
-        // Carga el contenido inicial
-        cargarContenidoMermas("merma-producto");
+        cargarContenidoMermas('merma-insumo')
     })
-    .catch(err => console.error("Error cargando el módulo de mermas: ", err));
+    .catch(error => {
+        console.error("Error cargando el módulo de mermas: ", error);
+        Swal.fire('Error', 'No se pudo cargar el módulo de mermas', 'error');
+    });
 }
 
 // Función genérica para cargar cualquier sección de compras dinámicamente
 function cargarContenidoMermas(endpoint) {
     const mermasContent = document.getElementById('mermas-contenido');
-    mermasContent.innerHTML = '';
-
-    cambiarTab(endpoint);
-
+    tabs.bloquearTabs();
+    mermasContent.innerHTML = tabs.mostrarEsqueletoModuloContent();
+    tabs.cambiarTab(endpoint);
     const timestamp = Date.now();
-    fetch(`/mermas/${endpoint}?_=${timestamp}`)
-    .then(response => response.text())
+    api.getHTML(`/mermas/${endpoint}?_=${timestamp}`)
     .then(html => {
         mermasContent.innerHTML = html;
-
         // Eliminar scripts antiguos
         document.querySelectorAll('script[data-submodule]').forEach(script => script.remove());
 
         // Cargar script del submódulo
         const script = document.createElement('script');
         script.src = `../../static/js/modulos/mermas/${endpoint}.js?_=${timestamp}`;
+        script.type = 'module';
         script.setAttribute('data-submodule', endpoint);
 
         script.onload = () => {
@@ -50,39 +49,12 @@ function cargarContenidoMermas(endpoint) {
             // if (endpoint === 'merma-producto') window.cargarMermaProducto();
             // if (endpoint === 'merma-insumo') window.cargarMermaInsumo();
         };
-
         document.body.appendChild(script);
     })
-    .catch(err => console.error(`Error cargando ${endpoint}:`, err));
-}
-
-// Funcion para cambiar tab seleccionado
-function cambiarTab(tabId) {
-    document.querySelectorAll('.tab-item').forEach(tab => {
-        // Remover estilos activos
-        tab.classList.remove(
-            'active',
-            'bg-[#8A5114]',
-            'text-white'
-        );
-
-        // Aplicar estilos inactivos
-        tab.classList.add(
-            'text-black',
-            'hover:bg-[#8A5114]/20'
-        );
+    .catch(error => {
+        console.error(`Error cargando ${endpoint}:`, error);
+        Swal.fire('Error', `No se pudo cargar la sección ${endpoint}`, 'error');
     });
-
-    // Aplicar estilos al tab activo
-    const activeTab = document.querySelector(`[data-target="${tabId}"]`);
-    activeTab.classList.add(
-        'bg-[#8A5114]',
-        'text-white'
-    );
-    activeTab.classList.remove(
-        'text-black',
-        'hover:bg-[#8A5114]/20'
-    );
 }
 
 // Asignar la función globalmente para que sea accesible en el HTML

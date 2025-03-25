@@ -1,6 +1,81 @@
 import { api } from '../../utils/api.js'
 import { tabs } from '../../utils/tabs.js'
 import { alertas } from '../../utils/alertas.js';
+import { validarLongitud, validarRequerido, validarSoloTexto, validarCaracteresProhibidos, validarSelectRequerido } from '../../utils/validaciones.js';
+
+// ====================================================================
+// Funciones para realizar validaciones del lado del Cliente
+// ====================================================================
+const validacionesInsumos = {
+    nombre : (input) => {
+        const requerido = validarRequerido(input, 'nombre');
+        if (requerido) return requerido;
+        const caracteresProhibidos = validarCaracteresProhibidos(input, 'nombre');
+        if (caracteresProhibidos) return caracteresProhibidos;
+        const soloTexto = validarSoloTexto(input, 'nombre');
+        if (soloTexto) return soloTexto;
+        const longitud = validarLongitud(input, 3, 25);
+        if (longitud) return longitud;
+        return null;
+    },
+    descripcion : (input) => {
+        const caracteresProhibidos = validarCaracteresProhibidos(input, 'descripción');
+        if (caracteresProhibidos) return caracteresProhibidos;
+        const soloTexto = validarSoloTexto(input, 'descripción');
+        if (soloTexto) return soloTexto;
+        const longitud = validarLongitud(input, 3, 100);
+        if (longitud) return longitud;
+        return null;
+    },
+    unidad : (input) => {
+        return validarSelectRequerido(input, 'unidad');
+    }
+}
+
+function validarFormulario() {
+    const insumo = {
+        nombre : document.querySelector('input[name="nombre"]').value,
+        descripcion : document.querySelector('input[name="descripcion"]').value,
+        unidad : document.getElementById('cmb_unidad').value
+    }
+
+    const errores = {};
+
+    Object.keys(validacionesInsumos).forEach(campo => {
+        const error = validacionesInsumos[campo](insumo[campo]);
+        if (error) {
+            errores[campo] = error;
+        }
+    });
+
+    return Object.keys(errores).length === 0 ? null : errores;
+}
+
+function mostrarErrores(errores) {
+    document.querySelectorAll('.error-message').forEach(span => span.classList.add('hidden'));
+    Object.keys(errores).forEach(campo => {
+        let input;
+        if (campo === 'unidad') {
+            input = document.getElementById('cmb_unidad');
+        } else {
+            input = document.querySelector(`[name="${campo}"]`);
+        }
+
+        if (!input) {
+            console.error(`No se encontro el campo ${campo}`);
+            return;
+        }
+
+        const errorSpan = input.nextElementSibling;
+        if (!errorSpan || !errorSpan.classList.contains('error-message')) {
+            console.error(`No se encontro el mensaje de error para el campo ${campo}`);
+            return;
+        }
+
+        errorSpan.textContent = errores[campo];
+        errorSpan.classList.remove('hidden');
+    });
+}
 
 // ====================================================================
 // Funciones para manejar el DOM y mostrar modales
@@ -30,13 +105,6 @@ function filtrarTabla() {
         }
     });
 }
-
-// Cerrar modal al hacer clic fuera
-// document.getElementById('modalBackdrop').addEventListener('click', (e) => {
-//     if (e.target === document.getElementById('modalBackdrop')) {
-//         cerrarModal();
-//     }
-// });
 
 // Funcino para cerrar los distintos modales
 function cerrarModal() {
@@ -105,6 +173,12 @@ function cargarInsumos() {
 }
 
 function guardarInsumo() {
+    // Validar formulario
+    const errores = validarFormulario();
+    if (errores) {
+        mostrarErrores(errores);
+        return;
+    }
     const formData = {
         nombre: document.querySelector('input[name="nombre"]').value,
         descripcion: document.querySelector('input[name="descripcion"]').value,

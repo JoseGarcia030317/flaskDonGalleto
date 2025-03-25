@@ -2,7 +2,8 @@
     <div class="items-center justify-center w-full">
         <!-- Botón para añadir -->
         <div class="flex justify-end items-end mb-2 w-full">
-            <button onclick="abrirModalPrincipal('añadir')" id="btn-agregar" class="text-white p-2 rounded-full cursor-pointer">
+            <button onclick="abrirModalPrincipal('añadir')" id="btn-agregar"
+                class="text-white p-2 rounded-full cursor-pointer">
                 <img src="../../../static/images/plus.png" class="w-7 h-7">
             </button>
         </div>
@@ -74,7 +75,7 @@
             </form>
 
             <!-- Apartado para ver recetas -->
-            <div class="w-full overflow-y-auto mt-4 border-t border-[#895645]">
+            <div class="w-full overflow-y-auto mt-4 border-t border-[#895645] h-70">
                 <div class="flex pt-3 w-full justify-center">
                     <h3 class="font-semibold">Recetas</h3>
                 </div>
@@ -84,8 +85,9 @@
                         <img src="../../../static/images/plus.png" class="w-7 h-7">
                     </button>
                 </div>
+
                 <!-- Cards de Recetas Agregadas (cards con informacion general) -->
-                <div id="recetas-container" class="mt-4 w-full space-y-3 border">
+                <div id="recetas-container" class="mt-4 w-full space-y-3">
                     <p>aquí van las cards con informacion general de las recetas</p>
                 </div>
             </div>
@@ -102,29 +104,71 @@
     <!-- Modal secundario: receta -->
     <div id="modalBackdropSecundario" class="fixed inset-0 bg-black/50 z-50 hidden">
         <!-- Modal secundario añadir/editar -->
-        <div id="modalFormSecundario" class="hidden bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[40rem] max-w-[95vw]">
+        <div id="modalFormSecundario"
+            class="hidden bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[40rem] max-w-[95vw]">
+
             <!-- Encabezado del modal secundario -->
             <div class="bg-[#efe6dc] rounded-t-lg p-4 -m-6 mb-4 flex justify-center items-center relative">
                 <h2 id="modal-titulo-secundario" class="text-[#3C1D0C] font-semibold text-center">Añadir proveedor</h2>
-                <button onclick="cerrarModalSecundario()" class="text-black hover:text-gray-700 absolute right-4 cursor-pointer">
+                <button onclick="cerrarModalSecundario()"
+                    class="text-black hover:text-gray-700 absolute right-4 cursor-pointer">
                     <img src="../../../static/images/cerrar.png" class="w-6 h-6">
                 </button>
             </div>
 
-            <!-- campo de busqueda dinamica -->
-            <div class="relative w-96 mx-auto">
-                <input type="text" name="buscar" placeholder="Buscar..." oninput="filtrarTabla()"
-                    class="w-full pl-4 pr-10 py-1 border border-[#895645] rounded-full">
+            <div class="h-[20rem] overflow-y-auto">
+                <!-- Formulario para la receta -->
+                <form id="recetaForm" class="space-y-3">
+                    <!-- campo para id de la receta -->
+                    <input type="number" name="receta_id" value="0" hidden>
 
-                <!-- Icono de lupa -->
-                <div class="absolute right-3 top-1/3 pt-1 transform -translate-y-1/2">
-                    <img src="./../../../static/images/magnifying glass.png" class="w-6 h-6">
+                    <!-- Primera fila: nombre de la receta -->
+                    <div class="grid grid-cols-1 gap-4 pl-2 pr-2">
+                        <!-- campo nombre de la receta -->
+                        <div>
+                            <label class="block text-[#895645] mb-1">Nombre de la receta</label>
+                            <input type="text" name="nombre-receta"
+                                class="w-full p-2 border border-[#895645] rounded-full" required>
+                        </div>
+                    </div>
+
+                    <!-- Segunda fila: tiempo de horneado y galletas producidas -->
+                    <div class="grid grid-cols-2 gap-4 pl-2 pr-2">
+                        <!-- campo tiempo de horneado -->
+                        <div>
+                            <label class="block text-[#895645] mb-1">Tiempo de horneado (min)</label>
+                            <input type="number" min="1" step="1" name="tiempo-horneado"
+                                class="w-full p-2 border border-[#895645] rounded-full" required>
+                        </div>
+                        <!-- campo de galletas producidad -->
+                        <div>
+                            <label class="block text-[#895645] mb-1">Galletas producidas</label>
+                            <input type="number" min="1" step="1" name="galletas-producidas"
+                                class="w-full p-2 border border-[#895645] rounded-full" required>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- campo de busqueda dinamica -->
+                <div class="relative w-96 mx-auto mt-4">
+                    <input type="text" id="buscador-insumos" placeholder="Buscar insumos..."
+                        onkeyup="filtrarInsumos(this.value)"
+                        class="w-full h-[42px] pl-4 pr-10 py-1 border border-[#895645] rounded-full">
+
+                    <!-- Icono de lupa -->
+                    <div class="absolute right-3 top-1/2 pt-1 transform -translate-y-1/2">
+                        <img src="./../../../static/images/magnifying glass.png" class="w-6 h-6">
+                    </div>
+
+                    <!-- Sugerencias de búsqueda -->
+                    <div id="sugerencias-insumos"
+                        class="hidden absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                    </div>
                 </div>
-            </div>
 
-            <!-- Lista de Insumos Seleccionados -->
-            <div id="insumos-seleccionados" class="space-y-2 overflow-y-auto mt-4 mb-4 border">
-                <p>aqui van los insumos seleccionado con su respectivo input de cantidad</p>
+                <!-- Lista de Insumos Seleccionados -->
+                <div id="insumos-seleccionados" class="space-y-2 mt-4 mb-4">
+                </div>
             </div>
 
             <!-- Botón Guardar receta -->

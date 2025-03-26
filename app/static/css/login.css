@@ -22,8 +22,12 @@
 	}
 
 .title-log {
-	margin: 50px 0px 0px;
+	font-family: "Poppins", sans-serif;
+	font-weight: 400;
+	font-style: normal;
+	margin: 30px 0px 0px;
 	font-size: 50px;
+	color: #5b3b33;
 }
 
 .title-over{
@@ -32,7 +36,7 @@
   	font-weight: 400;
   	font-style: normal;
 	color: #ffffff;
-	margin-bottom: 37px;
+	margin-bottom: 93px;
 }
 
 .title-over2{
@@ -41,12 +45,11 @@
   	font-weight: 400;
   	font-style: normal;
 	color: #ffffff;
-	margin-bottom: 10px;
+	margin-bottom: 80px;
 }
 
 .title-g {
-	font-family: "Great Vibes", cursive;
- 	font-size: 100px;
+ 	font-size: 50px;
   	font-style: normal;
 	color: #5b3b33;
 	margin-bottom: 0px;
@@ -80,7 +83,7 @@ width: 190px;
 }
 
 .login-card {
-	margin: 50px 0px 80px;
+	margin: 50px 0px 70px;
 	text-align: left;
 	font-size: 18px;
 }
@@ -92,10 +95,10 @@ width: 190px;
 }
 .login-form {
 	background-color: #FFFFFF;
-	flex-direction: column;
 	padding: 0 60px;
 	height: 100%;
 	text-align: center;
+	display: block;
 }
 
 .inputs {
@@ -131,10 +134,11 @@ input:-webkit-autofill {
 	border: 1px solid #895645;
 	background-color: #895645;
 	color: #FFFFFF;
-	padding: 12px 45px;
+	padding: 12px 62px;
 	letter-spacing: 1px;
 	text-transform: uppercase;
 	transition: transform 80ms ease-in;
+	cursor: pointer;
 }
 
 .buttons:hover {
@@ -156,10 +160,11 @@ input:-webkit-autofill {
 	border: 1px solid #895645;
 	background-color: #895645;
 	color: #FFFFFF;
-	padding: 11px 53px;
+	padding: 12px 62px;
 	letter-spacing: 1px;
 	text-transform: uppercase;
 	transition: transform 80ms ease-in;
+	cursor: pointer;
 }
 
 .btn-ghost:hover{
@@ -176,8 +181,11 @@ input:-webkit-autofill {
 		position: relative;
 		overflow: hidden;
 		height: 650px; /* Ajusta la altura si es necesario */
-		max-width: 60% !important;
-		min-height: 300px;
+		display: flex;
+            flex-wrap: nowrap;
+            width: 80%;
+            max-width: 1200px;
+            padding: 10px;
 
 	}
 
@@ -186,6 +194,11 @@ input:-webkit-autofill {
 	top: 0;
 	height: 100%;
 	transition: all 0.6s ease-in-out;
+	display: flex;
+            flex-wrap: nowrap;
+            width: 80%;
+            max-width: 1200px;
+            padding: 10px;
 }
 
 .sign-in-container {
@@ -313,3 +326,86 @@ footer p {
 }
 
 
+/* FORMULARIO */
+.container-form {
+	padding: 30px;
+	background-color: white;
+	border-radius: 20px;
+	max-width: 600px;
+	margin: auto;
+	display: flex;
+    flex-wrap: nowrap;    
+	justify-content: center;
+  }
+  
+  .container-form h1 {
+	font-size: 2rem;
+	color: #5b3a29;
+	font-family: 'Poppins';
+    font-weight: 300;
+    font-size: 50px;
+  }
+  
+  .form-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+
+  }
+  
+  .form-grid h1 {
+	grid-column: span 2; /* El título ocupa las dos columnas */
+	text-align: center;
+  }
+  
+  .form-grid label:nth-child(2n+1) {
+	grid-column: 1;
+  }
+  
+  .form-grid label:nth-child(2n) {
+	grid-column: 2;
+  }
+  
+  .form-grid input {
+	grid-column: span 1; /* Mantiene inputs alineados en columnas */
+  }
+  
+  .form-grid .full-width {
+	grid-column: span 2; /* Botón o campo que ocupa toda la fila */
+  }
+  
+  .form-group {
+	display: flex;
+    flex-direction: column;
+    width: fit-content; /* O solo el ancho necesario */
+    min-width: 250px; /* Puedes establecer un ancho mínimo si lo prefieres */
+  }
+  
+  .form-group-full {
+	grid-column: 1 / -1;
+	display: flex;
+	flex-direction: column;
+  }
+  
+  .input-registro {
+	background-color: #e4d4c4;
+	border-radius: 10px;
+	border: none;
+	padding: 12px 15px;
+	margin-top: 5px;
+	width: 100%;
+	outline: none;
+  }
+  
+  .button-container {
+	grid-column: 1 / -1;
+	
+	text-align: center;
+  }
+  @media screen and (max-width: 600px) {
+	.form-grid {
+	  grid-template-columns: 1fr;
+	}
+  }
+  
+  /* FIN FORMULARIO */

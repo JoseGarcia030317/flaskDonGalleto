@@ -30,14 +30,14 @@
                             <label for="Usuario">Usuario</label>
                               {{ form.usuario(
                                   class="inputs",
-                                  id="usuario",
+                                  id="usuario", placeholder="Usuario",
                                   value=form.usuario.data if form.usuario.data else ''
                               )}}
                           <!-- Input Password-->
                             <label for="Password">Password</label>
                               {{ form.contrasenia(
                                   class="inputs", 
-                                  id="contrasenia"
+                                  id="contrasenia", placeholder="*******"
                               )}}
                                 {% for error in form.contrasenia.errors %}
                                 <p class="text-red-500 text-sm mt-1">{{ error }}</p>
@@ -58,21 +58,53 @@
                 </div>
 
                           <!-- REGISTRARSE-->
-                          <div class="form-container sign-up-container">
-                              <form action="#" class="login-form">
-                                <h1 class="title-log">Crea una cuenta</h1>
-                                  <span>Es tan sencillo como hornear</span>
-                                    <div class="login-card2">
-                                      <label for="">Nombre</label>
-                                      <input class="inputs" type="text" placeholder="Name" />
-                                      <label for="">Correo electrónico</label>
-                                      <input class="inputs" type="email" placeholder="Email" />
-                                      <label for="">Password</label>
-                                      <input class="inputs" type="password" placeholder="Password" />
+                          
+                              
+                                <div class="container-form form-container sign-up-container">
+                                  
+                              
+                                  <form class="form-grid ">
+                                    <h1>Crear cuenta</h1>
+                                    <div class="form-group ">
+                                      <label>Nombre(s)</label>
+                                      <input class="input-registro" type="text" placeholder="Nombre" />
                                     </div>
-                                <button class="buttons">Registrarse</button>
-                              </form>
-                          </div>
+                                
+                                    <div class="form-group">
+                                      <label>Apellido paterno</label>
+                                      <input class="input-registro" type="text" placeholder="Apellido" />
+                                    </div>
+                                
+                                    <div class="form-group">
+                                      <label>Apellido materno</label>
+                                      <input class="input-registro" type="text" placeholder="Apellido materno" />
+                                    </div>
+                                
+                                    <div class="form-group">
+                                      <label>Teléfono</label>
+                                      <input class="input-registro" type="text" placeholder="(477)******" />
+                                    </div>
+                                
+                                    <div class="form-group-full">
+                                      <label>Correo electrónico</label>
+                                      <input class="input-registro" type="email" placeholder="usuario@correo.com" />
+                                    </div>
+
+                                    <div class="form-group-full">
+                                      <label>Contraseña</label>
+                                      <input class="input-registro" type="password" placeholder="********" />
+                                    </div>
+                                   
+                                    <div class="button-container">
+                                      <button class="buttons">Crear cuenta</button>
+                                    </div>
+                                     <div class="button-container">
+                                      <label>¿Eres una Empresa? Da clic <a href="registro-empresa.html" style="color: blue;">aquí</a></label>
+                                    </div>
+                                  </form>
+                                 
+                                </div>
+                             
 
                         
 
@@ -86,7 +118,7 @@
                                     <h1 class="title-g">Don galleto</h1>
                                       <h1 class="title-over2">¿Tienes una cuenta?</h1>
                                         <p class="msj-registro" >Inicia sesión con tus credenciales</p>
-                                          <button class="btn-ghost" id="signIn">Iniciar sesión</button>
+                                          <button class="buttons" id="signIn">Iniciar sesión</button>
                                 </div>
 
                                 <!-- Over login -->
@@ -97,7 +129,7 @@
                                       <h1 class="title-g">Don galleto</h1>
                                       <h1 class="title-over">Hola ¡Bienvenido!</h1>
                                       <p class="msj-registro">¿No tienes una cuenta? Registrate gratis</p>
-                                      <button class="btn-ghost" id="signUp">Registrarse</button>
+                                      <button class="buttons" id="signUp">Registrarse</button>
                                 </div>
                             </div>
                           </div>    

@@ -1,0 +1,23 @@
+summary: Obtener un cliente por ID
+tags:
+  - Clientes
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          id_cliente:
+            type: integer
+        required:
+          - id_cliente
+responses:
+  200:
+    description: Cliente encontrado
+    content:
+      application/json:
+        example:
+          id: 1
+          nombre: Cliente A
+          email: clienteA@example.com

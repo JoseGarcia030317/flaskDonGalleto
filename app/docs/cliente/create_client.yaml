@@ -1,0 +1,34 @@
+summary: Crear un nuevo cliente
+tags:
+  - Clientes
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        nombre:
+          type: string
+        apellido_pat:
+          type: string
+        apellido_mat:
+          type: string
+        empresa:
+          type: string
+        tipo:
+          type: integer
+        telefono:
+          type: string
+        correo:
+          type: string
+        contrasenia:
+          type: string
+      required:
+        - correo
+        - contrasenia
+        - telefono
+        - tipo
+responses:
+  201:
+    description: Cliente creado exitosamente

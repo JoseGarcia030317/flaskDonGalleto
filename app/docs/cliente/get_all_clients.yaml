@@ -1,0 +1,15 @@
+summary: Obtener todos los clientes
+tags:
+  - Clientes
+responses:
+  200:
+    description: Lista de todos los clientes
+    content:
+      application/json:
+        example:
+          - id: 1
+            nombre: Cliente A
+            email: clienteA@example.com
+          - id: 2
+            nombre: Cliente B
+            email: clienteB@example.com

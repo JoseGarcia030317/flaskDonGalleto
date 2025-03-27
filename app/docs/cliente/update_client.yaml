@@ -1,0 +1,21 @@
+summary: Actualizar datos de un cliente
+tags:
+  - Clientes
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          id_cliente:
+            type: integer
+          nombre:
+            type: string
+          email:
+            type: string
+        required:
+          - id_cliente
+responses:
+  200:
+    description: Cliente actualizado

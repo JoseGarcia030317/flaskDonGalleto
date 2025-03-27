@@ -1,0 +1,34 @@
+summary: Crear una nueva merma
+tags:
+  - Mermas
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        motivo:
+          type: integer
+        tipo_merma:
+          type: integer
+        observacion:
+          type: string
+        id_usuario_registro:
+          type: integer
+        id_estatus:
+          type: integer
+      required:
+        - motivo
+        - tipo_merma
+        - id_usuario_registro
+responses:
+  201:
+    description: Merma creada exitosamente
+    examples:
+      application/json:
+        id: 1
+        motivo: 2
+        tipo_merma: 2
+        observacion: "El producto se encontraba dañado y no servia"
+        id_usuario_registro: 1

@@ -1,0 +1,25 @@
+summary: Eliminar una merma
+tags:
+  - Mermas
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        id_mermas:
+          type: integer
+      required:
+        - id_mermas
+responses:
+  200:
+    description: Merma eliminada correctamente
+    examples:
+      application/json:
+        id_merma: 1
+        motivo: 2
+        tipo_merma: 2
+        observacion: "El producto se encontraba dañado test"
+        id_usuario_registro: 1
+        id_estatus: 0

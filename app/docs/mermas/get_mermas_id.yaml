@@ -1,0 +1,26 @@
+summary: Obtener una merma por ID
+tags:
+  - Mermas
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        id_mermas:
+          type: integer
+      required:
+        - id_mermas
+responses:
+  200:
+    description: Detalles de la merma
+    examples:
+      application/json:
+        fecha: "2025-03-25T22:11:00"
+        id_estatus: 1
+        id_merma: 1
+        id_usuario_registro: 1
+        motivo: "Caducado"
+        observacion: "El producto se encontraba dañado test"
+        tipo_merma: "INSUMO"

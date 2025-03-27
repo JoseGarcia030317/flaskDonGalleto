@@ -1,0 +1,22 @@
+summary: Obtener todas las mermas
+tags:
+  - Mermas
+responses:
+  200:
+    description: Lista de todas las mermas
+    examples:
+      application/json:
+        - fecha: "2025-03-25T22:11:00"
+          id_estatus: 1
+          id_merma: 1
+          id_usuario_registro: 1
+          motivo: "Caducado"
+          observacion: "El producto se encontraba dañado test"
+          tipo_merma: "INSUMO"
+        - fecha: "2025-03-25T22:11:00"
+          id_estatus: 1
+          id_merma: 1
+          id_usuario_registro: 1
+          motivo: "Dañado"
+          observacion: "El producto se encontraba dañado test"
+          tipo_merma: "GALLETA"

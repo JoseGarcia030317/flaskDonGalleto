@@ -25,6 +25,8 @@ from routes.routes_templates.mod_ventas_bp import mod_ventas_bp
 from routes.proveedores_bp import prov_bp
 from routes.insumos_bp import insumos_bp
 from routes.unidad_bp import unidad_bp
+from routes.clientes_bp import clientes_bp
+from routes.mermas_bp import mermas_bp
 
 # Inicializar extensiones de Flask
 # db = SQLAlchemy()
@@ -79,6 +81,8 @@ app.register_blueprint(mod_ventas_bp)
 app.register_blueprint(prov_bp)
 app.register_blueprint(insumos_bp)
 app.register_blueprint(unidad_bp)
+app.register_blueprint(clientes_bp)
+app.register_blueprint(mermas_bp)
 
 # Ruta raíz de la aplicacion
 @app.route("/")

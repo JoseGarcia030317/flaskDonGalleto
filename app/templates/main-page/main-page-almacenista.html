@@ -4,15 +4,15 @@
 
 {% block side_var %}
 <div>
-  <nav class="space-y-2 bg-[#ECCA58] border-0 w-full">
-    <a onclick="cargarModuloCompras()" class="block px-6 py-1 text-nav text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
+  <nav class="space-y-2 bg-[#efe6dc] border-0 w-full">
+    <a onclick="cargarModuloCompras()" class="block px-4 cursor-pointer py-1 text-nav text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
       Compras
     </a>
-    <a onclick="cargarModuloMermas()" class="block px-6 py-1 text-nav text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
+    <a onclick="cargarModuloMermas()" class="block px-4 cursor-pointer py-1 text-nav text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
       Mermas
     </a>
     <div class="absolute left-0 w-full text-center">
-      <a href="/logout" class="flex items-center justify-center px-6 text-lg py-2 mt-[200px] text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black font-medium">
+      <a href="/logout" class="flex items-center justify-center px-6 text-lg py-2 mt-[230px] text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black font-medium">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
         </svg>
@@ -25,5 +25,5 @@
 
 {% block scripts %}
 <script type="module" src="../../static/js/modulos/compras/index-compra.js"></script>
-<script src="../../static/js/modulos/mermas/index-mermas.js"></script>
+<script type="module" src="../../static/js/modulos/mermas/index-mermas.js"></script>
 {% endblock %}

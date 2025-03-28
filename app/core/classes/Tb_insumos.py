@@ -1,6 +1,6 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, DOUBLE
+from sqlalchemy import Column, ForeignKey, Integer, String, DOUBLE, SmallInteger, DateTime, Numeric
 from sqlalchemy.ext.declarative import declarative_base
-
+import datetime
 Base = declarative_base()
 
 
@@ -21,3 +21,42 @@ class Insumo(Base):
         self.unidad_id = unidad_id
         self.estatus = estatus
         self.precio_unitario = precio_unitario
+
+
+
+class InventarioInsumo(Base):
+    __tablename__ = 'TB_InventarioInsumo'
+    
+    id_inventario_insumo = Column(Integer, primary_key=True, autoincrement=True)
+    insumo_id = Column(Integer, nullable=False)
+    cantidad = Column(Numeric(18, 2), nullable=True)
+    tipo_movimiento = Column(Integer, nullable=True)
+    tipo_registro = Column(SmallInteger, nullable=False)
+    fecha = Column(DateTime, nullable=True)
+    compra_id = Column(Integer, nullable=True)
+    merma_id = Column(Integer, nullable=True)
+    horneado_id = Column(Integer, nullable=True)
+    id_estatus = Column(Integer, nullable=False, default = 1)
+    
+    def __init__(self, insumo_id=None, tipo_registro=None, cantidad=None, tipo_movimiento=None, fecha=None, compra_id=None, merma_id=None, horneado_id=None, id_estatus=None):
+        """
+        Constructor para crear una instancia de InventarioInsumo.
+        
+        :param insumo_id: ID del insumo 
+        :param tipo_registro: Tipo de registro
+        :param cantidad: Cantidad 
+        :param tipo_movimiento: Tipo de movimiento
+        :param fecha: Fecha del registro
+        :param compra_id: ID de la compra asociada
+        :param merma_id: ID de la merma asociada
+        :param horneado_id: ID del horneado asociado
+        """
+        self.insumo_id = insumo_id
+        self.tipo_registro = tipo_registro
+        self.cantidad = cantidad
+        self.tipo_movimiento = tipo_movimiento
+        self.fecha = fecha or datetime.datetime.now()
+        self.compra_id = compra_id if compra_id else 0
+        self.merma_id = merma_id if merma_id else 0
+        self.horneado_id = horneado_id if horneado_id else 0
+        self.id_estatus = id_estatus if id_estatus else 1

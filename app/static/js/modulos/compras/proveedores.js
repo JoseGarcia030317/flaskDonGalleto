@@ -1,5 +1,105 @@
-import { api } from '../../utils/api.js'
+import { api } from '../../utils/api.js';
 import { tabs } from '../../utils/tabs.js';
+import { alertas } from '../../utils/alertas.js';
+import { validarLongitud, validarRequerido, validarTelefono, validarEmail, validarSoloTexto, validarCaracteresProhibidos } from '../../utils/validaciones.js';
+
+// ====================================================================
+// Funciones para realizar validaciones del lado del Cliente
+// ====================================================================
+const validacionesProveedor = {
+    nombre: (input) => {
+        const requerido = validarRequerido(input, 'nombre');
+        if (requerido) return requerido;
+        const caracteresProhibidos = validarCaracteresProhibidos(input, 'nombre');
+        if (caracteresProhibidos) return caracteresProhibidos;
+        const soloTexto = validarSoloTexto(input, 'nombre');
+        if (soloTexto) return soloTexto;
+        const longitud = validarLongitud(input, 3, 25);
+        if (longitud) return longitud;
+        return null;
+    },
+    telefono: (input) => {
+        const requerido = validarRequerido(input, 'teléfono');
+        if (requerido) return requerido;
+        const caracteresProhibidos = validarCaracteresProhibidos(input, 'telefono')
+        if (caracteresProhibidos) return caracteresProhibidos;
+        const telefonoValido = validarTelefono(input);
+        if (telefonoValido) return telefonoValido;
+        const longitud = validarLongitud(input, 10, 10);
+        if (longitud) return longitud;
+        return null;
+    },
+    contacto: (input) => {
+        const caracteresProhibidos = validarCaracteresProhibidos(input, 'contacto');
+        if (caracteresProhibidos) return caracteresProhibidos;
+        const soloTexto = validarSoloTexto(input, 'contacto');
+        if (soloTexto) return soloTexto;
+        const longitud = validarLongitud(input, 0, 50);
+        if (longitud) return longitud;
+        return null;
+    },
+    email: (input) => {
+        const caracteresProhibidos = validarCaracteresProhibidos(input, 'correo electrónico');
+        if (caracteresProhibidos) return caracteresProhibidos;
+
+        const requerido = validarRequerido(input, 'correo electrónico');
+        if (requerido) return requerido;
+        
+        const emailValido = validarEmail(input);
+        if (emailValido) return emailValido;
+
+        const longitud = validarLongitud(input, 10, 50);
+        if (longitud) return longitud;
+
+        return null;
+    },
+    descripcion: (input) => {
+        const caracteresProhibidos = validarCaracteresProhibidos(input, 'descripcion');
+        if (caracteresProhibidos) return caracteresProhibidos;
+        const longitud = validarLongitud(input, 0, 100);
+        if (longitud) return longitud;
+        return null;
+    }
+};
+
+function validarFormulario() {
+    const proveedor = {
+        nombre: document.querySelector('input[name="nombre"]').value,
+        telefono: document.querySelector('input[name="telefono"]').value,
+        contacto: document.querySelector('input[name="contacto"]').value,
+        email: document.querySelector('input[name="email"]').value,
+        descripcion: document.querySelector('textarea[name="descripcion"]').value,
+    };
+
+    const errores = {};
+
+    Object.keys(validacionesProveedor).forEach(campo => {
+        const error = validacionesProveedor[campo](proveedor[campo]);
+        if (error) {
+            errores[campo] = error;
+        }
+    });
+
+    return Object.keys(errores).length === 0 ? null : errores;
+}
+
+function mostrarErrores(errores) {
+    document.querySelectorAll('.error-message').forEach(span => span.classList.add('hidden'));
+    Object.keys(errores).forEach(campo => {
+        const input = document.querySelector(`[name="${campo}"]`);
+        if (!input) {
+            console.error(`No se encontró el campo: ${campo}`);
+            return;
+        }
+        const errorSpan = input.nextElementSibling;
+        if (!errorSpan || !errorSpan.classList.contains('error-message')) {
+            console.error(`No se encontró el mensaje de error para el campo: ${campo}`);
+            return;
+        }
+        errorSpan.textContent = errores[campo];
+        errorSpan.classList.remove('hidden');
+    });
+}
 
 // ====================================================================
 // Funciones para manejar el DOM y mostrar modales y alertas
@@ -13,33 +113,6 @@ function abrirModal(tipo) {
     document.getElementById('modalTitulo').textContent =
         tipo === 'editar' ? 'Editar proveedor' : 'Añadir proveedor';
     modalForm.classList.remove('hidden');
-}
-
-function confirmarEliminar() {
-    return Swal.fire({
-        title: "¿Estás seguro que deseas eliminar el registro?",
-        imageUrl: "../../../static/images/warning.png",
-        imageWidth: 128,
-        imageHeight: 128,
-        showCancelButton: true,
-        confirmButtonText: '<span class="text-lg font-medium">Aceptar</span>',
-        cancelButtonText: '<span class="text-lg font-medium">Cancelar</span>',
-        customClass: {
-            confirmButton: "flex items-center gap-3 px-6 py-3 border-2 border-[#8A5114] bg-white text-[#8A5114] rounded-full hover:bg-[#f5f5f5] transition-colors",
-            cancelButton: "flex items-center gap-3 px-6 py-3 border-2 border-[#DAA520] bg-white text-[#DAA520] rounded-full hover:bg-[#f5f5f5] transition-colors"
-        }
-    });
-
-}
-
-function procesoTerminadoExito() {
-    Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Proceso realizado con exito",
-        showConfirmButton: false,
-        timer: 1500
-    });
 }
 
 // Función para filtrar la tabla
@@ -57,14 +130,6 @@ function filtrarTabla() {
     });
 }
 
-// Cerrar modal al hacer clic fuera
-// document.getElementById('modalBackdrop').addEventListener('click', (e) => {
-//     if (e.target === document.getElementById('modalBackdrop')) {
-//         cerrarModal();
-//         limpiarFormulario();
-//     }
-// });
-
 // Funcino para cerrar los distintos modales
 function cerrarModal() {
     document.getElementById('modalBackdrop').classList.add('hidden');
@@ -73,10 +138,10 @@ function cerrarModal() {
 }
 
 // ====================================================================
-// Funciones para hacer las conexiones con la aplicaion Flak
+// Funciones para hacer las conexiones con la aplicaion Flask
 // ====================================================================
 // Funcion para cargar los proveedores al iniciar la aplicacion
-function cargarProveedores() {
+function cargarProveedores() {  
     const tbody = document.getElementById('tbody_proveedores');
     tabs.mostrarEsqueletoTabla(tbody);
     
@@ -85,15 +150,15 @@ function cargarProveedores() {
             tbody.innerHTML = '';
             data.forEach(proveedor => {
                 tbody.innerHTML += `
-                <tr data-id="${proveedor.id_proveedor}" class="hover:bg-gray-50">
-                    <td class="p-3 text-center">${proveedor.nombre}</td>
-                    <td class="p-3 text-center">${proveedor.telefono}</td>
-                    <td class="p-3 text-center">${proveedor.estatus == 1 ? 'Activo' : 'Inactivo'}</td>
-                    <td class="p-3 flex justify-center">
-                        <button onclick="buscarProveedorId(${proveedor.id_proveedor})" class="align-middle">
+                <tr data-id="${proveedor.id_proveedor}" class="hover:bg-gray-100">
+                    <td class="p-3 text-[#301e1a] text-center">${proveedor.nombre}</td>
+                    <td class="p-3 text-[#301e1a] text-center">${proveedor.telefono}</td>
+                    <td class="p-3 text-[#301e1a] text-center">${proveedor.correo_electronico}</td>
+                    <td class="p-3 text-[#301e1a] flex justify-center">
+                        <button onclick="buscarProveedorId(${proveedor.id_proveedor})" class="align-middle cursor-pointer">
                             <img src="../../../static/images/lapiz.png" class="w-7 h-7">
                         </button>
-                        <button onclick="eliminarProveedor(${proveedor.id_proveedor})" class="align-middle">
+                        <button onclick="eliminarProveedor(${proveedor.id_proveedor})" class="align-middle cursor-pointer">
                             <img src="../../../static/images/bote basura.png" class="w-7 h-7">
                         </button>
                     </td>
@@ -101,15 +166,23 @@ function cargarProveedores() {
             `;
             });
             limpiarFormulario();
+            document.getElementById('btn-agregar').disabled = false;
         })
         .catch(error => {
             console.error('Error:', error.message);
-            Swal.fire('Error', error.message, 'error');
-        });
+            Swal.fire('Error', error.message || 'Error al cargar proveedores', 'error');
+        })
+        .finally(() => tabs.desbloquearTabs());
 }
 
 // Funcion para crear o modificar un proveedor
 function guardarProveedor() {
+    // Validar el formulario
+    const errores = validarFormulario();
+    if (errores) {
+        mostrarErrores(errores);
+        return;
+    }
     const formData = {
         nombre: document.querySelector('input[name="nombre"]').value,
         telefono: document.querySelector('input[name="telefono"]').value,
@@ -124,11 +197,12 @@ function guardarProveedor() {
     let endpoint = id_proveedor != 0 ? '/provedores/update_proveedor' : '/provedores/create_proveedor';
     let payload = id_proveedor != 0 ? {...formData, id_proveedor} : formData;
 
+    tabs.mostrarLoader();
     api.postJSON(endpoint, payload)
         .then(data => {
             if (data.id_proveedor) {
                 cerrarModal();
-                procesoTerminadoExito();
+                alertas.procesoTerminadoExito();
                 cargarProveedores();
                 limpiarFormulario();
             } else {
@@ -136,23 +210,25 @@ function guardarProveedor() {
             }
         })
         .catch(error => {
-            console.error('Error en la petición:', error);
-            alert('Error al crear proveedor');
-        });
+            console.error('Error:', error.message);
+        Swal.fire('Error', error.message || 'Error al guardar proveedor', 'error');
+        })
+        .finally(() => tabs.ocultarLoader());
 }
 
 // Funcion para eliminar de manera logica un proveedor
 function eliminarProveedor(id_proveedor) {
-    confirmarEliminar()
+    alertas.confirmarEliminar()
     .then(resultado => {
         if (!resultado.isConfirmed) {
             return Promise.reject('cancelado');
         }
+        tabs.mostrarLoader();
         return api.postJSON('/provedores/delete_proveedor', {id_proveedor : id_proveedor});
     })
     .then(data => {
         if (data.id_proveedor) {
-            procesoTerminadoExito()
+            alertas.procesoTerminadoExito()
             cargarProveedores();
             limpiarFormulario();
         } else {
@@ -164,10 +240,12 @@ function eliminarProveedor(id_proveedor) {
             console.error('Error:', error.message || error);
             Swal.fire('Error', error.message || 'Error al eliminar', 'error');
         }
-    });
+    })
+    .finally(() => tabs.ocultarLoader());
 }
 
 function buscarProveedorId(id_proveedor) {
+    tabs.mostrarLoader();
     api.postJSON('/provedores/get_proveedor_byId', {id_proveedor : id_proveedor})
     .then(data => {
         if (data) {
@@ -183,7 +261,8 @@ function buscarProveedorId(id_proveedor) {
     .catch(error => {
         console.error('Error:', error.message);
         Swal.fire('Error', error.message || 'Error al cargar insumo', 'error');
-    });
+    })
+    .finally(() => tabs.ocultarLoader());
 }
 
 function limpiarFormulario() {
@@ -195,10 +274,6 @@ function limpiarFormulario() {
 
     document.querySelector('input[name="proveedor_id"]').value = 0;
 }
-
-// ====================================================================
-// Funciones para realizar validaciones del lado del Cliente
-// ====================================================================
 
 // Exponer la función globalmente para poder ser usada en html
 window.cargarProveedores = cargarProveedores;

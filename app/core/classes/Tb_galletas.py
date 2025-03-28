@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, SmallInteger
+from sqlalchemy import Column, Integer, SmallInteger, String, Numeric
 from sqlalchemy.ext.declarative import declarative_base
 import datetime
 Base = declarative_base()
@@ -35,3 +35,24 @@ class InventarioGalleta(Base):
         self.venta_id = venta_id if venta_id else 0 
         self.merma_id = merma_id if merma_id else 0
         self.tipo_movimiento = tipo_movimiento
+
+
+
+class Galleta(Base):
+    __tablename__ = 'TB_Galleta'
+    
+    id_galleta = Column(Integer, primary_key=True, autoincrement=True)
+    nombre_galleta = Column(String(50), nullable=True)
+    proteccion_precio = Column(Numeric(18, 2), nullable=True)
+    gramos_galleta = Column(Numeric(18, 2), nullable=True)
+    precio_unitario = Column(Numeric(18, 2), nullable=True)
+    dias_caducidad = Column(Integer, nullable=True)
+    estatus = Column(Integer, nullable=True)
+    
+    def __init__(self, nombre_galleta=None, proteccion_precio=None, gramos_galleta=None, precio_unitario=None, dias_caducidad=None, estatus=None):
+        self.nombre_galleta = nombre_galleta
+        self.proteccion_precio = proteccion_precio
+        self.gramos_galleta = gramos_galleta
+        self.precio_unitario = precio_unitario
+        self.dias_caducidad = dias_caducidad
+        self.estatus = estatus

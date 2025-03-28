@@ -37,15 +37,26 @@ def get_all_mermas_galletas() -> list:
         logger.error("Error al obtener mermas de galletas: %s", e)
         raise
 
-def get_merma(merma_id: int) -> dict:
-    """Obtiene una merma de la base de datos en base al ID."""
+def get_merma_insumo(merma_id: int) -> dict:
+    """Obtiene una merma de insumo de la base de datos en base al ID."""
     try:
-        result = crud.read_merma(merma_id)
-        logger.info("Se ha obtenido la merma con id %d correctamente.", merma_id)
+        result = crud.read_merma_insumo(merma_id)
+        logger.info("Se ha obtenido la merma de insumo con id %d correctamente.", merma_id)
         return result
     except Exception as e:
-        logger.error("Error al obtener la merma con id %d: %s", merma_id, e)
+        logger.error("Error al obtener la merma de insumo con id %d: %s", merma_id, e)
         raise
+
+def get_merma_galleta(merma_id: int) -> dict:
+    """Obtiene una merma de galleta de la base de datos en base al ID."""
+    try:
+        result = crud.read_merma_galleta(merma_id)
+        logger.info("Se ha obtenido la merma de galleta con id %d correctamente.", merma_id)
+        return result
+    except Exception as e:
+        logger.error("Error al obtener la merma de galleta con id %d: %s", merma_id, e)
+        raise 
+    
 
 def create_merma_insumo(data: dict) -> dict:
     """Crea una nueva merma de insumo en la base de datos."""

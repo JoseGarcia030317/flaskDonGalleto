@@ -22,12 +22,22 @@ def get_all_mermas_galletas():
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500
 
-@mermas_bp.route("/mermas/get_merma", methods=['POST'])
-def get_merma():
+@mermas_bp.route("/mermas/get_merma_insumo", methods=['POST'])
+def get_merma_insumo():
     data = request.get_json()
     merma_id = data.get("id_merma")
     try:
-        result = mermas.get_merma(merma_id)
+        result = mermas.get_merma_insumo(merma_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500
+
+@mermas_bp.route("/mermas/get_merma_galleta", methods=['POST'])
+def get_merma_galleta():
+    data = request.get_json()
+    merma_id = data.get("id_merma")
+    try:
+        result = mermas.get_merma_galleta(merma_id)
         return jsonify(result)
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500

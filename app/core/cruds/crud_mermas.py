@@ -3,7 +3,7 @@ import logging
 from sqlalchemy import case
 from core.classes.Tb_mermas import Merma, MotivoMerma, TipoMerma
 from core.classes.Tb_insumos import InventarioInsumo, Insumo
-from core.classes.Tb_galletas import InventarioGalleta
+from core.classes.Tb_galletas import InventarioGalleta, Galleta
 from utils.connectiondb import DatabaseConnector
 
 logger = logging.getLogger(__name__)
@@ -74,7 +74,7 @@ class MermaCRUD:
         data["tipo_merma"] = self.TIPO_MOVIMIENTO_GALLETA
         return self._create_merma(data, InventarioGalleta, self.ATTRIBUTES_GALLETA, self.TIPO_MOVIMIENTO_GALLETA)
 
-    def read_merma(self, id_merma: int) -> dict:
+    def read_merma_insumo(self, id_merma: int) -> dict:
         """
         Recupera una merma de insumo por su id y la retorna como dict.
         Retorna {} si no se encuentra.
@@ -122,6 +122,55 @@ class MermaCRUD:
                 Insumo, InventarioInsumo.insumo_id == Insumo.id_insumo
             ).filter(Merma.id_merma == id_merma, Merma.tipo_merma == self.TIPO_MOVIMIENTO_INSUMO).first()
             return dict(row._mapping) if row is not None else {}
+    
+    def read_merma_galleta(self, id_merma: int) -> dict:
+        """
+        Recupera una merma de galleta por su id y la retorna como dict.
+        Retorna {} si no se encuentra.
+        """
+        Session = DatabaseConnector().get_session
+        with Session() as session:
+            row = session.query(
+                Merma.id_merma,
+                Merma.observacion,
+                Merma.fecha,
+                Merma.id_usuario_registro,
+                Merma.id_estatus,
+                MotivoMerma.id_motivo_merma,
+                MotivoMerma.descripcion.label('motivo_descripcion'),
+                TipoMerma.id_tipo_merma,
+                TipoMerma.descripcion.label('tipo_merma_descripcion'),
+                InventarioGalleta.galleta_id,
+                Galleta.nombre_galleta.label('galleta_descripcion'),
+                InventarioGalleta.cantidad,
+                InventarioGalleta.tipo_movimiento,
+                case(
+                    (InventarioGalleta.tipo_movimiento == self.TIPO_MOVIMIENTO_GALLETA, 'Merma'),
+                    (InventarioGalleta.tipo_movimiento == 2, 'Horneado'),
+                    (InventarioGalleta.tipo_movimiento == 3, 'Compra'),
+                    else_='Movimiento no registrado'
+                ).label('tipo_movimiento_descripcion'),
+                InventarioGalleta.tipo_registro,
+                case(
+                    (InventarioGalleta.tipo_registro == self.TIPO_REGISTRO_SALIDA, 'Salida'),
+                    (InventarioGalleta.tipo_registro == self.TIPO_REGISTRO_ENTRADA, 'Entrada'),
+                    else_='Tipo de registro no valido'
+                ).label('tipo_registro_descripcion'),
+                case(
+                    (Merma.id_estatus == self.STATUS_ACTIVO, 'Activo'),
+                    else_='Inactivo'
+                ).label('estatus_descripcion')
+            ).join(
+                MotivoMerma, Merma.motivo == MotivoMerma.id_motivo_merma
+            ).join(
+                TipoMerma, Merma.tipo_merma == TipoMerma.id_tipo_merma
+            ).join(
+                InventarioGalleta, Merma.id_merma == InventarioGalleta.merma_id
+            ).join(
+                Galleta, InventarioGalleta.galleta_id == Galleta.id_galleta
+            ).filter(Merma.id_merma == id_merma, Merma.tipo_merma == self.TIPO_MOVIMIENTO_GALLETA).first()
+            return dict(row._mapping) if row is not None else {}
+    
     
     def _update_merma(self, id_merma: int, data: dict, inventory_class, inventory_allowed: list) -> dict:
         """
@@ -255,6 +304,7 @@ class MermaCRUD:
                 TipoMerma.id_tipo_merma,
                 TipoMerma.descripcion.label('tipo_merma_descripcion'),
                 InventarioGalleta.galleta_id,
+                Galleta.nombre_galleta.label('galleta_descripcion'),
                 InventarioGalleta.cantidad,
                 InventarioGalleta.tipo_movimiento,
                 case(
@@ -279,6 +329,8 @@ class MermaCRUD:
                 TipoMerma, Merma.tipo_merma == TipoMerma.id_tipo_merma
             ).join(
                 InventarioGalleta, Merma.id_merma == InventarioGalleta.merma_id
-            ).filter(Merma.id_estatus == self.STATUS_ACTIVO, Merma.tipo_merma == 2)
+            ).join(
+                Galleta, InventarioGalleta.galleta_id == Galleta.id_galleta
+            ).filter(Merma.id_estatus == self.STATUS_ACTIVO, Merma.tipo_merma == self.TIPO_MOVIMIENTO_GALLETA)
             result = query.all()
             return [dict(row._mapping) for row in result]

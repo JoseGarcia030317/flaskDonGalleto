@@ -1,1 +1,19 @@
-<h1>Gráfica de los productos más vendidos está funcionando</h1>
+<!-- Contenedor Principal -->
+<div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+
+    <!-- Gráfica Superior -->
+    <div style="background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 35%;">
+        <canvas id="ventasDiarias" width="250" height="250"></canvas>
+    </div>
+
+    <!-- Gráficas Inferiores (2 en línea) -->
+    <div style="display: flex; gap: 20px; width: 80%; justify-content: center;">
+        <div style="background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <canvas id="ProMasVendidos" width="400" height="400"></canvas>
+        </div>
+        <div style="background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <canvas id="PreMasVendidos" width="400" height="400"></canvas>
+        </div>
+    </div>
+
+</div>

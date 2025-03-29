@@ -1,12 +1,13 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
+from flask_login import UserMixin
 import bcrypt
 
 
 Base = declarative_base()
 
 
-class Cliente(Base):
+class Cliente(UserMixin, Base):
     __tablename__ = 'Tb_Clientes'
     
     id_cliente = Column(Integer, primary_key=True, autoincrement=True)
@@ -20,7 +21,7 @@ class Cliente(Base):
     contrasenia = Column(String(65), nullable=False)
     estatus = Column(Integer, nullable=False, default=1)
     
-    def __init__(self, nombre, apellido_pat, apellido_mat, telefono, empresa, tipo, correo, contrasenia, estatus=1):
+    def __init__(self, nombre, apellido_pat, apellido_mat, telefono, empresa, tipo, correo, contrasenia, estatus=1, id_cliente=None):
         self.nombre = nombre
         self.apellido_pat = apellido_pat
         self.apellido_mat = apellido_mat
@@ -30,6 +31,7 @@ class Cliente(Base):
         self.correo = correo
         self.contrasenia = self.hash_password(contrasenia)
         self.estatus = estatus
+        self.id_cliente = id_cliente
 
     def hash_password(self, password):
         """
@@ -43,3 +45,6 @@ class Cliente(Base):
         Verifica si la contraseña en texto plano coincide con la contraseña encriptada almacenada.
         """
         return bcrypt.checkpw(password.encode('utf-8'), self.contrasenia.encode('utf-8'))
+
+    def get_id(self):
+        return str(self.id_cliente)

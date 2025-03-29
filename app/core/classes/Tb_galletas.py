@@ -1,6 +1,5 @@
-from sqlalchemy import Column, Integer, SmallInteger, String, Numeric
+from sqlalchemy import Column, Integer, SmallInteger, String, Numeric, PrimaryKeyConstraint
 from sqlalchemy.ext.declarative import declarative_base
-import datetime
 Base = declarative_base()
 
 
@@ -55,4 +54,49 @@ class Galleta(Base):
         self.gramos_galleta = gramos_galleta
         self.precio_unitario = precio_unitario
         self.dias_caducidad = dias_caducidad
-        self.estatus = estatus
+        self.estatus = estatus if estatus else 1
+
+
+class Receta(Base):
+    __tablename__ = 'TB_Receta'
+    
+    id_receta = Column(Integer, primary_key=True, autoincrement=True)
+    nombre_receta = Column(String(50), nullable=True)
+    tiempo_horneado = Column(Integer, nullable=True)
+    galletas_producidas = Column(Integer, nullable=True)
+    estatus = Column(Integer, nullable=True)
+    galleta_id = Column(Integer, nullable=False)
+    
+    
+    def __init__(self, nombre_receta=None, tiempo_horneado=None, galletas_producidas=None, estatus=None, galleta_id=None):
+        self.nombre_receta = nombre_receta
+        self.tiempo_horneado = tiempo_horneado if tiempo_horneado else 0
+        self.galletas_producidas = galletas_producidas
+        self.estatus = estatus if estatus else 1
+        self.galleta_id = galleta_id
+
+
+class DetalleReceta(Base):
+    __tablename__ = 'TB_DetalleReceta'
+    
+    receta_id = Column(Integer)
+    insumo_id = Column(Integer)
+    cantidad = Column(Numeric(18, 2), nullable=True)
+
+    #primary key
+    __table_args__ = (
+        PrimaryKeyConstraint('receta_id', 'insumo_id'),
+    )
+    
+    
+    def __init__(self, insumo_id, cantidad, receta_id=None):
+        """
+        Constructor para crear una instancia de DetalleReceta.
+        
+        :param receta_id: ID de la receta (obligatorio).
+        :param insumo_id: ID del insumo (obligatorio).
+        :param cantidad: Cantidad requerida para la receta.
+        """
+        self.receta_id = receta_id
+        self.insumo_id = insumo_id
+        self.cantidad = cantidad

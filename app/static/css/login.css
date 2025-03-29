@@ -186,7 +186,7 @@ input:-webkit-autofill {
             width: 80%;
             max-width: 1200px;
             padding: 10px;
-
+		    justify-content: center;
 	}
 
 .form-container {
@@ -409,3 +409,110 @@ footer p {
   }
   
   /* FIN FORMULARIO */
+
+  .form-empresa{
+	display: flex;
+	text-align: center;
+	width: 130vh;
+	background-color: #c6b6ab;
+	
+  }
+
+  .container-form-empresa {
+	border-radius: 20px;
+	max-width: 600px;
+	margin: auto;
+	display: flex;
+    flex-wrap: nowrap;
+	text-align: left;
+	
+  }
+  
+  .container-form-empresa h1 {
+	font-size: 2rem;
+	color: #5b3a29;
+	font-family: 'Poppins';
+    font-weight: 300;
+    font-size: 45px;
+	margin-top: 20px;
+  }
+  
+  .form-grid-empresa {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 20px;
+	
+  }
+  
+  .form-grid-empresa h1 {
+	grid-column: span 2; /* El título ocupa las dos columnas */
+	text-align: center;
+  }
+  
+  .form-grid-empresa label:nth-child(2n+1) {
+	grid-column: 1;
+  }
+  
+  .form-grid-empresa label:nth-child(2n) {
+	grid-column: 2;
+  }
+  
+  .form-grid-empresa input {
+	grid-column: span 1; /* Mantiene inputs alineados en columnas */
+  }
+  
+  .form-grid-empresa .full-width {
+	grid-column: span 2; /* Botón o campo que ocupa toda la fila */
+  }
+  
+  .form-group-empresa {
+	display: flex;
+    flex-direction: column;
+    width: fit-content; /* O solo el ancho necesario */
+    min-width: 250px; /* Puedes establecer un ancho mínimo si lo prefieres */
+  }
+  
+  .form-group-full-empresa {
+	grid-column: 1 / -1;
+	display: flex;
+	flex-direction: column;
+  }
+  
+  .input-registro-empresa {
+	background-color: #e4d4c4;
+	border-radius: 10px;
+	border: none;
+	padding: 12px 15px;
+	margin-top: 5px;
+	width: 100%;
+	outline: none;
+  }
+  
+  .button-container-empresa {
+	grid-column: 1 / -1;
+	
+	text-align: center;
+  }
+
+  .btn-cerrar-empresa{
+	align-items: end;
+    display: flex;
+    position: absolute;
+    transform: translateX(550px);
+	cursor: pointer;
+  }
+  .btn-cerrar-empresa img{
+	width: 30px;
+  }
+  @media screen and (max-width: 600px) {
+	.form-grid-empresa {
+	  grid-template-columns: 1fr;
+	}
+  }
+
+  
+
+.btn-emp {
+	color: blue;
+	cursor: pointer;
+}

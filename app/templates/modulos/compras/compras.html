@@ -1,1 +1,114 @@
-<h1>soy compra</h1>
+<div id="compras-content" class="p-2">
+    <div class="items-center justify-center w-full">
+        <!-- Barra de búsqueda y botón añadir -->
+        <div class="flex justify-between mb-2 max-w-4xl">
+            <!-- Campo de búsqueda -->
+            <div class="relative w-96 mx-auto">
+                <input type="text" name="buscar" placeholder="Buscar..." oninput="filtrarTabla()"
+                    class="w-full pl-4 pr-10 py-1 border border-[#8A5114] rounded-full">
+
+                <!-- Icono de lupa -->
+                <div class="absolute right-3 top-1/3 pt-1 transform -translate-y-1/2">
+                    <img src="./../../../static/images/magnifying glass.png" class="w-6 h-6">
+                </div>
+            </div>
+            <button id="btn-agregar" onclick="abrirModal()" class="text-white p-2 rounded-full cursor-pointer">
+                <img src="../../../static/images/plus.png" class="w-7 h-7">
+            </button>
+        </div>
+        <div class="overflow-x-auto overflow-y-auto">
+            <table class="w-full table-auto border-collapse  rounded-t-lg">
+                <thead>
+                    <tr class="bg-[#efe6dc] align-middle">
+                        <th class="p-2 text-center text-[#915A17]">FECHA</th>
+                        <th class="p-2 text-center text-[#915A17]">CLAVE</th>
+                        <th class="p-2 text-center text-[#915A17]">PROVEEDOR</th>
+                        <th class="p-2 text-center text-[#915A17]">TOTAL</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody_compras">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="modalBackdropCompra" class="hidden fixed inset-0 bg-black/50 z-50">
+        <!-- Modal Añadir/Editar -->
+        <div id="modalFormCompra"
+            class="hidden bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[50rem]">
+            <!-- Encabezado del modal -->
+            <div class="bg-[#efe6dc] rounded-t-lg p-4 -m-6 mb-4 flex justify-center items-center relative">
+                <h2 id="modalTitulo" class="text-[#3C1D0C] font-semibold text-center">Añadir compra</h2>
+                <button onclick="cerrarModal()" class="text-black hover:text-gray-700 absolute right-4 cursor-pointer">
+                    <img src="../../../static/images/cerrar.png" class="w-6 h-6">
+                </button>
+            </div>
+            <form id="compraForm" class="space-y-4">
+                <!-- Campo para id de la compra -->
+                <input type="number" name="id_compra" value="0" hidden>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[#895645] mb-1">Clave</label>
+                        <input type="text" name="clave" class="w-full p-2 border border-[#895645] rounded-full" required>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                    <div>
+                        <label class="block text-[#895645] mb-1">Fecha</label>
+                        <input type="date" name="fecha" class="w-full p-2 border border-[#895645] rounded-full" required>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                    <div>
+                        <label class="block text-[#895645] mb-1">Proveedor</label>
+                        <select type="text" name="proveedor" class="w-full p-2 border border-[#895645] rounded-full" required>
+                            <option value="">Leche León</option>
+                            <option value="">Nutella</option>
+                        </select>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                    <div>
+                        <label class="block text-[#895645] mb-1">Observaci&oacute;n</label>
+                        <input type="text" name="observacion" class="w-full p-2 border border-[#895645] rounded-full" required>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 border border-[#895645] p-3 rounded-xl">
+                    <div class="relative w-96 mx-auto">
+                        <input type="text" id="buscador-insumos" placeholder="Buscar insumos..."
+                            onkeyup="filtrarInsumos(this.value)"
+                            class="w-full h-[42px] pl-4 pr-10 py-1 border border-[#895645] rounded-full">
+    
+                        <!-- Icono de lupa -->
+                        <div class="absolute right-3 top-1/2 pt-1 transform -translate-y-1/2">
+                            <img src="./../../../static/images/magnifying glass.png" class="w-6 h-6">
+                        </div>
+                        <!-- Sugerencias de búsqueda -->
+                        <div id="sugerencias-insumos"
+                            class="hidden absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                        </div>
+                    </div>
+                    <div id="header-insumos-seleccionados" class="grid grid-cols-4 gap-4 text-center pt-2" hidden>
+                        <span class="text-[#895645] w-50">Producto</span>
+                        <span></span>
+                        <span class="text-[#895645]">Cantidad</span>
+                        <span class="text-[#895645]">Costo</span>
+                    </div>
+                    <!-- Lista de Insumos Seleccionados -->
+                    <div id="insumos-seleccionados" class="space-y-2 mt-1 mb-4 max-h-40 overflow-y-auto">
+                    </div>
+                </div>
+                <button type="submit" onclick="guardarCompra()"
+                    class="w-full py-2 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#895645] font-semibold flex items-center justify-center gap-2 hover:bg-[#a46a52] cursor-pointer">
+                    <img src="../../../static/images/guardar 3C1D0C.png" class="w-5 h-5">
+                    Guardar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="loader" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" hidden>
+        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
+            <img src="../../../static/images/LogoGalleto.png" alt="Cargando..." class="h-16 w-16 animate-spin">
+            <span class="mt-4 text-gray-700 font-semibold">Cargando...</span>
+        </div>
+    </div>
+</div>
+    

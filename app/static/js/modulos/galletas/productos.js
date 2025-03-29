@@ -337,7 +337,7 @@ function seleccionarInsumo(idInsumo) {
                    min="0.0" 
                    step="0.1" 
                    placeholder="Cantidad" 
-                   class="w-24 p-1 border rounded-full text-center"
+                   class="w-24 p-1 border border-[#895645] rounded-full text-center"
                    required>
             <span class="w-12 text-sm">${insumo.unidad}</span>
             <button onclick="eliminarInsumo(${idInsumo}, this)" 

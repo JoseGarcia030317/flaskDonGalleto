@@ -1,24 +1,11 @@
 import logging
 from sqlalchemy import text
 from datetime import datetime
+import json
 from utils.connectiondb import DatabaseConnector
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
-
-
-from datetime import datetime
-from sqlalchemy import text
-import logging
-
-logger = logging.getLogger(__name__)
-
-from datetime import datetime
-from sqlalchemy import text
-import logging
-import json
-
-logger = logging.getLogger(__name__)
 
 def get_daily_sales():
     """Obtiene las ventas diarias del sistema desde BD."""

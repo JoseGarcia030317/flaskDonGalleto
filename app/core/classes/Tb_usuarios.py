@@ -38,4 +38,4 @@ class Usuario(UserMixin, Base):
         return hashed.decode('utf-8')
     
     def get_id(self):
-        return str(self.id_usuario)
+        return str(f'usuario: {self.id_usuario}')

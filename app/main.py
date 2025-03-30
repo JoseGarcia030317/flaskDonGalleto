@@ -9,6 +9,7 @@ from config import Config
 from flasgger import Swagger
 from core.logic import login
 from core.classes.Tb_usuarios import Usuario
+from core.classes.Tb_clientes import Cliente
 
 # Blueprints para renderizar HTML
 from routes.routes_templates.auth import auth_bp
@@ -27,6 +28,7 @@ from routes.insumos_bp import insumos_bp
 from routes.unidad_bp import unidad_bp
 from routes.clientes_bp import clientes_bp
 from routes.mermas_bp import mermas_bp
+from routes.galletas_bp import galletas_bp
 
 # Inicializar extensiones de Flask
 # db = SQLAlchemy()
@@ -76,13 +78,14 @@ app.register_blueprint(mod_mermas_bp)
 app.register_blueprint(mod_portalCliente_bp)
 app.register_blueprint(mod_seguridad_bp)
 app.register_blueprint(mod_ventas_bp)
+
 # Registro de blueprints para comunicarse con la BD
 app.register_blueprint(prov_bp)
 app.register_blueprint(insumos_bp)
 app.register_blueprint(unidad_bp)
 app.register_blueprint(clientes_bp)
 app.register_blueprint(mermas_bp)
-
+app.register_blueprint(galletas_bp)
 # Ruta raíz de la aplicacion
 @app.route("/")
 def inicio():
@@ -113,9 +116,14 @@ def check_authentication():
 # Configurar Flask-Login
 @login_manager.user_loader
 def load_user(user_id):
-    user_data = login.get_user_by_id(user_id)
-    if user_data:
-        return Usuario(**user_data)
+    if user_id:
+        user = None
+        if user_id.startswith("usuario:"):
+            user = Usuario(**login.get_user_by_id(user_id.split(":")[1]))
+        elif user_id.startswith("cliente:"):
+            user = Cliente(**login.get_cliente_by_id(user_id.split(":")[1]))
+            user.tipo = 3
+        return user
     return None
 
 # Manejo de errores personalizados

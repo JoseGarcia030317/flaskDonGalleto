@@ -21,7 +21,7 @@ class Merma(Base):
         self.observacion = observacion
         self.fecha = fecha or datetime.datetime.now()
         self.id_usuario_registro = id_usuario_registro
-        self.id_estatus = id_estatus
+        self.id_estatus = id_estatus if id_estatus in [1, 0] else 1
 
 
 class MotivoMerma(Base):

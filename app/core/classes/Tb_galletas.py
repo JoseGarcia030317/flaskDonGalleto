@@ -66,14 +66,16 @@ class Receta(Base):
     galletas_producidas = Column(Integer, nullable=True)
     estatus = Column(Integer, nullable=True)
     galleta_id = Column(Integer, nullable=False)
+    receta_base = Column(Integer, nullable=False)
     
     
-    def __init__(self, nombre_receta=None, tiempo_horneado=None, galletas_producidas=None, estatus=None, galleta_id=None):
+    def __init__(self, nombre_receta=None, tiempo_horneado=None, galletas_producidas=None, estatus=None, galleta_id=None, receta_base=None):
         self.nombre_receta = nombre_receta
         self.tiempo_horneado = tiempo_horneado if tiempo_horneado else 0
         self.galletas_producidas = galletas_producidas
         self.estatus = estatus if estatus else 1
         self.galleta_id = galleta_id
+        self.receta_base = receta_base if receta_base else 0
 
 
 class DetalleReceta(Base):

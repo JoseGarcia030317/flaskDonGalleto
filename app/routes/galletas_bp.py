@@ -16,3 +16,15 @@ def create_galleta():
         return jsonify(galletas.create_galleta(data))
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500
+    
+@galletas_bp.route("/galletas/update_galleta", methods=['POST'])
+def update_galleta():
+    """
+    Actualiza una galleta existente a partir de datos en JSON o diccionario.
+    """
+    try:
+        data = request.get_json()
+        return jsonify(galletas.update_galleta(data["id_galleta"], data))
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500
+

@@ -49,12 +49,6 @@ def logout():
     return redirect(url_for('auth_bp.login'))
 
 
-@auth_bp.route("/test", methods=['POST'])
-def test():
-    data = request.get_json()
-    return log.autenticar_usuario(data['usuario'], data['contrasenia'])
-
-
 def retornarUsuario(tipo_usuario):
     if tipo_usuario == 1:
         return "main_page_bp.mp_admin"

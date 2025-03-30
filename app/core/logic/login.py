@@ -19,6 +19,11 @@ def get_user_by_id(id_usuario):
     crud = UsuarioCRUD()
     return crud.read(id_usuario)
 
+def get_cliente_by_id(id_cliente):
+    """Obtiene un cliente por su id."""
+    crud = ClienteCRUD()
+    return crud.read(id_cliente)
+
 def autenticar_usuario(usr, pwd):
     """Verifica las credenciales de un usuario. 
     Si el usuario es un cliente (tiene un arroba("@") en el usuario), se le da acceso a la pagina de cliente.

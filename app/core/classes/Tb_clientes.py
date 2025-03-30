@@ -47,4 +47,4 @@ class Cliente(UserMixin, Base):
         return bcrypt.checkpw(password.encode('utf-8'), self.contrasenia.encode('utf-8'))
 
     def get_id(self):
-        return str(self.id_cliente)
+        return str(f'cliente: {self.id_cliente}')

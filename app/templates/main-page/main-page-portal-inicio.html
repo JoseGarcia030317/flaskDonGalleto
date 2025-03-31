@@ -1,30 +1,191 @@
-{% extends "main-page-base.html" %}
+{% extends "maing-page-landing.html" %}
 
 {% block title %}Administrador{% endblock %}
 
 {% block side_var %}
 <div>
   <nav class="space-y-2 bg-[#efe6dc] border-0 w-full">
-    <a onclick="cargarModuloDashboard()" class="block px-6 py-1 text-nav text-[#3C1D0C] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
-      Dashboard
+    <a href="/landingpage" class="block px-6 py-1 text-nav text-[#3C1D0C] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
+      Inicio
     </a>
     <a 
     href="/login" class="block px-6 py-1 text-nav text-[#3C1D0C] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
       Inicio de sesión
     </a>
     <div class="absolute left-0 w-full text-center">
-      <a href="/logout" class="flex items-center justify-center px-6 text-lg py-2 mt-[200px] text-[#8A5114] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black font-medium">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
-        </svg>
-        Cerrar sesión
-      </a>
     </div>     
   </nav>
 </div>
 {% endblock %}
 
+{% block content %}
+<div class="flex flex-col mx-3 my-4 border-content">
+  <div class="container">
+      <main class="main-content">
+          <!-- Caja superior (Header) -->
+          <section class="header">
+
+          </section>
+
+          <!-- Caja superior (Header) -->
+          <section class="mid-box1">
+              <h1>"CON EL SABOR DE CASA, QUE TE HACE SENTIR EN EL HOGAR"</h1>
+          </section> <!-- Caja del medio -->
+
+          <section class="mid-box2">
+              <h2>"Nuestros especiales del mes"</h2>
+          </section> <!-- Caja del medio -->
+
+          <div class="grid">
+              <div class="box large-box">
+                  <img src="./imgs/g1.jpg" alt="">
+              </div> <!-- Caja grande izquierda -->
+              <div class="box large-box">
+                  <img src="./imgs/g2.jpg" alt="">
+              </div> <!-- Caja grande central -->
+              <div class="box large-box">
+                  <img src="./imgs/g3.jpg" alt="">
+              </div> <!-- Caja grande derecha -->
+              <div class="box small-box">
+                  <div class="precios">
+                      <h2>Galleta vainilla<h3>$ 12. 00</h3>
+                      </h2>
+                  </div>
+                  <div class="precios">
+                      <h2>Galleta chispas locas<h3>$ 12. 00</h3>
+                      </h2>
+                  </div>
+                  <div class="precios">
+                      <h2>Galleta espacial<h3>$ 12. 00</h3>
+                      </h2>
+                  </div>
+                  <div class="btn">
+                      <button type="button">Agregar <img src="./imgs/shop.png" alt=""></button>
+                  </div>
+                  <div class="btn">
+                      <button type="button">Agregar <img src="./imgs/shop.png" alt=""></button>
+                  </div>
+                  <div class="btn">
+                      <button type="button">Agregar <img src="./imgs/shop.png" alt=""></button>
+                  </div>
+              </div>
+          </div>
+
+          <section class="mid-box3">
+              <div class="btn-history">
+                  <button type="button">Ordenar en línea</button>
+              </div>
+          </section>
+
+          <div class="grid-history">
+              <div class="box large-box-history">
+                  <h1>
+                      "El sabor de la tradición, antojando a todo México"
+                  </h1>
+              </div>
+              <div class="box large-box-history">
+                  <h3>
+                      Desde 1691 la familia "Don Galleto"
+                      ha estado creando recetas únicas y deliciosas
+                      que han pasado de generación en generación.
+                      Con ingredientes frescos y naturales, nuestras
+                      galletas son el resultado de un amor por la cocina
+                      y la tradición. <br><br> ¡Descubre el sabor
+                      auténtico de nuestras galletas y déjate llevar
+                      por la nostalgia!
+                  </h3>
+              </div>
+          </div>
+
+
+
+
+
+          <div class="grid2">
+              <div class="box large-box-menu">
+                  <div class="menu">
+                      <h1>
+                          Nuestro menú
+                      </h1>
+                      <span>
+                          Alegra tu día con nuestras galletas recién horneadas,
+                          elaboradas con ingredientes frescos y naturales.
+                      </span> <br><br>
+                      <div class="btn-history">
+                          <button type="button">Ordenar en línea</button>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="grid-menu">
+                  <div class="box large-box-me">
+                      <img src="./imgs/galletas/chispas.jpg" alt="">
+                  </div> <!-- Caja grande izquierda -->
+                  <div class="box large-box-me">
+                      <img src="./imgs/galletas/oreja.jpg" alt="">
+                  </div> <!-- Caja grande central -->
+                  <div class="box large-box-me">
+                      <img src="./imgs/galletas/avena.jpg" alt="">
+                  </div> <!-- Caja grande derecha -->
+                  <div class="box small-box-me">
+                      <div class="precios">
+                          <h2>Galleta vainilla</h2>
+                      </div>
+                      <div class="precios">
+                          <h2>Galleta coco</h2>
+                      </div>
+                      <div class="precios">
+                          <h2>Galleta espacial</h2>
+                      </div>
+
+                  </div>
+                  <div class="box large-box-me">
+                      <img src="./imgs/galletas/chocolate.jpg" alt="">
+                  </div> <!-- Caja grande izquierda -->
+                  <div class="box large-box-me">
+                      <img src="./imgs/galletas/rueda.jpg" alt="">
+                  </div> <!-- Caja grande central -->
+                  <div class="box large-box-me">
+                      <img src="./imgs/galletas/rellena.jpg" alt="">
+                  </div> <!-- Caja grande derecha -->
+                  <div class="box small-box-me">
+                      <div class="precios">
+                          <h2>Galleta vainilla</h2>
+                      </div>
+                      <div class="precios">
+                          <h2>Galleta angel</h2>
+                      </div>
+                      <div class="precios">
+                          <h2>Galleta espacial</h2>
+                      </div>
+
+                  </div>
+              </div>
+
+          </div>
+          <div class="grid-footer">
+              <div class="box large-box-footer">
+                  <h1>
+                      "El sabor de Don Galleto, antojando a todo México"
+                  </h1>
+              </div>
+
+          </div>
+          <section class="footer">
+              <div class="footer-content">
+                  <p>&copy; 2025 Don Galleto. Todos los derechos reservados.</p>
+                  <p>
+                      <a href="#about">Acerca de</a> |
+                      <a href="#contact">Contacto</a> |
+                      <a href="#privacy">Política de privacidad</a>
+                  </p>
+              </div>
+          </section>
+      </main>
+  </div>
+
+</div>
+{% endblock %}
+
 {% block scripts %}
-<script type="module" src="../../static/js/modulos/dashboard/index-dashboard.js"></script>
-<script type="module" src="../../static/js/modulos/seguridad/index-seguridad.js"></script>
 {% endblock %}

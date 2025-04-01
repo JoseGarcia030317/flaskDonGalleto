@@ -7,7 +7,14 @@ logger = logging.getLogger(__name__)
 
 class GalletaCRUD:
     
-    ATTRIBUTES_GALLETA = ["nombre_galleta", "proteccion_precio", "gramos_galleta", "precio_unitario", "dias_caducidad"]
+    ATTRIBUTES_GALLETA = [
+        "nombre_galleta", 
+        "descripcion_galleta", 
+        "proteccion_precio", 
+        "gramos_galleta", 
+        "precio_unitario", 
+        "dias_caducidad"
+    ]
     ATTRIBUTES_RECETA = ["nombre_receta", "tiempo_horneado", "galletas_producidas"]
     ATTRIBUTES_DETALLE_RECETA = ["insumo_id", "cantidad"]
 
@@ -70,7 +77,11 @@ class GalletaCRUD:
                     session.add(detalle)
                 
                 session.commit()
-                return {"status": 201, "message": "Galleta y receta base creadas exitosamente", "id_galleta": galleta.id_galleta}
+                return {
+                    "status": 201, 
+                    "message": "Galleta y receta base creadas exitosamente", 
+                    "id_galleta": galleta.id_galleta
+                }
             except Exception as e:
                 session.rollback()
                 logger.error("Error al crear la galleta: %s", e)
@@ -118,7 +129,9 @@ class GalletaCRUD:
         self._update_attributes(receta, receta_filtered, self.ATTRIBUTES_RECETA)
         if "detalle_receta" in rec_data:
             # Eliminar detalles existentes y actualizar con los nuevos
-            session.query(DetalleReceta).filter(DetalleReceta.receta_id == receta.id_receta).delete()
+            session.query(DetalleReceta).filter(
+                DetalleReceta.receta_id == receta.id_receta
+            ).delete()
             self._update_recipe_details(session, receta, rec_data["detalle_receta"])
 
     def _process_new_recipe(self, session, rec_data: dict, id_galleta: int, update_ids: set) -> None:
@@ -145,7 +158,6 @@ class GalletaCRUD:
             Receta.estatus == 1
         ).all()
         for receta in current_recetas:
-            # Convertir a entero por si acaso y comparar
             if int(receta.id_receta) not in update_ids and not receta.receta_base:
                 receta.estatus = 0
 
@@ -157,12 +169,12 @@ class GalletaCRUD:
         y administrar las recetas asociadas (actualización, adición o baja lógica).
         
         Las recetas que no se incluyan en el payload se marcarán como eliminadas
-        (id_estatus = 0), salvo la receta base.
+        (estatus = 0), salvo la receta base.
         
         Parámetros:
             id_galleta (int): Identificador de la galleta a actualizar.
             galleta_data (str | dict): Datos en formato JSON o diccionario.
-
+        
         Retorna:
             dict: Resultado de la operación, con mensaje e id de la galleta.
         """
@@ -171,16 +183,15 @@ class GalletaCRUD:
 
         with Session() as session:
             try:
-                # Buscar la galleta a actualizar
-                galleta = session.query(Galleta).filter(Galleta.id_galleta == id_galleta).first()
+                galleta = session.query(Galleta).filter(
+                    Galleta.id_galleta == id_galleta
+                ).first()
                 if not galleta:
                     raise ValueError("No se encontró la galleta con el id proporcionado")
                 
-                # Actualizar atributos de la galleta
                 self._update_galleta_attributes(galleta, data)
 
                 update_ids = set()
-                # Procesar recetas enviadas en el payload
                 if "recetas" in data:
                     recetas_data = data["recetas"]
                     if not isinstance(recetas_data, list):
@@ -192,7 +203,6 @@ class GalletaCRUD:
                         else:
                             self._process_new_recipe(session, rec_data, id_galleta, update_ids)
                 
-                # Baja lógica de recetas que no se han incluido en el payload
                 self._remove_missing_recipes(session, id_galleta, update_ids)
                 
                 session.commit()
@@ -201,3 +211,120 @@ class GalletaCRUD:
                 session.rollback()
                 logger.error("Error al actualizar la galleta: %s", e)
                 raise e
+
+    # ---------------- Funciones de eliminación y consulta ----------------
+
+    def delete(self, id_galleta: int) -> dict:
+        """
+        Realiza la baja lógica de una galleta y sus recetas activas,
+        y elimina físicamente los detalles asociados.
+        Se marca la galleta y todas sus recetas (estatus = 0), y se borran los detalles.
+        
+        Parámetros:
+            id_galleta (int): Identificador de la galleta a eliminar.
+        
+        Retorna:
+            dict: Resultado de la operación.
+        """
+        Session = DatabaseConnector().get_session
+        with Session() as session:
+            try:
+                galleta = session.query(Galleta).filter(
+                    Galleta.id_galleta == id_galleta,
+                    Galleta.estatus == 1
+                ).first()
+                if not galleta:
+                    raise ValueError("No se encontró la galleta activa con el id proporcionado")
+                
+                galleta.estatus = 0
+
+                recetas = session.query(Receta).filter(
+                    Receta.galleta_id == id_galleta,
+                    Receta.estatus == 1
+                ).all()
+                for receta in recetas:
+                    receta.estatus = 0
+                    session.query(DetalleReceta).filter(
+                        DetalleReceta.receta_id == receta.id_receta
+                    ).delete()
+                
+                session.commit()
+                return {"status": 200, "message": "Galleta eliminada correctamente", "id_galleta": id_galleta}
+            except Exception as e:
+                session.rollback()
+                logger.error("Error al eliminar la galleta: %s", e)
+                raise e
+
+    def get_by_id(self, id_galleta: int) -> dict:
+        """
+        Consulta una galleta activa por su ID, incluyendo sus recetas y detalles.
+        La respuesta tendrá exactamente la siguiente estructura:
+
+        Parámetros:
+            id_galleta (int): Identificador de la galleta a consultar.
+        
+        Retorna:
+            dict: Datos de la galleta con sus recetas y detalles.
+        """
+        Session = DatabaseConnector().get_session
+        with Session() as session:
+            galleta = session.query(Galleta).filter(
+                Galleta.id_galleta == id_galleta,
+                Galleta.estatus == 1
+            ).first()
+            if not galleta:
+                raise ValueError("No se encontró la galleta activa con el id proporcionado")
+            
+            recetas = session.query(Receta).filter(
+                Receta.galleta_id == id_galleta,
+                Receta.estatus == 1
+            ).all()
+            recetas_list = []
+            for rec in recetas:
+                detalles = session.query(DetalleReceta).filter(
+                    DetalleReceta.receta_id == rec.id_receta
+                ).all()
+                recetas_list.append({
+                    "nombre_receta": rec.nombre_receta,
+                    "tiempo_horneado": rec.tiempo_horneado,
+                    "galletas_producidas": rec.galletas_producidas,
+                    "detalle_receta": [
+                        {"insumo_id": det.insumo_id, "cantidad": det.cantidad}
+                        for det in detalles
+                    ]
+                })
+            
+            return {
+                "id_galleta": galleta.id_galleta,
+                "nombre_galleta": galleta.nombre_galleta,
+                "descripcion_galleta": "", # TODO: Implementar
+                "proteccion_precio": galleta.proteccion_precio,
+                "gramos_galleta": galleta.gramos_galleta,
+                "precio_unitario": galleta.precio_unitario,
+                "dias_caducidad": galleta.dias_caducidad,
+                "recetas": recetas_list
+            }
+
+    def get_all(self) -> list:
+        """
+        Consulta y retorna todas las galletas activas.
+        Cada galleta se retorna con la siguiente estructura:
+        
+        Retorna:
+            list: Lista de galletas activas.
+        """
+        Session = DatabaseConnector().get_session
+        with Session() as session:
+            galletas = session.query(Galleta).filter(Galleta.estatus == 1).all()
+            result = []
+            for gal in galletas:
+                result.append({
+                    "id_galleta": gal.id_galleta,
+                    "nombre_galleta": gal.nombre_galleta,
+                    "descripcion_galleta": "", # TODO: Implementar
+                    "proteccion_precio": gal.proteccion_precio,
+                    "gramos_galleta": gal.gramos_galleta,
+                    "precio_unitario": gal.precio_unitario,
+                    "dias_caducidad": gal.dias_caducidad
+                })
+            return result

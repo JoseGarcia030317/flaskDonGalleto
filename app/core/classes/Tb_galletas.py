@@ -42,14 +42,16 @@ class Galleta(Base):
     
     id_galleta = Column(Integer, primary_key=True, autoincrement=True)
     nombre_galleta = Column(String(50), nullable=True)
+    descripcion_galleta = Column(String(255), nullable=True)
     proteccion_precio = Column(Numeric(18, 2), nullable=True)
     gramos_galleta = Column(Numeric(18, 2), nullable=True)
     precio_unitario = Column(Numeric(18, 2), nullable=True)
     dias_caducidad = Column(Integer, nullable=True)
     estatus = Column(Integer, nullable=True)
     
-    def __init__(self, nombre_galleta=None, proteccion_precio=None, gramos_galleta=None, precio_unitario=None, dias_caducidad=None, estatus=None):
+    def __init__(self, nombre_galleta=None, descripcion_galleta=None, proteccion_precio=None, gramos_galleta=None, precio_unitario=None, dias_caducidad=None, estatus=None):
         self.nombre_galleta = nombre_galleta
+        self.descripcion_galleta = descripcion_galleta
         self.proteccion_precio = proteccion_precio
         self.gramos_galleta = gramos_galleta
         self.precio_unitario = precio_unitario

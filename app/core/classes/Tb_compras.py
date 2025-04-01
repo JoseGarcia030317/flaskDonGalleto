@@ -66,3 +66,4 @@ class CompraDetalle(Base):
 
     def __repr__(self):
         return f"<CompraDetalle(compra_id={self.compra_id}, insumo_id={self.insumo_id}, precio_unitario={self.precio_unitario})>"
+

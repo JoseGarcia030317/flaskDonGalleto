@@ -97,8 +97,7 @@ class CompraCRUD:
                     "insumo_id": detalle.insumo_id,
                     "presentacion": detalle.presentacion,
                     "precio_unitario": float(detalle.precio_unitario),
-                    "cantidad": detalle.cantidad,
-                    "fecha_caducidad": detalle.fecha_caducidad
+                    "cantidad": detalle.cantidad
                 })
             return result
 
@@ -183,8 +182,7 @@ class CompraCRUD:
                         "insumo_id": detalle.insumo_id,
                         "presentacion": detalle.presentacion,
                         "precio_unitario": float(detalle.precio_unitario),
-                        "cantidad": detalle.cantidad,
-                        "fecha_caducidad": detalle.fecha_caducidad
+                        "cantidad": detalle.cantidad
                     })
                 result_list.append(compra_dict)
             return result_list

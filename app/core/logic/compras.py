@@ -26,3 +26,33 @@ def update_compra(compra_data: str | dict) -> dict:
     except Exception as e:
         logger.error("Error al actualizar la compra: %s", e)
         raise e from e
+
+def delete_compra(id_compra: int) -> dict:
+    """
+    Elimina una compra existente.
+    """
+    try:
+        return crud.delete(id_compra)
+    except Exception as e:
+        logger.error("Error al eliminar la compra: %s", e)
+        raise e from e
+
+def list_compras() -> list:
+    """
+    Obtiene todas las compras.
+    """
+    try:
+        return crud.list_all() 
+    except Exception as e:
+        logger.error("Error al obtener las compras: %s", e)
+        raise e from e
+
+def get_compra(id_compra: int) -> dict:
+    """
+    Obtiene una compra específica.
+    """
+    try:   
+        return crud.read_compra(id_compra)
+    except Exception as e:
+        logger.error("Error al obtener la compra: %s", e)
+        raise e from e

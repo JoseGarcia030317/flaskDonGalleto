@@ -26,3 +26,34 @@ def update_galleta(id_galleta: int, galleta_data: str | dict) -> dict:
     except Exception as e:
         logger.error("Error al actualizar la galleta: %s", e)
         raise e
+
+def get_all_galletas() -> dict:
+    """
+    Obtiene todas las galletas existentes.
+    """
+    try:
+        return crud.get_all()
+    except Exception as e:
+        logger.error("Error al obtener todas las galletas: %s", e)
+        raise e
+
+def get_galleta_by_id(id_galleta: int) -> dict:
+    """
+    Obtiene una galleta existente a partir de su ID.    
+    """
+    try:
+        return crud.get_by_id(id_galleta)
+    except Exception as e:
+        logger.error("Error al obtener la galleta: %s", e)
+        raise e     
+
+def delete_galleta(id_galleta: int) -> dict:
+    """
+    Elimina una galleta existente a partir de su ID.
+    """
+    try:
+        return crud.delete(id_galleta)
+    except Exception as e:
+        logger.error("Error al eliminar la galleta: %s", e)
+        raise e
+

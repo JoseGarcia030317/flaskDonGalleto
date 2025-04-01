@@ -25,7 +25,19 @@ function procesoTerminadoExito() {
     });
 }
 
+function alertaWarning(mensaje) {
+    console.log("mensaje: " + mensaje);
+    Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: mensaje,
+        showConfirmButton: false,
+        timer: 1500
+    });
+}
+
 export const alertas = {
     confirmarEliminar : () => confirmarEliminar(),
-    procesoTerminadoExito : () => procesoTerminadoExito()
+    procesoTerminadoExito : () => procesoTerminadoExito(),
+    alertaWarning : (mensaje) => alertaWarning(mensaje)
 }

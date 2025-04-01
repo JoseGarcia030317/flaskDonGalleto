@@ -1,23 +1,12 @@
 <div id="almacen-content" class="p-2">
-    <div>
-        <div class="w-full flex py-4 px-3 border border-[#8A5114] justify-between rounded-full">
-            <h3>Compra #65643</h3>
-            <div class="flex">
-                <p class="text-[#915A17] underline underline-offset-1 pr-1" onclick="abrirModal('registrar')">Ingresar
-                    insumos</p>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="#8A5114" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
-            </div>
-        </div>
+    <div id="tbody_almacen"> 
+        
     </div>
 
     <div id="modalBackdropAlmacen" class="hidden fixed inset-0 bg-black/50 z-50">
         <!-- Modal Añadir/Editar -->
         <div id="modalFormAlmacen"
-            class="hidden bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[40rem]">
+            class="hidden bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[50rem]">
             <!-- Encabezado del modal -->
             <div class="bg-[#efe6dc] rounded-t-lg p-4 -m-6 mb-4 flex justify-center items-center relative">
                 <h2 id="modalTitulo" class="text-[#3C1D0C] font-semibold text-center">Ingresar insumos</h2>
@@ -26,10 +15,43 @@
                 </button>
             </div>
 
-            <div class="w-full flex py-4 px-3 justify-between overflow-y-auto">
-                <h3 class="font-medium">Leche 3 cajas</h3>
-                <hr>
-            </div>
+            <div class="w-full flex flex-col py-4 px-3 justify-between overflow-y-auto">
+                <!-- Header Table -->
+                <div id="header-table-almacen" class="grid grid-cols-5 gap-4 pt-2">
+                    <span class="text-[#895645] font-semibold ml-6">Producto</span>
+                    <span class="text-[#895645] font-semibold text-center">Cantidad</span>
+                    <span class="text-[#895645] font-semibold text-center">Presentación</span>
+                    <span class="text-[#895645] font-semibold">Cant. Estándar</span>
+                    <span class="text-[#895645] font-semibold">Fecha de caducidad</span>
+                </div>
+
+                <div class="max-h-60 overflow-y-auto">
+                    <!-- Item Row -->
+                    <div class="gap-1 flex ml-0">
+                        <button id="btn-agregar" onclick="agregarGrupoInsumo()" class="text-white ml-0 rounded-full cursor-pointer">
+                            <img src="../../../static/images/plus.png" class="w-5 h-5">
+                        </button>
+                        <div class="flex items-center w-full gap-4 p-3 bg-gray-50 rounded-lg shadow-sm">
+                            <p class="w-1/5">Leche</p>
+                            <p class="text-center w-1/5">3</p>
+                            <p class="text-center w-1/5">Caja</p> 
+                            <div class="flex w-1/5 justify-center items-center space-x-2">
+                                <span>=</span>                    
+                                <input type="number" name="cantidad" min="0.0" step="0.1" placeholder="" class="w-20 p-2 border border-[#895645] rounded-full text-center" required>
+                                <p class="text-center w-auto">Lt</p>
+                            </div>
+                            <input type="date" name="fecha_caducidad" class="w-1/5 p-2 border border-[#895645] rounded-full text-center" required>
+                        </div>
+                    </div>
+                    <div id="grupo-agregado">
+                    
+                    </div>
+                </div>
+                <button type="submit" onclick="guardarAlmacen()" class="w-full py-2 mt-4 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#895645] font-semibold flex items-center justify-center gap-2 hover:bg-[#a46a52] cursor-pointer">
+                    <img src="../../../static/images/guardar 3C1D0C.png" class="w-5 h-5">
+                    Guardar
+                </button>
+            </div>            
         </div>
     </div>
 </div>

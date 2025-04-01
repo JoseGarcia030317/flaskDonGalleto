@@ -1,6 +1,7 @@
 import { api } from '../../utils/api.js';
 import { tabs } from '../../utils/tabs.js';
 import { alertas } from '../../utils/alertas.js';
+import { abrirConversor, cerrarConversor, cambiarPestana, convertirUnidad, limpiarCampos } from "../../utils/conversor.js";
 
 const galletas = [
     {
@@ -163,7 +164,7 @@ function abrirModalPrincipal(tipo) {
 
     backdrop.classList.remove('hidden');
     document.getElementById('modal-titulo').textContent =
-        tipo === 'editar' ? 'Editar producto' : 'Añadir producto';
+        tipo === 'editar' ? 'Editar galleta' : 'Añadir galleta';
     modalForm.classList.remove('hidden');
 
     generarRecetasCards(recetas);
@@ -220,7 +221,7 @@ function generarCards(galletas) {
             </div>
 
             <div class="flex justify-items-center border-t border-black p-2">
-                <button onclick="buscarGalletaReceta(${galleta.id_galleta})" class="flex-1 flex items-center justify-center p-2 cursor-pointer">
+                <button onclick="buscarGalletaPorId(${galleta.id_galleta})" class="flex-1 flex items-center justify-center p-2 cursor-pointer">
                     <img src="../../../static/images/lapiz.png" class="w-7 h-7">
                 </button>
                 
@@ -377,3 +378,10 @@ window.eliminarInsumo = eliminarInsumo;
 
 window.editarReceta = editarReceta;
 window.eliminarReceta = eliminarReceta;
+
+// exponer funciones del conversor de unidades globalmente
+window.cambiarPestana = cambiarPestana;
+window.convertirUnidad = convertirUnidad;
+window.abrirConversor = abrirConversor;
+window.cerrarConversor = cerrarConversor;
+window.limpiarCampos = limpiarCampos;

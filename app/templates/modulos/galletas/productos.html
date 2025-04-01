@@ -20,7 +20,7 @@
     <div id="modalBackdrop" class="fixed inset-0 bg-black/50 z-50 hidden">
         <!-- Modal añadir/editar -->
         <div id="modalForm"
-            class="bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2/3">
+            class="bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2/3 max-h-[90vh] flex flex-col">
             <!-- Encabezado del modal -->
             <div class="bg-[#efe6dc] rounded-t-lg p-4 -m-6 mb-4 flex justify-center items-center relative">
                 <h2 id="modal-titulo" class="text-[#3C1D0C] font-semibold text-center">Agregar Producto</h2>
@@ -30,65 +30,67 @@
                 </button>
             </div>
 
-            <!-- Formulario -->
-            <form id="galletaForm" class="space-y-4">
-                <!-- Campo para id de la galleta -->
-                <input type="number" name="galleta_id" value="0" hidden>
+            <div class="flex-1 overflow-y-auto space-y-4">
+                <!-- Formulario -->
+                <form id="galletaForm" class="space-y-4">
+                    <!-- Campo para id de la galleta -->
+                    <input type="number" name="galleta_id" value="0" hidden>
 
-                <!-- Primer fila: nombre de la galleta y dias de vida en anaquel -->
-                <div class="grid grid-cols-2 gap-4">
-                    <!-- campo de nombre -->
-                    <div>
-                        <label class="block text-[#895645] mb-1">Nombre de la galleta</label>
-                        <input type="text" name="nombre-galleta" class="w-full p-2 border border-[#895645] rounded-full"
-                            required>
+                    <!-- Primer fila: nombre de la galleta y dias de vida en anaquel -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- campo de nombre -->
+                        <div>
+                            <label class="block text-[#895645] mb-1">Nombre de la galleta</label>
+                            <input type="text" name="nombre-galleta"
+                                class="w-full p-2 border border-[#895645] rounded-full" required>
+                        </div>
+                        <!-- campo de dias de vida en anaquel -->
+                        <div>
+                            <label class="block text-[#895645] mb-1">Días de vida</label>
+                            <input type="number" min="1" step="1" max="30" name="dias-vida"
+                                class="w-full p-2 border border-[#895645] rounded-full" required>
+                        </div>
                     </div>
-                    <!-- campo de dias de vida en anaquel -->
-                    <div>
-                        <label class="block text-[#895645] mb-1">Días de vida</label>
-                        <input type="number" min="1" step="1" max="30" name="dias-vida"
-                            class="w-full p-2 border border-[#895645] rounded-full" required>
-                    </div>
-                </div>
 
-                <!-- Segunda fila: gramos de la galleta, proteccion del precio precio sugerido -->
-                <div class="grid grid-cols-3 gap-4">
-                    <!-- campo de gramos galleta -->
-                    <div>
-                        <label class="block text-[#895645] bm-1">Gramos de la galleta</label>
-                        <input type="number" step="0.1" name="gramos-galleta"
-                            class="w-full p-2 border border-[#895645] rounded-full">
+                    <!-- Segunda fila: gramos de la galleta, proteccion del precio precio sugerido -->
+                    <div class="grid grid-cols-3 gap-4">
+                        <!-- campo de gramos galleta -->
+                        <div>
+                            <label class="block text-[#895645] bm-1">Gramos de la galleta</label>
+                            <input type="number" step="0.1" name="gramos-galleta"
+                                class="w-full p-2 border border-[#895645] rounded-full">
+                        </div>
+                        <!-- Proteccion de precio -->
+                        <div>
+                            <label class="block text-[#895645] bm-1">Protección del precio</label>
+                            <input type="number" step="0.1" name="proteccion-precio"
+                                class="w-full p-2 border border-[#895645] rounded-full">
+                        </div>
+                        <!-- Precio sugerido -->
+                        <div>
+                            <label class="block text-[#895645] bm-1">Precio sugerido</label>
+                            <input type="number" step="0.1" name="precio-sugerido"
+                                class="w-full p-2 border border-[#895645] rounded-full" disabled>
+                        </div>
                     </div>
-                    <!-- Proteccion de precio -->
-                    <div>
-                        <label class="block text-[#895645] bm-1">Protección del precio</label>
-                        <input type="number" step="0.1" name="proteccion-precio"
-                            class="w-full p-2 border border-[#895645] rounded-full">
-                    </div>
-                    <!-- Precio sugerido -->
-                    <div>
-                        <label class="block text-[#895645] bm-1">Precio sugerido</label>
-                        <input type="number" step="0.1" name="precio-sugerido"
-                            class="w-full p-2 border border-[#895645] rounded-full" disabled>
-                    </div>
-                </div>
-            </form>
+                </form>
 
-            <!-- Apartado para ver recetas -->
-            <div class="w-full overflow-y-auto mt-4 border-t border-[#895645] h-70">
-                <div class="flex pt-3 w-full justify-center">
-                    <h3 class="font-semibold">Recetas</h3>
-                </div>
-                <div class="flex w-full justify-end">
-                    <button id="btn-agregar-receta" onclick="abrirModalSecundario('añadir')"
-                        class="text-black hover:text-gray-700 cursor-pointer">
-                        <img src="../../../static/images/plus.png" class="w-7 h-7">
-                    </button>
-                </div>
+                <!-- Apartado para ver recetas -->
+                <div class="w-full overflow-y-auto mt-4 border-t border-[#895645] h-70">
+                    <div class="flex pt-3 w-full justify-center">
+                        <h3 class="font-semibold">Recetas</h3>
+                    </div>
+                    <div class="flex w-full justify-end">
+                        <button id="btn-agregar-receta" onclick="abrirModalSecundario('añadir')"
+                            class="text-black hover:text-gray-700 cursor-pointer">
+                            <img src="../../../static/images/plus.png" class="w-7 h-7">
+                        </button>
+                    </div>
 
-                <!-- Cards de Recetas Agregadas (cards con informacion general) -->
-                <div id="recetas-container" class="mt-4 w-full space-y-3">
-                    <p>aquí van las cards con informacion general de las recetas</p>
+                    <!-- Cards de Recetas Agregadas (cards con informacion general) -->
+                    <div id="recetas-container" class="mt-4 w-full space-y-3">
+                        <p>aquí van las cards con informacion general de las recetas</p>
+                    </div>
                 </div>
             </div>
 
@@ -105,22 +107,24 @@
     <div id="modalBackdropSecundario" class="fixed inset-0 bg-black/50 z-50 hidden">
         <!-- Modal secundario añadir/editar -->
         <div id="modalFormSecundario"
-            class="hidden bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[40rem] max-w-[95vw]">
-
-            <!-- Encabezado del modal secundario -->
+            class="bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[55rem] max-w-[90vw] max-h-[90vh] flex flex-col">
+            <!-- Encabezado del modal -->
             <div class="bg-[#efe6dc] rounded-t-lg p-4 -m-6 mb-4 flex justify-center items-center relative">
-                <h2 id="modal-titulo-secundario" class="text-[#3C1D0C] font-semibold text-center">Añadir proveedor</h2>
+                <h2 id="modal-titulo-secundario" class="text-[#3C1D0C] font-semibold text-center">Agregar receta</h2>
                 <button onclick="cerrarModalSecundario()"
                     class="text-black hover:text-gray-700 absolute right-4 cursor-pointer">
                     <img src="../../../static/images/cerrar.png" class="w-6 h-6">
                 </button>
             </div>
 
-            <div class="h-[20rem] overflow-y-auto">
-                <!-- Formulario para la receta -->
-                <form id="recetaForm" class="space-y-3">
+            <div class="flex-1 overflow-y-auto space-y-4">
+                <!-- Formulario de receta -->
+                <form id="recetaForm" class="space-y-4">
+                    <!-- campo para id de la galleta seleccionada -->
+                    <input type="number" id="galleta_id" value="0">
+
                     <!-- campo para id de la receta -->
-                    <input type="number" name="receta_id" value="0" hidden>
+                    <input type="number" id="receta_id" value="0">
 
                     <!-- Primera fila: nombre de la receta -->
                     <div class="grid grid-cols-1 gap-4 pl-2 pr-2">
@@ -133,7 +137,7 @@
                     </div>
 
                     <!-- Segunda fila: tiempo de horneado y galletas producidas -->
-                    <div class="grid grid-cols-2 gap-4 pl-2 pr-2">
+                    <div class="grid lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-4 pl-2 pr-2">
                         <!-- campo tiempo de horneado -->
                         <div>
                             <label class="block text-[#895645] mb-1">Tiempo de horneado (min)</label>
@@ -149,34 +153,129 @@
                     </div>
                 </form>
 
-                <!-- campo de busqueda dinamica -->
-                <div class="relative w-96 mx-auto mt-4">
-                    <input type="text" id="buscador-insumos" placeholder="Buscar insumos..."
-                        onkeyup="filtrarInsumos(this.value)"
-                        class="w-full h-[42px] pl-4 pr-10 py-1 border border-[#895645] rounded-full">
-
-                    <!-- Icono de lupa -->
-                    <div class="absolute right-3 top-1/2 pt-1 transform -translate-y-1/2">
-                        <img src="./../../../static/images/magnifying glass.png" class="w-6 h-6">
+                <!-- Campo de busqueda dinamica -->
+                <div class="space-y-4 grid grid-cols-[auto_max-content] mt-4 w-full border-t pt-4 gap-2">
+                    <div class="pl-2">
+                        <input type="text" id="buscador-insumos" placeholder="Buscar insumos..."
+                            onkeyup="filtrarInsumos(this.value)"
+                            class="w-full h-[42px] pl-4 pr-10 py-1 border border-[#895645] rounded-full">
+                        <!-- Sugerencias -->
+                        <div id="sugerencias-insumos"
+                            class="hidden absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                        </div>
                     </div>
 
-                    <!-- Sugerencias de búsqueda -->
-                    <div id="sugerencias-insumos"
-                        class="hidden absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                    <div class="pr-2">
+                        <button onclick="abrirConversor()"
+                            class="h-[42px] bg-[#efe6dc] text-[#3C1D0C] border border-[#895645] font-semibold px-4 py-2 rounded-full hover:bg-[#a46a52] cursor-pointer whitespace-nowrap">
+                            Equivalencias
+                        </button>
                     </div>
                 </div>
 
                 <!-- Lista de Insumos Seleccionados -->
-                <div id="insumos-seleccionados" class="space-y-2 mt-4 mb-4">
+                <div id="insumos-seleccionados" class="space-y-2 mt-4 mb-4 overflow-y-auto max-h-40">
                 </div>
             </div>
 
-            <!-- Botón Guardar receta -->
+            <!-- Botón Guardar -->
             <button type="submit" onclick="guardarReceta()"
-                class="w-full py-2 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#895645] font-semibold flex items-center justify-center gap-2 hover:bg-[#a46a52] cursor-pointer">
+                class="w-full mt-4 py-2 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#895645] font-semibold flex items-center justify-center gap-2 hover:bg-[#a46a52] cursor-pointer">
                 <img src="../../../static/images/guardar 3C1D0C.png" class="w-5 h-5">
                 Guardar
             </button>
+        </div>
+
+        <!-- Modal del conversor -->
+        <div id="modal-conversor" class="hidden inset-0 z-[60] items-center justify-center">
+            <div class="bg-white rounded-xl p-4 w-80 max-w-[85vw] border-2 border-[#8A5114] shadow-lg">
+                <!-- Encabezado -->
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-[#3C1D0C]">Conversor de Unidades</h2>
+                    <button onclick="cerrarConversor()" class="text-[#8A5114] hover:text-[#6d3e0f] cursor-pointer">
+                        <img src="../../../static/images/cerrar.png" class="w-6 h-6">
+                    </button>
+                </div>
+
+                <!-- Pestañas -->
+                <div class="flex gap-2 mb-4">
+                    <button onclick="cambiarPestana('liquidos')" id="btn-liquidos"
+                        class="px-4 py-2 rounded-full bg-[#8A5114] text-white font-medium cursor-pointer">
+                        Líquidos
+                    </button>
+                    <button onclick="cambiarPestana('solidos')" id="btn-solidos"
+                        class="px-4 py-2 rounded-full bg-[#efe6dc] text-[#3C1D0C] font-medium cursor-pointer hover:bg-[#d4c4b5]">
+                        Sólidos
+                    </button>
+                </div>
+
+                <!-- Contenido Líquidos -->
+                <div id="contenido-liquidos" class="space-y-4">
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[#3C1D0C]">Mililitros (ml)</label>
+                            <input type="number" data-categoria="liquidos" class="input-conversor"
+                                oninput="convertirUnidad('liquidos', 'mililitros', this.value)">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[#3C1D0C]">Litros (L)</label>
+                            <input type="number" data-categoria="liquidos" class="input-conversor"
+                                oninput="convertirUnidad('liquidos', 'litros', this.value)">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[#3C1D0C]">Tazas</label>
+                            <input type="number" data-categoria="liquidos" class="input-conversor"
+                                oninput="convertirUnidad('liquidos', 'tazas', this.value)">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[#3C1D0C]">Cucharadas</label>
+                            <input type="number" data-categoria="liquidos" class="input-conversor"
+                                oninput="convertirUnidad('liquidos', 'cucharadas', this.value)">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[#3C1D0C]">Cucharaditas</label>
+                            <input type="number" data-categoria="liquidos" class="input-conversor"
+                                oninput="convertirUnidad('liquidos', 'cucharaditas', this.value)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contenido Sólidos -->
+                <div id="contenido-solidos" class="space-y-4 hidden">
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[#3C1D0C]">Gramos (g)</label>
+                            <input type="number" data-categoria="solidos" class="input-conversor"
+                                oninput="convertirUnidad('solidos', 'gramos', this.value)">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[#3C1D0C]">Kilos (kg)</label>
+                            <input type="number" data-categoria="solidos" class="input-conversor"
+                                oninput="convertirUnidad('solidos', 'kilos', this.value)">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[#3C1D0C]">Tazas</label>
+                            <input type="number" data-categoria="solidos" class="input-conversor"
+                                oninput="convertirUnidad('solidos', 'tazas', this.value)">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[#3C1D0C]">Cucharadas</label>
+                            <input type="number" data-categoria="solidos" class="input-conversor"
+                                oninput="convertirUnidad('solidos', 'cucharadas', this.value)">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[#3C1D0C]">Cucharaditas</label>
+                            <input type="number" data-categoria="solidos" class="input-conversor"
+                                oninput="convertirUnidad('solidos', 'cucharaditas', this.value)">
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="limpiarCampos()"
+                    class="w-full mt-6 py-2 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#8A5114] hover:bg-[#d4c4b5] cursor-pointer">
+                    Limpiar
+                </button>
+            </div>
         </div>
     </div>
 

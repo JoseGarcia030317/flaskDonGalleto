@@ -15,7 +15,7 @@ function cargarModuloMermas() {
             const endpoint = tab.dataset.target;
             cargarContenidoMermas(endpoint);
         });
-        cargarContenidoMermas('merma-insumo')
+        cargarContenidoMermas('merma-producto')
     })
     .catch(error => {
         console.error("Error cargando el módulo de mermas: ", error);
@@ -47,7 +47,8 @@ function cargarContenidoMermas(endpoint) {
             // TO DO: aquí tiene que colocar los if's necesarios para poder iniciarlizar cada uno de los submodulos
             // Ejemplo:
             // if (endpoint === 'merma-producto') window.cargarMermaProducto();
-            // if (endpoint === 'merma-insumo') window.cargarMermaInsumo();
+            if (endpoint === 'merma-insumo') window.cargarMermaInsumo();
+            if (endpoint === 'merma-producto') window.cargarMermaProducto();
         };
         document.body.appendChild(script);
     })

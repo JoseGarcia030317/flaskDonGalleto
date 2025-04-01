@@ -1,7 +1,7 @@
 import { api } from '../../utils/api.js'
 import { tabs } from '../../utils/tabs.js'
 import { alertas } from '../../utils/alertas.js';
-import { validarLongitud, validarRequerido, validarSoloTexto, validarCaracteresProhibidos, validarSelectRequerido } from '../../utils/validaciones.js';
+import { validarLongitud, validarRequerido, validarSoloTexto, validarCaracteresProhibidos, validarSelectRequerido, mostrarErrores, limpiarErrores } from '../../utils/validaciones.js';
 
 // ====================================================================
 // Funciones para realizar validaciones del lado del Cliente
@@ -49,32 +49,6 @@ function validarFormulario() {
     });
 
     return Object.keys(errores).length === 0 ? null : errores;
-}
-
-function mostrarErrores(errores) {
-    document.querySelectorAll('.error-message').forEach(span => span.classList.add('hidden'));
-    Object.keys(errores).forEach(campo => {
-        let input;
-        if (campo === 'unidad') {
-            input = document.getElementById('cmb_unidad');
-        } else {
-            input = document.querySelector(`[name="${campo}"]`);
-        }
-
-        if (!input) {
-            console.error(`No se encontro el campo ${campo}`);
-            return;
-        }
-
-        const errorSpan = input.nextElementSibling;
-        if (!errorSpan || !errorSpan.classList.contains('error-message')) {
-            console.error(`No se encontro el mensaje de error para el campo ${campo}`);
-            return;
-        }
-
-        errorSpan.textContent = errores[campo];
-        errorSpan.classList.remove('hidden');
-    });
 }
 
 // ====================================================================
@@ -127,7 +101,7 @@ function cargarSelectUnidad() {
                     <option value="${tipo.id_unidad}">
                         ${tipo.nombre} (${tipo.simbolo})
                     </option>`;
-        })
+        });
     })
     .catch(error => {
         console.error('Error:', error.message);
@@ -268,6 +242,8 @@ function limpiarFormulario() {
     cargarSelectUnidad();
 
     document.getElementById('insumo_id').value = 0;
+
+    limpiarErrores();
 }
 
 // Exponer la función globalmente

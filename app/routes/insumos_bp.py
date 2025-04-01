@@ -15,7 +15,7 @@ def get_all_insumos():
 @insumos_bp.route("/insumos/get_all_insumos_unidad", methods=['GET'])
 @login_required
 @fresh_login_required
-@role_required(5)
+@role_required(4,5)
 def get_all_insumos_unidad():
     return insumos.get_all_insumos_unidad()
 

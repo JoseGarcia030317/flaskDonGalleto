@@ -20,7 +20,7 @@ class UsuarioCRUD:
             "telefono": usuario.telefono,
             "tipo": usuario.tipo,
             "usuario": usuario.usuario,
-            "contrasenia": usuario.contrasenia,  # Se recomienda no retornar la contraseña en producción.
+            "contrasenia": usuario.contrasenia,
             "estatus": usuario.estatus
         }
 

@@ -1,95 +1,95 @@
-<div id="insumos-content" class="p-2">
-    <div class="items-center justify-center w-full">
-        <!-- Barra de búsqueda y botón añadir -->
-        <div class="flex justify-between mb-2 max-w-4xl">
-            <!-- Campo de búsqueda -->
-            <div class="relative w-96 mx-auto">
-                <input type="text" placeholder="Buscar..." name="buscar" oninput="filtrarTabla()"
-                    class="w-full pl-4 pr-10 py-1 border border-[#8A5114] rounded-full">
+    <div id="insumos-content" class="p-2">
+        <div class="items-center justify-center w-full">
+            <!-- Barra de búsqueda y botón añadir -->
+            <div class="flex justify-between mb-2 max-w-4xl">
+                <!-- Campo de búsqueda -->
+                <div class="relative w-96 mx-auto">
+                    <input type="text" placeholder="Buscar..." name="buscar" oninput="filtrarTabla()"
+                        class="w-full pl-4 pr-10 py-1 border border-[#8A5114] rounded-full">
 
-                <!-- Icono de lupa -->
-                <div class="absolute right-3 top-1/3 transform -translate-y-1/2">
-                    <img src="./../../../static/images/magnifying glass.png" class="w-6 h-6">
+                    <!-- Icono de lupa -->
+                    <div class="absolute right-3 top-1/3 transform -translate-y-1/2">
+                        <img src="./../../../static/images/magnifying glass.png" class="w-6 h-6">
+                    </div>
                 </div>
-            </div>
 
-            <!-- Botón para añadir -->
-            <button id="btn-agregar" onclick="abrirModal('añadir')" class="text-white p-2 rounded-full cursor-pointer" disabled>
-                <img src="../../../static/images/plus.png" class="w-7 h-7">
-            </button>
-        </div>
-
-        <!-- Tabla de insumos -->
-        <div class="overflow-x-auto overflow-y-auto">
-            <table class="w-full table-auto border-collapse rounded-t-lg">
-                <thead>
-                    <tr class="bg-[#efe6dc] align-middle">
-                        <th class="p-2 text-center text-[#915A17]">NOMBRE</th>
-                        <th class="p-2 text-center text-[#915A17]">DESCRIPCI&Oacute;N</th>
-                        <th class="p-2 text-center text-[#915A17]">UNIDAD DE MEDIDA</th>
-                        <th class="p-2 text-center text-[#915A17]">ACCIONES</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody_insumos">
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Modales -->
-    <div id="modalBackdrop" class="hidden fixed inset-0 bg-black/50 z-50">
-        <!-- Modal Añadir/Editar -->
-        <div id="modalForm"
-            class="hidden bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[40rem]">
-            <!-- Encabezado del modal -->
-            <div class="bg-[#efe6dc] rounded-t-lg p-4 -m-6 mb-4 flex justify-center items-center relative">
-                <h2 id="modalTitulo" class="text-[#3C1D0C] font-semibold text-center">Añadir insumo</h2>
-                <button onclick="cerrarModal()" class="text-black hover:text-gray-700 absolute right-4 cursor-pointer">
-                    <img src="../../../static/images/cerrar.png" class="w-6 h-6">
+                <!-- Botón para añadir -->
+                <button id="btn-agregar" onclick="abrirModal('añadir')" class="text-white p-2 rounded-full cursor-pointer" disabled>
+                    <img src="../../../static/images/plus.png" class="w-7 h-7">
                 </button>
             </div>
-            <!-- Formulario -->
-            <form id="insumoForm" class="space-y-4">
-                <input type="number" id="insumo_id" value="0" hidden>
-                <div class="grid grid-cols-2 gap-4">
-                    <!-- Nombre -->
-                    <div>
-                        <label class="block text-[#895645] mb-1">Nombre</label>
-                        <input type="text" name="nombre" class="w-full p-2 border border-[#895645] rounded-full"
-                            required>
-                            <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
-                    </div>
-                    <!-- Descripcion -->
-                    <div>
-                        <label class="block text-[#895645] mb-1">Descripci&oacute;n</label>
-                        <input type="text" name="descripcion" class="w-full p-2 border border-[#895645] rounded-full"
-                            required>
-                            <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
-                    </div>
-                    <!-- Unidad -->
-                    <div>
-                        <label class="block text-[#895645] mb-1">Unidad</label>
-                        <select type="text" id="cmb_unidad" name="unidad" class="w-full p-2 mb-2 border border-[#895645] rounded-full"
-                            required>
-                        </select>
-                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
-                    </div>
-                </div>
-            </form>
-            <!-- Botón Guardar -->
-            <button type="submit" onclick="guardarInsumo()"
-                class="w-full py-2 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#8A5114] font-semibold flex items-center justify-center gap-2 hover:bg-gray-50 cursor-pointer">
-                <img src="../../../static/images/guardar 3C1D0C.png" class="w-5 h-5">
-                Guardar
-            </button>
-        </div>
-    </div>
 
-    <!-- loader -->
-    <div id="loader" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" hidden>
-        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
-            <img src="../../../static/images/LogoGalleto.png" alt="Cargando..." class="h-16 w-16 animate-spin">
-            <span class="mt-4 text-gray-700 font-semibold">Cargando...</span>
+            <!-- Tabla de insumos -->
+            <div class="overflow-x-auto overflow-y-auto">
+                <table class="w-full table-auto border-collapse rounded-t-lg">
+                    <thead>
+                        <tr class="bg-[#efe6dc] align-middle">
+                            <th class="p-2 text-center text-[#915A17]">NOMBRE</th>
+                            <th class="p-2 text-center text-[#915A17]">DESCRIPCI&Oacute;N</th>
+                            <th class="p-2 text-center text-[#915A17]">UNIDAD DE MEDIDA</th>
+                            <th class="p-2 text-center text-[#915A17]">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody_insumos">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Modales -->
+        <div id="modalBackdrop" class="hidden fixed inset-0 bg-black/50 z-50">
+            <!-- Modal Añadir/Editar -->
+            <div id="modalForm"
+                class="hidden bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[40rem]">
+                <!-- Encabezado del modal -->
+                <div class="bg-[#efe6dc] rounded-t-lg p-4 -m-6 mb-4 flex justify-center items-center relative">
+                    <h2 id="modalTitulo" class="text-[#3C1D0C] font-semibold text-center">Añadir insumo</h2>
+                    <button onclick="cerrarModal()" class="text-black hover:text-gray-700 absolute right-4 cursor-pointer">
+                        <img src="../../../static/images/cerrar.png" class="w-6 h-6">
+                    </button>
+                </div>
+                <!-- Formulario -->
+                <form id="insumoForm" class="space-y-4">
+                    <input type="number" id="insumo_id" value="0" hidden>
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Nombre -->
+                        <div>
+                            <label class="block text-[#895645] mb-1">Nombre</label>
+                            <input type="text" name="nombre" class="w-full p-2 border border-[#895645] rounded-full"
+                                required>
+                                <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                        </div>
+                        <!-- Descripcion -->
+                        <div>
+                            <label class="block text-[#895645] mb-1">Descripci&oacute;n</label>
+                            <input type="text" name="descripcion" class="w-full p-2 border border-[#895645] rounded-full"
+                                required>
+                                <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                        </div>
+                        <!-- Unidad -->
+                        <div>
+                            <label class="block text-[#895645] mb-1">Unidad</label>
+                            <select type="text" id="cmb_unidad" name="unidad" class="w-full p-2 mb-2 border border-[#895645] rounded-full"
+                                required>
+                            </select>
+                            <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                        </div>
+                    </div>
+                </form>
+                <!-- Botón Guardar -->
+                <button type="submit" onclick="guardarInsumo()"
+                    class="w-full py-2 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#8A5114] font-semibold flex items-center justify-center gap-2 hover:bg-gray-50 cursor-pointer">
+                    <img src="../../../static/images/guardar 3C1D0C.png" class="w-5 h-5">
+                    Guardar
+                </button>
+            </div>
+        </div>
+
+        <!-- loader -->
+        <div id="loader" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" hidden>
+            <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
+                <img src="../../../static/images/LogoGalleto.png" alt="Cargando..." class="h-16 w-16 animate-spin">
+                <span class="mt-4 text-gray-700 font-semibold">Cargando...</span>
+            </div>
         </div>
     </div>
-</div>

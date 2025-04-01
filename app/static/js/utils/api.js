@@ -2,10 +2,10 @@
 const handleResponse = async (response) => {
     // Manejar error 403 (Forbidden)
     if (response.status === 403) {
-        Swal.fire({
+        await Swal.fire({
             icon: 'warning',
             title: 'Acceso denegado',
-            text: 'No tienes permisos para este recurso',
+            text: 'No tienes permisos para este recurso, serás redirigido al inicio de sesión',
             showConfirmButton: true
         }).then(() => {
             window.location.href = "/login";

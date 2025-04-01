@@ -25,7 +25,18 @@ function procesoTerminadoExito() {
     });
 }
 
+function procesoTerminadoSinExito() {
+    Swal.fire({
+        position: 'center',
+        icon: "error",
+        title: "Ha ocurrido un error, intentalo más tarde",
+        showConfirmButton : false,
+        timer : 1500
+      });
+}
+
 export const alertas = {
     confirmarEliminar : () => confirmarEliminar(),
-    procesoTerminadoExito : () => procesoTerminadoExito()
+    procesoTerminadoExito : () => procesoTerminadoExito(),
+    procesoTerminadoSinExito : () => procesoTerminadoSinExito()
 }

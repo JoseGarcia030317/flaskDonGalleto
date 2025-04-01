@@ -1,7 +1,7 @@
 import { api } from '../../utils/api.js';
 import { tabs } from '../../utils/tabs.js';
 import { alertas } from '../../utils/alertas.js';
-import { validarLongitud, validarRequerido, validarTelefono, validarEmail, validarSoloTexto, validarCaracteresProhibidos } from '../../utils/validaciones.js';
+import { validarLongitud, validarRequerido, validarTelefono, validarEmail, validarSoloTexto, validarCaracteresProhibidos, mostrarErrores, limpiarErrores } from '../../utils/validaciones.js';
 
 // ====================================================================
 // Funciones para realizar validaciones del lado del Cliente
@@ -81,24 +81,6 @@ function validarFormulario() {
     });
 
     return Object.keys(errores).length === 0 ? null : errores;
-}
-
-function mostrarErrores(errores) {
-    document.querySelectorAll('.error-message').forEach(span => span.classList.add('hidden'));
-    Object.keys(errores).forEach(campo => {
-        const input = document.querySelector(`[name="${campo}"]`);
-        if (!input) {
-            console.error(`No se encontró el campo: ${campo}`);
-            return;
-        }
-        const errorSpan = input.nextElementSibling;
-        if (!errorSpan || !errorSpan.classList.contains('error-message')) {
-            console.error(`No se encontró el mensaje de error para el campo: ${campo}`);
-            return;
-        }
-        errorSpan.textContent = errores[campo];
-        errorSpan.classList.remove('hidden');
-    });
 }
 
 // ====================================================================
@@ -273,6 +255,8 @@ function limpiarFormulario() {
     document.querySelector('textarea[name="descripcion"]').value = '';
 
     document.querySelector('input[name="proveedor_id"]').value = 0;
+
+    limpiarErrores();
 }
 
 // Exponer la función globalmente para poder ser usada en html

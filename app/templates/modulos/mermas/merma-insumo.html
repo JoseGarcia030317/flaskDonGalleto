@@ -15,7 +15,7 @@
 
             <!-- Botón para añadir -->
             <button id="btn-agregar" onclick="abrirModal('añadir')" class="text-white p-2 rounded-full cursor-pointer"
-                >
+                disabled>
                 <img src="../../../static/images/plus.png" class="w-7 h-7">
             </button>
         </div>
@@ -26,7 +26,7 @@
                 <thead>
                     <tr class="bg-[#efe6dc] align-middle">
                         <th class="p-2 text-center text-[#915A17]">FECHA</th>
-                        <th class="p-2 text-center text-[#915A17]">TIPO</th>
+                        <th class="p-2 text-center text-[#915A17]">MOTIVO</th>
                         <th class="p-2 text-center text-[#915A17]">INSUMO</th>
                         <th class="p-2 text-center text-[#915A17]">CANTIDAD</th>
                         <th class="p-2 text-center text-[#915A17]">ACCIONES</th>
@@ -56,32 +56,47 @@
                 <!-- Campo para id de merma de producto -->
                 <input type="number" name="merma_insumo_id" value="0" hidden>
 
-                <!-- Producto -->
-                <div>
-                    <label class="block text-[#895645] mb-1">Insumo</label>
-                    <select type="text" id="cmb_insumo" name="insumo" class="w-full p-2 border border-[#895645] rounded-full"
-                        required>
-                    </select>
+                <!-- Insumo -->
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <label class="block text-[#895645] mb-1">Insumo</label>
+                        <select type="text" id="cmb_insumo" name="insumo"
+                            class="w-full p-2 border border-[#895645] rounded-full" required>
+                        </select>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
                 </div>
 
-                <!-- Tipo de merma -->
-                <div>
-                    <label class="block text-[#895645] mb-1">Tipo de merma</label>
-                    <select type="text" id="cmb_tipo_merma" name="tipo_merma" class="w-full p-2 border border-[#895645] rounded-full"
-                        required>
-                        <option value="">Selecciona una opción</option>
-                        <option value="1">Dañado</option>
-                        <option value="2">Caducado</option>
-                    </select>
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Motivo de merma -->
+                    <div>
+                        <label class="block text-[#895645] mb-1">Motivo de la merma</label>
+                        <select type="text" id="cmb_motivo_merma" name="motivo_merma"
+                            class="w-full p-2 border border-[#895645] rounded-full" required>
+                            <option value="">Selecciona una opción</option>
+                            <option value="1">Caducado</option>
+                            <option value="2">Dañado</option>
+                        </select>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+
+                    <!-- Cantidad (pzas) -->
+                    <div>
+                        <label class="block text-[#895645] mb-1">Cantidad</label>
+                        <input type="number" min="1" name="cantidad"
+                            class="w-full p-2 border border-[#895645] rounded-full" required></input>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
                 </div>
 
-                <!-- Cantidad (pzas) -->
                 <div>
-                    <label class="block text-[#895645] mb-1">Cantidad</label>
-                    <input type="number" min="1" name="cantidad" class="w-full p-2 mb-3 border border-[#895645] rounded-full"
-                        required></input>
+                    <label class="block text-[#895645] mb-1">Observaciones</label>
+                    <textarea name="observaciones" class="w-full p-2 mb-2 border border-[#895645] rounded-2xl h-24"
+                        ></textarea>
+                    <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
                 </div>
             </form>
+
             <!-- Botón Guardar -->
             <button type="submit" onclick="guardarMermaInsumo()"
                 class="w-full py-2 bg-[#895645] text-[#ffffff] rounded-full border border-[#301e1a] font-medium flex items-center justify-center gap-2 hover:bg-[#a46a52] cursor-pointer">

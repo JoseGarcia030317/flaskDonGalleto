@@ -48,9 +48,18 @@ export function validarSoloTexto(input, campo) {
 
 // Función para validar que un campo solo contenga números
 export function validarSoloNumeros(input, campo) {
-    const regex = /^\d+$/; // Solo dígitos (0-9)
+    const regex = /^\d+$/;
     if (input && !regex.test(input)) {
-        return `El campo ${campo} solo permite números`;
+        return `El campo ${campo} solo permite números enteros`;
+    }
+    return null;
+}
+
+// Funcion para validar que un campo contenga numero decimal
+export function validarNumeroDecimal(input, campo) {
+    const regex = /^[0-9]*\.?[0-9]+$/;
+    if (input && !regex.test(input)) {
+        return `El campo ${campo} debe ser un número decimal válido`;
     }
     return null;
 }
@@ -86,4 +95,29 @@ export function validarContrasena(input, campo) {
         return `${campo} debe tener al menos 8 caracteres, una mayúscula, un número y un carácter especial (!@#$%^&*)`;
     }
     return null;
+}
+
+export function mostrarErrores(errores) {
+    document.querySelectorAll('.error-message').forEach(span => span.classList.add('hidden'));
+    Object.keys(errores).forEach(campo => {
+        const input = document.querySelector(`[name="${campo}"]`);
+        if (!input) {
+            console.error(`No se encontró el campo: ${campo}`);
+            return;
+        }
+        const errorSpan = input.nextElementSibling;
+        if (!errorSpan || !errorSpan.classList.contains('error-message')) {
+            console.error(`No se encontró el mensaje de error para el campo: ${campo}`);
+            return;
+        }
+        errorSpan.textContent = errores[campo];
+        errorSpan.classList.remove('hidden');
+    });
+}
+
+export function limpiarErrores() {
+    document.querySelectorAll('.error-message').forEach(span => {
+        span.classList.add('hidden');
+        span.textContent = '';
+    });
 }

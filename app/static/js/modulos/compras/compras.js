@@ -232,6 +232,7 @@ function guardarCompra(event){
 
 function cancelarCompra(event){    
     alertas.confirmarEliminar();
+    cerrarModal();
 }   
 
 function mostrarErrores(errores) {

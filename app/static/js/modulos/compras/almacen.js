@@ -1,5 +1,6 @@
 import { tabs } from '../../utils/tabs.js';
 import { alertas } from '../../utils/alertas.js';
+import { abrirConversor, cerrarConversor, cambiarPestana, convertirUnidad, limpiarCampos } from "../../utils/conversor.js";
 
 const compras = [
     {
@@ -94,6 +95,7 @@ function cargarDetalleCompra(){
 
 function guardarAlmacen(){
     alertas.procesoTerminadoExito();
+    cerrarModal();
 }
 
 function cerrarModal() {
@@ -108,3 +110,10 @@ window.cargarAlmacen = cargarAlmacen;
 window.abrirCompra = abrirCompra;
 window.agregarGrupoInsumo = agregarGrupoInsumo;
 window.guardarAlmacen = guardarAlmacen;
+
+// exponer funciones del conversor de unidades globalmente
+window.cambiarPestana = cambiarPestana;
+window.convertirUnidad = convertirUnidad;
+window.abrirConversor = abrirConversor;
+window.cerrarConversor = cerrarConversor;
+window.limpiarCampos = limpiarCampos;

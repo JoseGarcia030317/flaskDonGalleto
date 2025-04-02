@@ -1,15 +1,15 @@
 {% extends "maing-page-landing.html" %}
 
-{% block title %}Administrador{% endblock %}
+{% block title %}Cliente{% endblock %}
 
 {% block side_var %}
 <div>
-  <nav class="space-y-2 bg-[#efe6dc] border-0 w-full">
-    <a href="/landingpage" class="block px-6 py-1 text-nav text-[#3C1D0C] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
+  <nav >
+    <a href="/landingpage" class="block px-6 py-1  text-[#3C1D0C] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
       Inicio
     </a>
     <a 
-    href="/login" class="block px-6 py-1 text-nav text-[#3C1D0C] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
+    href="/login" class="block px-6 py-1  text-[#3C1D0C] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
       Inicio de sesión
     </a>
     <div class="absolute left-0 w-full text-center">
@@ -19,7 +19,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="flex flex-col mx-3 my-4 border-content">
+<div class="flex flex-col mx-3 my-4 ">
   <div class="container">
       <main class="main-content">
           <!-- Caja superior (Header) -->
@@ -38,13 +38,13 @@
 
           <div class="grid">
               <div class="box large-box">
-                  <img src="./imgs/g1.jpg" alt="">
+                  <img src="../../static/images/g1.jpg" alt="">
               </div> <!-- Caja grande izquierda -->
               <div class="box large-box">
-                  <img src="./imgs/g2.jpg" alt="">
+                  <img src="../../static/images/g2.jpg" alt="">
               </div> <!-- Caja grande central -->
               <div class="box large-box">
-                  <img src="./imgs/g3.jpg" alt="">
+                  <img src="../../static/images/g3.jpg" alt="">
               </div> <!-- Caja grande derecha -->
               <div class="box small-box">
                   <div class="precios">
@@ -59,15 +59,18 @@
                       <h2>Galleta espacial<h3>$ 12. 00</h3>
                       </h2>
                   </div>
+
+                <!--
                   <div class="btn">
-                      <button type="button">Agregar <img src="./imgs/shop.png" alt=""></button>
+                      <button type="button">Agregar <img src="../../static/images/shop.png" alt=""></button>
                   </div>
                   <div class="btn">
-                      <button type="button">Agregar <img src="./imgs/shop.png" alt=""></button>
+                      <button type="button">Agregar <img src="../../static/images/shop.png" alt=""></button>
                   </div>
                   <div class="btn">
-                      <button type="button">Agregar <img src="./imgs/shop.png" alt=""></button>
+                      <button type="button">Agregar <img src="../../static/images/shop.png" alt=""></button>
                   </div>
+                -->
               </div>
           </div>
 
@@ -119,13 +122,13 @@
 
               <div class="grid-menu">
                   <div class="box large-box-me">
-                      <img src="./imgs/galletas/chispas.jpg" alt="">
+                      <img src="../../static/images/corazon.jpg" alt="">
                   </div> <!-- Caja grande izquierda -->
                   <div class="box large-box-me">
-                      <img src="./imgs/galletas/oreja.jpg" alt="">
+                      <img src="../../static/images/chispas.jpg" alt="">
                   </div> <!-- Caja grande central -->
                   <div class="box large-box-me">
-                      <img src="./imgs/galletas/avena.jpg" alt="">
+                      <img src="../../static/images/oreja.jpg" alt="">
                   </div> <!-- Caja grande derecha -->
                   <div class="box small-box-me">
                       <div class="precios">
@@ -140,13 +143,13 @@
 
                   </div>
                   <div class="box large-box-me">
-                      <img src="./imgs/galletas/chocolate.jpg" alt="">
+                      <img src="../../static/images/rellena.jpg" alt="">
                   </div> <!-- Caja grande izquierda -->
                   <div class="box large-box-me">
-                      <img src="./imgs/galletas/rueda.jpg" alt="">
+                      <img src="../../static/images/rueda.jpg" alt="">
                   </div> <!-- Caja grande central -->
                   <div class="box large-box-me">
-                      <img src="./imgs/galletas/rellena.jpg" alt="">
+                      <img src="../../static/images/extra.jpg" alt="">
                   </div> <!-- Caja grande derecha -->
                   <div class="box small-box-me">
                       <div class="precios">
@@ -188,4 +191,5 @@
 {% endblock %}
 
 {% block scripts %}
+
 {% endblock %}

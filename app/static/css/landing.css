@@ -4,23 +4,53 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    
 }
+/* SIDE BAR */
+.sidebar-logo {
+    width: 100px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+  }
 
+.sidebar-title {
+    color: #3C1D0C;
+    font-size: 1.5rem; /* 24px - equivalente a text-2xl */
+    font-weight: 600; /* equivalente a font-semibold */
+    font-family: 'Poppins', sans-serif;
+    margin-bottom: 3rem;
+  }
+
+  nav a {
+    padding: 0.25rem 1.5rem;
+    font-family: "Poppins", sans-serif;
+    font-style: normal;
+    font-weight: 200;
+    font-size: 20px;
+    color: #8A5114;
+  }
+  
+  nav a:hover {
+    background-color: rgba(145, 90, 23, 0.15);
+    color: black;
+  }
+
+/* CONTENEDOR DE LANDINGPAGE*/
 .container {
     display: flex;
+    justify-content: center;
     min-height: 100vh;
-    padding: 100px;
+    margin-left: 15%;
+    flex-wrap: nowrap;
 }
 
-.large-box img {
-    width: 100%;
-    border-radius: 40px;
-}
 
-/* Contenido principal */
 .main-content {
     width: 100%;
-    padding: 20px;
+    padding: 5px 20px;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -29,12 +59,12 @@
 
 /* Header */
 .header {
-    background-image: url(./imgs/galletas/fondo7.jpg);
+    background-image: url(../images/fondo7.jpg);
     background-size: contain; /* Ajusta la imagen para cubrir todo el contenedor */
     background-position: center; /* Centra la imagen */
     background-repeat: no-repeat; /* Evita que la imagen se repita */
     /*background-attachment: fixed;*/
-    height:70vh;
+    height:100vh;
 }
 
 /* Caja del medio */
@@ -42,7 +72,7 @@
     height: 60px;
     text-align: center;
     align-items: center;
-    font-size: 25px;
+    font-size: 40px;
     margin-bottom: 100px;
 }
 
@@ -70,13 +100,14 @@
     
 }
 
-.small-box h3 {
-    color: #540b0e;
+.mid-box2 h2 {
     font-family: "Poppins", sans-serif;
-    font-weight: 400;
+    font-weight: 200;
     font-style: normal;
-    margin-top: 5px;
+    color: #540b0e;
+    font-size: 40px;
 }
+
 
 
 /* Grid central */
@@ -87,6 +118,14 @@
     justify-content: center;
 }
 
+.grid h2{
+    color: #540b0e;
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 20px
+}
+
 .grid-history {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -94,29 +133,40 @@
     margin-bottom: 100px;
 }
 
+.grid2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    justify-content: center;
+}
 
 
 .large-box {
     min-height: 10px;
 }
 
-
+.large-box img {
+    width: 100%;
+    border-radius: 40px;
+}
 
 .large-box-history img {
     height: 50vh;
 }
 
-h2 {
-    font-family: "Poppins", sans-serif;
-    font-weight: 200;
-    font-style: normal;
-    color: #540b0e;
-    
-}
+
 
 .small-box {
     height: 50px;
     display: contents;
+}
+
+.small-box h3 {
+    color: #540b0e;
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 20px;
 }
 
 .btn {
@@ -124,10 +174,6 @@ h2 {
    justify-content: end;
 }
 
-.precios {
-    display: flex;
-    justify-content: space-between;
-}
 .btn button {
     width: 130px;
     height: 40px;
@@ -155,6 +201,10 @@ h2 {
     height: 100px;
 }
 
+.precios {
+    display: flex;
+    justify-content: space-between;
+}
 .large-box-history {
     height: 50vh;
     display: flex;
@@ -165,6 +215,8 @@ h2 {
     font-weight: 300;
     font-style: normal;
     text-align: justify;
+    font-size: 20px;
+    color: #540b0e;
 }
 
 .large-box-history h1 {
@@ -172,6 +224,7 @@ h2 {
     font-family: "Poppins", sans-serif;
     font-weight: 200;
     font-style: normal;
+    color:#540b0e;
 }
 
 .mid-box3 {
@@ -190,7 +243,6 @@ h2 {
     border-radius: 10px;
     background-color: #540b0d00;
     color: #540b0e;
-    border: none;
     font-family: "Poppins", sans-serif;
     font-weight: 300;
     font-style: normal;
@@ -200,6 +252,7 @@ h2 {
     align-items: center;
     justify-content: center;
     border: 2px solid #540b0e;
+    font-size: 15px;
 }
 
 .btn-history img {
@@ -208,12 +261,7 @@ h2 {
     margin-left: 15px;
 }
 
-.grid2 {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    justify-content: center;
-}
+
 
 .large-box-menu {
     height: 100%;

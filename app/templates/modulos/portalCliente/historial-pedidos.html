@@ -1,1 +1,46 @@
-<h1>Historial de pedidos ya esta trabajando</h1>
+<div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold">Order history</h1>
+    <p class="text-gray-500">Check the status of recent orders, manage returns, and download invoices.</p>
+    
+    <div class="bg-gray-100 p-4 mt-4 rounded-lg">
+        <div class="flex justify-between text-sm">
+            <span><strong>Order number:</strong> <!-- Atributo desde la BD --> WU88191111</span>
+            <span><strong>Date placed:</strong> <!-- Atributo desde la BD --> January 22, 2021</span>
+            <span><strong>Total amount:</strong> $<!-- Atributo desde la BD --> 302.00</span>
+        </div>
+        <div class="mt-2 flex space-x-2">
+            <button class="px-4 py-2 bg-gray-200 rounded">View Order</button>
+            <button class="px-4 py-2 bg-gray-200 rounded">View Invoice</button>
+        </div>
+    </div>
+    
+    <!-- Producto 1 -->
+    <div class="flex mt-6 space-x-4">
+        <img src="https://via.placeholder.com/100" alt="Product Image" class="rounded-lg">
+        <div>
+            <h2 class="font-bold">Nomad Tumbler</h2>
+            <p class="text-gray-500">This durable double-walled insulated tumbler keeps your beverages at the perfect temperature all day long.</p>
+            <p class="mt-2 text-lg font-bold">$<!-- Atributo desde la BD --> 35.00</p>
+            <div class="flex space-x-4 text-blue-600 mt-2">
+                <a href="#">View Product</a>
+                <a href="#">Buy Again</a>
+            </div>
+            <p class="text-yellow-500 mt-2">Out for delivery</p>
+        </div>
+    </div>
+    
+    <!-- Producto 2 -->
+    <div class="flex mt-6 space-x-4">
+        <img src="https://via.placeholder.com/100" alt="Product Image" class="rounded-lg">
+        <div>
+            <h2 class="font-bold">Leather Long Wallet</h2>
+            <p class="text-gray-500">This leather long wallet will keep your bills nice and fold-free.</p>
+            <p class="mt-2 text-lg font-bold">$<!-- Atributo desde la BD --> 118.00</p>
+            <div class="flex space-x-4 text-blue-600 mt-2">
+                <a href="#">View Product</a>
+                <a href="#">Buy Again</a>
+            </div>
+            <p class="text-green-500 mt-2">✔ Delivered on <!-- Atributo desde la BD --> January 25, 2021</p>
+        </div>
+    </div>
+</div>

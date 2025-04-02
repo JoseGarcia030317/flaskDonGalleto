@@ -16,6 +16,16 @@ function cargarModuloPortalInicio() {
     //funcion agregar()
 
 
+function consultarGalletas() {
+  api.getJSON('/galletas')
+}
+function saludar(){
+  console.log('Hola desde el portal cliente');
+  aler
+}
+
+
 // Asignar la función globalmente para que sea accesible en el HTML
+window.saludar = saludar;
 window.cargarModuloPortalInicio = cargarModuloPortalInicio;
 //agregar funciones al html nombrar aquí 

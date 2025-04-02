@@ -28,3 +28,35 @@ def update_galleta():
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500
 
+@galletas_bp.route("/galletas/get_all_galletas", methods=['GET'])
+def get_all_galletas():
+    """
+    Obtiene todas las galletas existentes.
+    """
+    try:
+        return jsonify(galletas.get_all_galletas())
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500
+
+@galletas_bp.route("/galletas/get_galleta_by_id", methods=['POST'])
+def get_galleta_by_id():
+    """
+    Obtiene una galleta existente a partir de su ID.
+    """
+    try:
+        data = request.get_json()
+        return jsonify(galletas.get_galleta_by_id(data["id_galleta"]))
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500
+
+@galletas_bp.route("/galletas/delete_galleta", methods=['POST'])    
+def delete_galleta():
+    """
+    Elimina una galleta existente a partir de su ID.
+    """
+    try:
+        data = request.get_json()
+        return jsonify(galletas.delete_galleta(data["id_galleta"]))
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500
+

@@ -1,6 +1,7 @@
 import { api } from '../../utils/api.js';
 import { tabs } from '../../utils/tabs.js';
 import { alertas } from '../../utils/alertas.js';
+import { abrirConversor, cerrarConversor, cambiarPestana, convertirUnidad, limpiarCampos } from "../../utils/conversor.js";
 
 const galletas = [
     {
@@ -163,7 +164,7 @@ function abrirModalPrincipal(tipo) {
 
     backdrop.classList.remove('hidden');
     document.getElementById('modal-titulo').textContent =
-        tipo === 'editar' ? 'Editar producto' : 'Añadir producto';
+        tipo === 'editar' ? 'Editar galleta' : 'Añadir galleta';
     modalForm.classList.remove('hidden');
 
     generarRecetasCards(recetas);
@@ -220,7 +221,7 @@ function generarCards(galletas) {
             </div>
 
             <div class="flex justify-items-center border-t border-black p-2">
-                <button onclick="buscarGalletaReceta(${galleta.id_galleta})" class="flex-1 flex items-center justify-center p-2 cursor-pointer">
+                <button onclick="buscarGalletaPorId(${galleta.id_galleta})" class="flex-1 flex items-center justify-center p-2 cursor-pointer">
                     <img src="../../../static/images/lapiz.png" class="w-7 h-7">
                 </button>
                 
@@ -337,7 +338,7 @@ function seleccionarInsumo(idInsumo) {
                    min="0.0" 
                    step="0.1" 
                    placeholder="Cantidad" 
-                   class="w-24 p-1 border rounded-full text-center"
+                   class="w-24 p-1 border border-[#895645] rounded-full text-center"
                    required>
             <span class="w-12 text-sm">${insumo.unidad}</span>
             <button onclick="eliminarInsumo(${idInsumo}, this)" 
@@ -377,3 +378,10 @@ window.eliminarInsumo = eliminarInsumo;
 
 window.editarReceta = editarReceta;
 window.eliminarReceta = eliminarReceta;
+
+// exponer funciones del conversor de unidades globalmente
+window.cambiarPestana = cambiarPestana;
+window.convertirUnidad = convertirUnidad;
+window.abrirConversor = abrirConversor;
+window.cerrarConversor = cerrarConversor;
+window.limpiarCampos = limpiarCampos;

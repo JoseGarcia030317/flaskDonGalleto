@@ -88,3 +88,53 @@ def best_selling_presentations():
         logger.error("Error al obtener las presentaciones más vendidas: %s", e)
         raise
 
+def cost_per_cookie():
+    """Obtiene costo por galletas del sistema desde BD."""
+    Session = DatabaseConnector().get_session 
+    try:
+        with Session() as session:
+
+            result = session.execute(text("CALL SP_CostPerCookie"))
+            rows = result.fetchall()
+            
+            data = [
+                {
+                    "cookie_name": row.nombre_galleta,
+                    "amount": row.costo_por_galleta,
+                }
+                for row in rows
+            ]
+            
+            logger.info("Se han obtenido los datos de los costo por galletas.")
+            return data
+    except Exception as e:
+        logger.error("Error al obtener los costo por galletas: %s", e)
+        raise
+
+
+def profit_margin():
+    """Obtiene el margen por cada galleta sistema desde BD."""
+    Session = DatabaseConnector().get_session 
+    try:
+        with Session() as session:
+
+            result = session.execute(text("CALL SP_ProfitMargin"))
+            rows = result.fetchall()
+            
+            data = [
+                {
+                    "cookie_name": row.nombre_galleta,
+                    "amount": row.precio_unitario,
+                    "margin":row.margen_utilidad,
+                    "date": row.fecha_caducidad,
+                    "stock":row.existencias_aproximadas
+                }
+                for row in rows
+            ]
+            
+            logger.info("Se han obtenido los datos de los costo por galletas.")
+            return data
+    except Exception as e:
+        logger.error("Error al obtener los costo por galletas: %s", e)
+        raise
+

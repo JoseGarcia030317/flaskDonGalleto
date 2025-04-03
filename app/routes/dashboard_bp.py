@@ -31,3 +31,19 @@ def best_selling_presentations():
         return jsonify(result)
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500
+    
+@dashboard_bp.route("/dashboard/cost_per_cookie", methods=['GET'])
+def cost_per_cookie():
+    try:
+        result = dashboard.cost_per_cookie()
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500
+    
+@dashboard_bp.route("/dashboard/profit_margin", methods=['GET'])
+def profit_margin():
+    try:
+        result = dashboard.profit_margin()
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500

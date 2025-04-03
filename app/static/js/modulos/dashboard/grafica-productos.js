@@ -4,14 +4,22 @@ function cargarGraficasDashboard(){
     GraficaVentasDiarias();
     GraficaProMasVendidos();
     GraficaPreMasVendidos();
-    prueba();
+    GraficaCostoGalleta();
+    GalletaRecomendada();
 }
 
 function GraficaVentasDiarias(){
     api.getJSON('/dashboard/get_daily_sales')
     .then(data => {
-        if (data && Array.isArray(data)) {
-            console.log(data);
+        const ctx = document.getElementById('ventasDiarias');
+
+        if (!ctx) {
+            console.error("Error: No se encontró el elemento con id 'ventasDiarias'");
+            toggleCardDisplay('cardVentasDiarias', 'cardErrorVentasDiarias', true);
+            return;
+        }
+
+        if (data && Array.isArray(data) && data.length > 0) {
             let totalCompras = 0;
             let totalEntrada = 0;
             let totalSalidaConCompra = 0;
@@ -27,13 +35,14 @@ function GraficaVentasDiarias(){
                 }
             });
 
-            const ctx = document.getElementById('ventasDiarias');
-
-            if (!ctx) {
-                console.error("Error: No se encontró el elemento con id 'ventasDiarias'");
+            if (totalEntrada === 0 && totalSalidaConCompra === 0) {
+                // No hay datos que mostrar, se muestra mensaje de error
+                toggleCardDisplay('cardVentasDiarias', 'cardErrorVentasDiarias', true);
                 return;
             }
-        
+
+            toggleCardDisplay('cardVentasDiarias', 'cardErrorVentasDiarias', false);
+
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
@@ -47,17 +56,17 @@ function GraficaVentasDiarias(){
                 },
                 options: {
                     responsive: true,
-                    
                 },
             });
             
-            
         } else {
-            console.error("Error: Datos recibidos no válidos.");
+            console.error("Error: Datos recibidos no válidos o vacíos.");
+            toggleCardDisplay('cardVentasDiarias', 'cardErrorVentasDiarias', true);
         }
     })
     .catch(error => {
         console.error("Error al obtener los datos del API:", error);
+        toggleCardDisplay('cardVentasDiarias', 'cardErrorVentasDiarias', true);
     });
 }
 
@@ -232,32 +241,79 @@ function GraficaPreMasVendidos(){
     });
 };
 
-function prueba(){
-    api.getJSON('/dashboard/get_daily_sales')
+
+function GraficaCostoGalleta(){
+    api.getJSON('/dashboard/cost_per_cookie')
     .then(data => {
         if (data && Array.isArray(data)) {
-            console.log(data);
-            
-            // Inicializamos las variables que contendrán las sumas
-            let totalCompras = 0;
-            let totalEntrada = 0;
-            let totalSalidaConCompra = 0;
-            
-            // Recorremos los datos y sumamos según el tipo
-            data.forEach(item => {
-                if (item.tipo === 'compras') {
-                    totalCompras = item.resultado.total_compras;
-                }
-                if (item.tipo === 'ventas') {
-                    totalEntrada = item.resultado.total_entrada;
-                    totalSalidaConCompra = item.resultado.total_salida + totalCompras;
+
+            const labels = data.map(item => item.cookie_name);
+            const amounts = data.map(item => item.amount);
+
+            const backgroundColors = [
+                '#e4d4c4', 
+                '#d2b79f', 
+                '#bf9578', 
+                '#b27c5d', 
+                '#a46a52',
+
+              ];
+              
+              const borderColors = [
+                '#e4d4c4', 
+                '#d2b79f', 
+                '#bf9578', 
+                '#b27c5d', 
+                '#a46a52',
+              ];
+
+            const ctx = document.getElementById('CostoGalleta');
+
+            if (!ctx) {
+                console.error("Error: No se encontró el elemento con id 'CostoGalleta'");
+                return;
+            }
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Costo Galletas',
+                        data: amounts,
+                        backgroundColor: backgroundColors,
+                        borderColor: borderColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                          callbacks: {
+                            title: function(context) {
+                              return context[0].label;
+                            },
+                            label: function(context) {
+                              const index = context.dataIndex;
+                              const value = amounts[index].toLocaleString('en-US', {
+                                style: 'currency',
+                                currency: 'USD'
+                              });
+                              
+                              return [
+                                `Monto Galleta: ${value}`
+                              ];
+                            }
+                          }
+                        }}
                 }
             });
-            
-            console.log("Total Compras: ", totalCompras);
-            console.log("Total Entrada: ", totalEntrada);
-            console.log("Total Salida con Compra: ", totalSalidaConCompra);
-            
         } else {
             console.error("Error: Datos recibidos no válidos.");
         }
@@ -265,11 +321,50 @@ function prueba(){
     .catch(error => {
         console.error("Error al obtener los datos del API:", error);
     });
-}
+};
 
+
+function GalletaRecomendada() {
+    api.getJSON('/dashboard/profit_margin')
+    .then(data => {
+        if (data && Array.isArray(data) && data.length > 0) {
+            const galleta = data[0];
+
+            const nombreGalleta = galleta.cookie_name;
+            const margenUtilidad = galleta.margin;
+            const existencias = galleta.stock;
+
+            // Actualizamos el contenido del HTML con los datos
+            document.querySelector('ul').innerHTML = `
+                <li><strong>Galleta recomendada:</strong> ${nombreGalleta}</li>
+                <li><strong>Margen de utilidad:</strong> ${margenUtilidad}%</li>
+                <li><strong>Existencias actuales:</strong> ${existencias}</li>
+            `;
+        } else {
+            console.error("Error: Datos recibidos no válidos o vacíos.");
+        }
+    })
+    .catch(error => {
+        console.error("Error al obtener los datos del API:", error);
+    });
+};
+
+
+function toggleCardDisplay(cardId, cardErrorId, showError) {
+    const card = document.getElementById(cardId);
+    const cardError = document.getElementById(cardErrorId);
+    if (showError) {
+        card.style.display = 'none';
+        cardError.style.display = 'block';
+    } else {
+        card.style.display = 'block';
+        cardError.style.display = 'none';
+    }
+};
 
 window.cargarGraficasDashboard = cargarGraficasDashboard;
 window.GraficaVentasDiarias = GraficaVentasDiarias;
 window.GraficaProMasVendidos = GraficaProMasVendidos;
 window.GraficaPreMasVendidos = GraficaPreMasVendidos;
-window.prueba = prueba;
+window.GraficaCostoGalleta = GraficaCostoGalleta;
+window.GalletaRecomendada = GalletaRecomendada;

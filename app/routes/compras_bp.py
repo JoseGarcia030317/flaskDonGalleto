@@ -27,3 +27,37 @@ def update_compra():
         return jsonify(compras.update_compra(data))
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500
+
+@compras_bp.route("/compras/delete_compra", methods=['POST'])
+def delete_compra():
+    """
+    Elimina una compra existente.
+    """
+    try:
+        data = request.get_json()
+        return jsonify(compras.delete_compra(data))
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500
+
+@compras_bp.route("/compras/list_compras", methods=['GET'])
+def list_compras():
+    """
+    Obtiene todas las compras.
+    """
+    try:
+        return jsonify(compras.list_compras())
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500
+    
+@compras_bp.route("/compras/get_compra", methods=['POST'])
+def get_compra():
+    """
+    Obtiene una compra específica.
+    """
+    try:
+        data = request.get_json()
+        return jsonify(compras.get_compra(data["id_compra"]))
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500
+
+

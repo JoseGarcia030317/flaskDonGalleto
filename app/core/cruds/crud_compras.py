@@ -8,10 +8,10 @@ logger = logging.getLogger(__name__)
 
 class CompraCRUD:
     # Atributos permitidos para la tabla Compra y CompraDetalle
-    ATTRIBUTES_COMPRA = ["clave_compra", "fecha_compra", "observacion", "estatus", "proveedor_id"]
+    ATTRIBUTES_COMPRA = ["fecha_compra", "observacion", "estatus", "proveedor_id"]
     ATTRIBUTES_COMPRA_DETALLE = ["insumo_id", "presentacion", "precio_unitario", "cantidad"]
     # Atributos que no se deben actualizar para detalles (si aplica)
-    ATTRIBUTES_DONT_UPDATE = ["insumo_id"]
+    ATTRIBUTES_DONT_UPDATE = ["clave_compra","insumo_id"]
 
     # Constantes para manejo de estados (por ejemplo, 1: Activo, 0: Inactivo)
     STATUS_ACTIVO = 1

@@ -25,7 +25,30 @@ function procesoTerminadoExito() {
     });
 }
 
+function alertaWarning(mensaje) {
+    console.log("mensaje: " + mensaje);
+    Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: mensaje,
+        showConfirmButton: false,
+        timer: 1500
+    });
+}
+
+function procesoTerminadoSinExito() {
+    Swal.fire({
+        position: 'center',
+        icon: "error",
+        title: "Ha ocurrido un error, intentalo más tarde",
+        showConfirmButton : false,
+        timer : 1500
+      });
+}
+
 export const alertas = {
     confirmarEliminar : () => confirmarEliminar(),
-    procesoTerminadoExito : () => procesoTerminadoExito()
+    procesoTerminadoExito : () => procesoTerminadoExito(),
+    alertaWarning : (mensaje) => alertaWarning(mensaje),
+    procesoTerminadoSinExito : () => procesoTerminadoSinExito()
 }

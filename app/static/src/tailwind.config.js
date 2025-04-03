@@ -4,6 +4,7 @@ module.exports = {
         fontFamily: {
           poppins: ['Poppins', 'sans-serif'],
           montserrat: ['Montserrat', 'sans-serif'],
+          
         },
         fontWeight: {
           light: 100,  

@@ -24,7 +24,7 @@ def mp_vendedor():
 @fresh_login_required
 @role_required(3)
 def mp_cliente():
-    return render_template("main-page/main-page-cliente.html", tipo_user='Cliente: ', user=current_user.usuario)
+    return render_template("main-page/main-page-cliente.html", tipo_user='Cliente: ', user=current_user.correo)
 
 @main_page_bp.route("/cocinero",  methods=['GET'])
 @login_required

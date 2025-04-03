@@ -1,1 +1,155 @@
-<h1>soy almacen</h1>
+<div id="almacen-content" class="p-2">
+    <div id="tbody_almacen"> 
+        
+    </div>
+
+    <div id="modalBackdropAlmacen" class="hidden fixed inset-0 bg-black/50 z-50">
+        <!-- Modal Añadir/Editar -->
+        <div id="modalFormAlmacen"
+            class="hidden bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[50rem]">
+            <!-- Encabezado del modal -->
+            <div class="bg-[#efe6dc] rounded-t-lg p-4 -m-6 mb-4 flex justify-center items-center relative">
+                <h2 id="modalTitulo" class="text-[#3C1D0C] font-semibold text-center">Ingresar insumos</h2>
+                <button onclick="cerrarModal()" class="text-black hover:text-gray-700 absolute right-4 cursor-pointer">
+                    <img src="../../../static/images/cerrar.png" class="w-6 h-6">
+                </button>
+            </div>
+
+            <div class="flex justify-end">
+                <button onclick="abrirConversor()"
+                    class="h-[42px] bg-[#efe6dc] text-[#3C1D0C] border border-[#895645] font-semibold px-4 py-2 rounded-full hover:bg-[#a46a52] cursor-pointer whitespace-nowrap">
+                    Equivalencias
+                </button>
+            </div>
+
+            <div class="w-full flex flex-col py-4 px-3 justify-between overflow-y-auto">
+                <!-- Header Table -->
+                <div id="header-table-almacen" class="grid grid-cols-5 gap-4 pt-2">
+                    <span class="text-[#895645] font-semibold ml-6">Producto</span>
+                    <span class="text-[#895645] font-semibold text-center">Cantidad</span>
+                    <span class="text-[#895645] font-semibold text-center">Presentación</span>
+                    <span class="text-[#895645] font-semibold">Cant. Estándar</span>
+                    <span class="text-[#895645] font-semibold">Fecha de caducidad</span>
+                </div>
+
+                <div class="max-h-60 overflow-y-auto">
+                    <!-- Item Row -->
+                    <div class="gap-1 flex ml-0">
+                        <button id="btn-agregar" onclick="agregarGrupoInsumo()" class="text-white ml-0 rounded-full cursor-pointer">
+                            <img src="../../../static/images/plus.png" class="w-5 h-5">
+                        </button>
+                        <div class="flex items-center w-full gap-4 p-3 bg-gray-50 rounded-lg shadow-sm">
+                            <p class="w-1/5">Leche</p>
+                            <p class="text-center w-1/5">3</p>
+                            <p class="text-center w-1/5">Caja</p> 
+                            <div class="flex w-1/5 justify-center items-center space-x-2">
+                                <span>=</span>                    
+                                <input type="number" name="cantidad" min="0.0" step="0.1" placeholder="" class="w-20 p-2 border border-[#895645] rounded-full text-center" required>
+                                <p class="text-center w-auto">Lt</p>
+                            </div>
+                            <input type="date" name="fecha_caducidad" class="w-1/5 p-2 border border-[#895645] rounded-full text-center" required>
+                        </div>
+                    </div>
+                    <div id="grupo-agregado">
+                    
+                    </div>
+                </div>
+                <button type="submit" onclick="guardarAlmacen()" class="w-full py-2 mt-4 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#895645] font-semibold flex items-center justify-center gap-2 hover:bg-[#a46a52] cursor-pointer">
+                    <img src="../../../static/images/guardar 3C1D0C.png" class="w-5 h-5">
+                    Guardar
+                </button>
+            </div>            
+        </div>
+
+        <div id="modal-conversor" class="hidden inset-0 z-[60] items-center justify-center mt-4 ml-4">
+            <div class="bg-white rounded-xl p-4 w-80 max-w-[85vw] border-2 border-[#8A5114] shadow-lg">
+                <!-- Encabezado -->
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-[#3C1D0C]">Conversor de Unidades</h2>
+                    <button onclick="cerrarConversor()" class="text-[#8A5114] hover:text-[#6d3e0f] cursor-pointer">
+                        <img src="../../../static/images/cerrar.png" class="w-6 h-6">
+                    </button>
+                </div>
+
+                <!-- Pestañas -->
+                <div class="flex gap-2 mb-4">
+                    <button onclick="cambiarPestana('liquidos')" id="btn-liquidos"
+                        class="px-4 py-2 rounded-full bg-[#8A5114] text-white font-medium cursor-pointer">
+                        Líquidos
+                    </button>
+                    <button onclick="cambiarPestana('solidos')" id="btn-solidos"
+                        class="px-4 py-2 rounded-full bg-[#efe6dc] text-[#3C1D0C] font-medium cursor-pointer hover:bg-[#d4c4b5]">
+                        Sólidos
+                    </button>
+                </div>
+
+                <!-- Contenido Líquidos -->
+                <div id="contenido-liquidos" class="space-y-4">
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[#3C1D0C]">Mililitros (ml)</label>
+                            <input type="number" data-categoria="liquidos" class="input-conversor"
+                                oninput="convertirUnidad('liquidos', 'mililitros', this.value)">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[#3C1D0C]">Litros (L)</label>
+                            <input type="number" data-categoria="liquidos" class="input-conversor"
+                                oninput="convertirUnidad('liquidos', 'litros', this.value)">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[#3C1D0C]">Tazas</label>
+                            <input type="number" data-categoria="liquidos" class="input-conversor"
+                                oninput="convertirUnidad('liquidos', 'tazas', this.value)">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[#3C1D0C]">Cucharadas</label>
+                            <input type="number" data-categoria="liquidos" class="input-conversor"
+                                oninput="convertirUnidad('liquidos', 'cucharadas', this.value)">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[#3C1D0C]">Cucharaditas</label>
+                            <input type="number" data-categoria="liquidos" class="input-conversor"
+                                oninput="convertirUnidad('liquidos', 'cucharaditas', this.value)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contenido Sólidos -->
+                <div id="contenido-solidos" class="space-y-4 hidden">
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[#3C1D0C]">Gramos (g)</label>
+                            <input type="number" data-categoria="solidos" class="input-conversor"
+                                oninput="convertirUnidad('solidos', 'gramos', this.value)">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[#3C1D0C]">Kilos (kg)</label>
+                            <input type="number" data-categoria="solidos" class="input-conversor"
+                                oninput="convertirUnidad('solidos', 'kilos', this.value)">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[#3C1D0C]">Tazas</label>
+                            <input type="number" data-categoria="solidos" class="input-conversor"
+                                oninput="convertirUnidad('solidos', 'tazas', this.value)">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[#3C1D0C]">Cucharadas</label>
+                            <input type="number" data-categoria="solidos" class="input-conversor"
+                                oninput="convertirUnidad('solidos', 'cucharadas', this.value)">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[#3C1D0C]">Cucharaditas</label>
+                            <input type="number" data-categoria="solidos" class="input-conversor"
+                                oninput="convertirUnidad('solidos', 'cucharaditas', this.value)">
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="limpiarCampos()"
+                    class="w-full mt-6 py-2 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#8A5114] hover:bg-[#d4c4b5] cursor-pointer">
+                    Limpiar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

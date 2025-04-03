@@ -7,8 +7,8 @@ class LoginForm(FlaskForm):
     usuario = StringField('Usuario', validators=[
         DataRequired(message='El nombre de usuario es requerido'),
         Length(min=4, max=20, message='El usuario debe tener entre 4 y 20 caracteres'),
-        Regexp('^[A-Za-z0-9_]+$', 
-               message='El usuario solo puede contener letras, números y guiones bajos')
+        Regexp('^[A-Za-z0-9_.@]+$', 
+               message='El usuario solo puede contener letras, números, guiones bajos y arrobas')
     ])
     
     contrasenia = PasswordField('Contraseña', validators=[

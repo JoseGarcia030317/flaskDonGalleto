@@ -1,0 +1,53 @@
+[{
+    "id_galleta": 1,
+    "nombre_galleta": "Galleta de prueba",
+    "descripcion_galleta": "Descripcion de la galleta",
+    "proteccion_precio": 20.50,
+    "gramos_galleta": 100,
+    "precio_unitario": 10.00,
+    "dias_caducidad": 30,
+    "recetas": [
+        {
+            "id_receta": 1,
+            "receta_base":true,
+            "nombre_receta": "Receta de prueba",
+            "tiempo_horneado": 10,
+            "galletas_producidas": 100,
+            "detalle_receta": [
+                {
+                    "id_insumo": 1,
+                    "nombre_insumo": "Insumo de prueba",
+                    "cantidad": 10.00,
+                    "unidad_medida": "kg"
+                }
+            ]
+        }
+    ]
+},{
+    "id_galleta": 2,
+    "nombre_galleta": "Galleta de prueba",
+    "descripcion_galleta": "Descripcion de la galleta",
+    "proteccion_precio": 20.50,
+    "gramos_galleta": 100,
+    "precio_unitario": 10.00,
+    "dias_caducidad": 30,
+    "recetas": [
+        {
+            "id_receta": 1,
+            "receta_base":true,
+            "nombre_receta": "Receta de prueba",
+            "tiempo_horneado": 10,
+            "galletas_producidas": 100,
+            "detalle_receta": [
+                {
+                    "id_insumo": 1,
+                    "nombre_insumo": "Insumo de prueba",
+                    "cantidad": 10.00,
+                    "unidad_medida": "kg"
+                }
+            ]
+        }
+    ]
+}
+]
+

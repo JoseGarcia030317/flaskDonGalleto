@@ -48,6 +48,8 @@ function cargarContenidoCompras(endpoint) {
             console.log(`Script de ${endpoint} cargado`);
             if (endpoint === 'proveedores') window.cargarProveedores();
             if (endpoint === 'insumos') window.cargarInsumos();
+            if (endpoint === 'compras') window.cargarCompras();
+            if (endpoint === 'almacen') window.cargarAlmacen();
         };
 
         document.body.appendChild(script);

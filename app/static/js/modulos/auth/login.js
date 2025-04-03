@@ -51,6 +51,7 @@ function validarFormulario() {
 
     // Validaciones 
     if (!cliente.nombre) errores.nombre = "El nombre es requerido";
+    if (!cliente.apellido_pat) errores.apellido_pa = "El apellido paterno es requerido";
     if (!cliente.telefono || !/^\d{10}$/.test(cliente.telefono)) {
         errores.telefono = "El teléfono debe tener 10 dígitos";
     }

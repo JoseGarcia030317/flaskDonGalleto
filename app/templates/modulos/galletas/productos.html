@@ -3,7 +3,7 @@
         <!-- Botón para añadir -->
         <div class="flex justify-end items-end mb-2 w-full">
             <button onclick="abrirModalPrincipal('añadir')" id="btn-agregar"
-                class="text-white p-2 rounded-full cursor-pointer">
+                class="text-white p-2 rounded-full cursor-pointer" disabled>
                 <img src="../../../static/images/plus.png" class="w-7 h-7">
             </button>
         </div>
@@ -37,40 +37,59 @@
                     <input type="number" name="galleta_id" value="0" hidden>
 
                     <!-- Primer fila: nombre de la galleta y dias de vida en anaquel -->
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-3 gap-4">
                         <!-- campo de nombre -->
                         <div>
                             <label class="block text-[#895645] mb-1">Nombre de la galleta</label>
-                            <input type="text" name="nombre-galleta"
+                            <input type="text" name="nombre_galleta"
                                 class="w-full p-2 border border-[#895645] rounded-full" required>
+                            <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
                         </div>
+
                         <!-- campo de dias de vida en anaquel -->
                         <div>
-                            <label class="block text-[#895645] mb-1">Días de vida</label>
-                            <input type="number" min="1" step="1" max="30" name="dias-vida"
+                            <label class="block text-[#895645] mb-1">Días de caducidad</label>
+                            <input type="number" min="1" step="1" max="30" name="dias_caducidad"
                                 class="w-full p-2 border border-[#895645] rounded-full" required>
+                            <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                        </div>
+
+                        <!-- campo de gramos galleta -->
+                        <div>
+                            <label class="block text-[#895645] bm-1">Gramos de la galleta</label>
+                            <input type="number" step="0.1" name="gramos_galleta"
+                                class="w-full p-2 border border-[#895645] rounded-full">
+                            <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
                         </div>
                     </div>
 
                     <!-- Segunda fila: gramos de la galleta, proteccion del precio precio sugerido -->
-                    <div class="grid grid-cols-3 gap-4">
-                        <!-- campo de gramos galleta -->
-                        <div>
-                            <label class="block text-[#895645] bm-1">Gramos de la galleta</label>
-                            <input type="number" step="0.1" name="gramos-galleta"
-                                class="w-full p-2 border border-[#895645] rounded-full">
-                        </div>
+                    <div class="grid grid-cols-2 gap-4">
                         <!-- Proteccion de precio -->
                         <div>
                             <label class="block text-[#895645] bm-1">Protección del precio</label>
-                            <input type="number" step="0.1" name="proteccion-precio"
-                                class="w-full p-2 border border-[#895645] rounded-full">
+                            <input oninput="actualizarPrecioSugerido()" type="number" step="0.1" min="1"
+                                name="proteccion_precio" class="w-full p-2 border border-[#895645] rounded-full">
+                            <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
                         </div>
+
                         <!-- Precio sugerido -->
                         <div>
-                            <label class="block text-[#895645] bm-1">Precio sugerido</label>
-                            <input type="number" step="0.1" name="precio-sugerido"
+                            <label class="block text-[#895645] bm-1">Precio de venta sugerido</label>
+                            <input type="text" name="precio_sugerido"
                                 class="w-full p-2 border border-[#895645] rounded-full" disabled>
+                            <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                        </div>
+                    </div>
+
+                    <!-- Tercera fila:descripcion -->
+                    <div class="grid grid-cols-1 gap-4">
+                        <!-- campo de descripcion galleta -->
+                        <div>
+                            <label class="block text-[#895645] bm-1">Descripción de la galleta</label>
+                            <textarea name="descripcion_galleta"
+                                class="w-full p-2 mb-2 border border-[#895645] rounded-2xl h-24"></textarea>
+                            <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
                         </div>
                     </div>
                 </form>
@@ -89,13 +108,12 @@
 
                     <!-- Cards de Recetas Agregadas (cards con informacion general) -->
                     <div id="recetas-container" class="mt-4 w-full space-y-3">
-                        <p>aquí van las cards con informacion general de las recetas</p>
                     </div>
                 </div>
             </div>
 
             <!-- Botón Guardar general (guardar la galleta y la(s) receta(s)) -->
-            <button type="submit" onclick="guardarGalletaReceta()"
+            <button type="submit" onclick="guardarGalleta()"
                 class="w-full mt-4 py-2 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#895645] font-semibold flex items-center justify-center gap-2 hover:bg-[#a46a52] cursor-pointer">
                 <img src="../../../static/images/guardar 3C1D0C.png" class="w-5 h-5">
                 Guardar
@@ -107,7 +125,7 @@
     <div id="modalBackdropSecundario" class="fixed inset-0 bg-black/50 z-50 hidden">
         <!-- Modal secundario añadir/editar -->
         <div id="modalFormSecundario"
-            class="bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[55rem] max-w-[90vw] max-h-[90vh] flex flex-col">
+            class="bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[55rem] max-w-[50vw] max-h-[90vh] flex flex-col">
             <!-- Encabezado del modal -->
             <div class="bg-[#efe6dc] rounded-t-lg p-4 -m-6 mb-4 flex justify-center items-center relative">
                 <h2 id="modal-titulo-secundario" class="text-[#3C1D0C] font-semibold text-center">Agregar receta</h2>
@@ -120,19 +138,17 @@
             <div class="flex-1 overflow-y-auto space-y-4">
                 <!-- Formulario de receta -->
                 <form id="recetaForm" class="space-y-4">
-                    <!-- campo para id de la galleta seleccionada -->
-                    <input type="number" id="galleta_id" value="0">
-
                     <!-- campo para id de la receta -->
-                    <input type="number" id="receta_id" value="0">
+                    <input type="text" id="receta_id" value="0">
 
                     <!-- Primera fila: nombre de la receta -->
                     <div class="grid grid-cols-1 gap-4 pl-2 pr-2">
                         <!-- campo nombre de la receta -->
                         <div>
                             <label class="block text-[#895645] mb-1">Nombre de la receta</label>
-                            <input type="text" name="nombre-receta"
+                            <input type="text" name="nombre_receta"
                                 class="w-full p-2 border border-[#895645] rounded-full" required>
+                            <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
                         </div>
                     </div>
 
@@ -141,14 +157,28 @@
                         <!-- campo tiempo de horneado -->
                         <div>
                             <label class="block text-[#895645] mb-1">Tiempo de horneado (min)</label>
-                            <input type="number" min="1" step="1" name="tiempo-horneado"
+                            <input type="number" min="1" step="1" name="tiempo_horneado"
                                 class="w-full p-2 border border-[#895645] rounded-full" required>
+                            <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
                         </div>
-                        <!-- campo de galletas producidad -->
+
+                        <!-- campo de galletas producidas -->
                         <div>
                             <label class="block text-[#895645] mb-1">Galletas producidas</label>
-                            <input type="number" min="1" step="1" name="galletas-producidas"
+                            <input type="number" min="1" step="1" name="galletas_producidas"
                                 class="w-full p-2 border border-[#895645] rounded-full" required>
+                            <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                        </div>
+                    </div>
+
+                    <!-- Costo de la receta -->
+                    <div class="grid grid-cols-1 gap-4 pl-2 pr-2">
+                         <!-- Costo receta -->
+                         <div>
+                            <label class="block text-[#895645] bm-1">Costo receta</label>
+                            <input value="0.00" type="text" name="costo_receta"
+                                class="w-full p-2 border border-[#895645] rounded-full" disabled>
+                            <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
                         </div>
                     </div>
                 </form>
@@ -179,7 +209,7 @@
             </div>
 
             <!-- Botón Guardar -->
-            <button type="submit" onclick="guardarReceta()"
+            <button type="submit" onclick="guardarRecetaLocal()"
                 class="w-full mt-4 py-2 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#895645] font-semibold flex items-center justify-center gap-2 hover:bg-[#a46a52] cursor-pointer">
                 <img src="../../../static/images/guardar 3C1D0C.png" class="w-5 h-5">
                 Guardar

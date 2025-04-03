@@ -46,9 +46,20 @@ function procesoTerminadoSinExito() {
       });
 }
 
+function alertaRecetas(texto) {
+    Swal.fire({
+        position: 'center',
+        icon: "warning",
+        title: texto,
+        showConfirmButton : false,
+        timer : 1500
+      });
+}
+
 export const alertas = {
     confirmarEliminar : () => confirmarEliminar(),
     procesoTerminadoExito : () => procesoTerminadoExito(),
     alertaWarning : (mensaje) => alertaWarning(mensaje),
-    procesoTerminadoSinExito : () => procesoTerminadoSinExito()
+    procesoTerminadoSinExito : () => procesoTerminadoSinExito(),
+    alertaRecetas : (texto) => alertaRecetas(texto)
 }

@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, Numeric, PrimaryKeyConstraint
 from sqlalchemy.ext.declarative import declarative_base
 import uuid
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -25,7 +26,7 @@ class Compra(Base):
         :param proveedor_id: ID del proveedor (obligatorio).
         """
         self.clave_compra = str(uuid.uuid4())[0:6] if clave_compra is None else clave_compra
-        self.fecha_compra = fecha_compra
+        self.fecha_compra = fecha_compra if fecha_compra else datetime.now()
         self.observacion = observacion
         self.estatus = estatus if estatus is not None else 1
         self.proveedor_id = proveedor_id

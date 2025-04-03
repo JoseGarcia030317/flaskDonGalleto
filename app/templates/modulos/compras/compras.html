@@ -48,11 +48,6 @@
                 <input type="number" name="id_compra" value="0" hidden>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[#895645] mb-1">Clave</label>
-                        <input type="text" name="clave" class="w-full p-2 border border-[#895645] rounded-full" required>
-                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
-                    </div>
-                    <div>
                         <label class="block text-[#895645] mb-1">Fecha</label>
                         <input type="date" name="fecha" class="w-full p-2 border border-[#895645] rounded-full" required>
                         <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
@@ -60,16 +55,14 @@
                     <div>
                         <label class="block text-[#895645] mb-1">Proveedor</label>
                         <select type="text" name="proveedor" class="w-full p-2 border border-[#895645] rounded-full" required>
-                            <option value="">Leche León</option>
-                            <option value="">Nutella</option>
                         </select>
                         <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
                     </div>
-                    <div>
-                        <label class="block text-[#895645] mb-1">Observaci&oacute;n</label>
-                        <input type="text" name="observacion" class="w-full p-2 border border-[#895645] rounded-full" required>
-                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
-                    </div>
+                </div>
+                <div>
+                    <label class="block text-[#895645] mb-1">Observaci&oacute;n</label>
+                    <input type="text" name="observacion" class="w-full p-2 border border-[#895645] rounded-full" required>
+                    <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
                 </div>
                 <div class="grid grid-cols-1 border border-[#895645] p-3 rounded-xl">
                     <div class="relative w-96 mx-auto">
@@ -116,22 +109,23 @@
             </div>
             <div id="detalles-compra">
                 <div class="grid grid-cols-3 gap-4">
+                    <label id="idCompra" class="block text-black mb-1" hidden></label>
                     <div>
                         <label class="block text-[#895645] mb-1">Fecha:</label>
-                        <label class="block text-black mb-1">17/09/2025</label>
+                        <label id="verFechaCompra" class="block text-black mb-1"></label>
                     </div>
                     <div>
                         <label class="block text-[#895645] mb-1">Clave:</label>
-                        <label class="block text-black mb-1">3242343</label>
+                        <label id="verClaveCompra" class="block text-black mb-1"></label>
                     </div>
                     <div>
                         <label class="block text-[#895645] mb-1">Proveedor:</label>
-                        <label class="block text-black mb-1">Leche Lala</label>
+                        <label id="verProveedorCompra" class="block text-black mb-1"></label>
                     </div>
                 </div>
                 <div class="flex m-2 ml-0">
                     <label class="block text-[#895645] mr-2">Observaci&oacute;n:</label>
-                    <label class="block text-black mb-1">Compra exitosa</label>
+                    <label id="verobservacionCompra" class="block text-black mb-1"></label>
                 </div>
                 <table class="w-full table-auto border-collapse mb-4 rounded-t-lg">
                     <thead>
@@ -143,12 +137,6 @@
                         </tr>
                     </thead>
                     <tbody id="tbody_compras_detalle">
-                        <tr>
-                            <td class="p-3 text-[#301e1a] text-center">Leche</td>
-                            <td class="p-3 text-[#301e1a] text-center">Caja</td>
-                            <td class="p-3 text-[#301e1a] text-center">3</td>
-                            <td class="p-3 text-[#301e1a] text-center">$300</td>
-                        </tr>
                     </tbody>
                 </table>
                 <button type="submit" onclick="cancelarCompra(event)"

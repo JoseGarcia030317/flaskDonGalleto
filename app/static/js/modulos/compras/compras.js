@@ -3,42 +3,14 @@ import { tabs } from '../../utils/tabs.js';
 import { alertas } from '../../utils/alertas.js';
 import { validarLongitud, validarRequerido, validarTelefono, validarEmail, validarSoloTexto, validarCaracteresProhibidos, validarSoloNumeros } from '../../utils/validaciones.js';
 
-const compras = [
-    { idCompra: 1, clave_compra: "987675", fecha_compra: "17/08/2025", proveedor: {id: 1, nombre: "Gota blanca", telefono: "4776783940", contacto: "Héctor Gómez", correo_electronico: "gota@gmail.com", descripcion_servicio: "Cada jueves", estatus: 1}, observacion: "Compra exitosa", total: 300},
-    { idCompra: 2, clave_compra: "987675", fecha_compra: "17/08/2025", proveedor: {id: 1, nombre: "Gota blanca", telefono: "4776783940", contacto: "Héctor Gómez", correo_electronico: "gota@gmail.com", descripcion_servicio: "Cada jueves", estatus: 1}, observacion: "Compra exitosa", total: 300},
-    { idCompra: 3, clave_compra: "987675", fecha_compra: "17/08/2025", proveedor: {id: 1, nombre: "Gota blanca", telefono: "4776783940", contacto: "Héctor Gómez", correo_electronico: "gota@gmail.com", descripcion_servicio: "Cada jueves", estatus: 1}, observacion: "Compra exitosa", total: 300},
-];
-
-const insumosDisponibles = [
-    { id: 1, nombre: "Harina de trigo", unidad: "kg" },
-    { id: 2, nombre: "Huevos", unidad: "pz" },
-    { id: 3, nombre: "Leche entera", unidad: "lt" },
-    { id: 4, nombre: "Mantequilla", unidad: "gr" },
-    { id: 5, nombre: "Azúcar glass", unidad: "gr" },
-    { id: 6, nombre: "Esencia de vainilla", unidad: "ml" },
-    { id: 7, nombre: "Leche deslactosada", unidad: "lt" },
-];
-
-const proveedoresDisponibles = [
-    {id: 1, nombre: "Gota blanca", telefono: "4776783940", contacto: "Héctor Gómez", correo_electronico: "gota@gmail.com", descripcion_servicio: "Cada jueves", estatus: 1},
-    {id: 2, nombre: "Leche León", telefono: "4776783940", contacto: "Héctor Gómez", correo_electronico: "gota@gmail.com", descripcion_servicio: "Cada jueves", estatus: 1},
-    {id: 3, nombre: "Tía Rosa", telefono: "4776783940", contacto: "Héctor Gómez", correo_electronico: "gota@gmail.com", descripcion_servicio: "Cada jueves", estatus: 1},
-];
+let insumosDisponibles = [];
 
 const presentaciones_producto = ["Unidad", "Paquete", "Caja", "Bolsa", "Galón", "Saco", "Tubo", "Sobre", "Rollo"]
 
-let insumosSeleccionados = new Set();
+let insumosSeleccionados = new Map();
 
 // VALIDACIONES COMPRA
 const validacionesCompra = {
-    clave: (input) => {
-            const requerido = validarRequerido(input, 'nombre');
-            if (requerido) return requerido;
-            const caracteresProhibidos = validarCaracteresProhibidos(input, 'nombre');
-            if (caracteresProhibidos) return caracteresProhibidos;
-            const soloNumeros = validarSoloNumeros(input, 'nombre');
-            if (soloNumeros) return soloNumeros;
-    },
     fecha: (input) => {
             const requerido = validarRequerido(input, 'fecha');
             if (requerido) return requerido;
@@ -56,45 +28,74 @@ const validacionesCompra = {
 }
 
 // FUNCIONES COMPRA
+function initCompras(){
+    cargarCompras();
+    cargarProveedores();
+    consultarInsumos();
+}
+
 function cargarCompras() {  
     const tbody = document.getElementById('tbody_compras');
     tabs.mostrarEsqueletoTabla(tbody);
-    tbody.innerHTML = '';
-    compras.forEach(compra => {
-        tbody.innerHTML += `
-        <tr data-id="${compra.idCompra}" class="hover:bg-gray-100">
-            <td class="p-3 text-[#301e1a] text-center">${compra.fecha_compra}</td>
+
+    api.getJSON('/compras/list_compras')
+    .then(data => {
+        tbody.innerHTML = '';
+        data.forEach(compra => {
+            tbody.innerHTML += `
+            <tr data-id="${compra.id_compra}" class="hover:bg-gray-100">
+            <td class="p-3 text-[#301e1a] text-center">${convertirFecha(compra.fecha_compra)}</td>
             <td class="p-3 text-[#301e1a] text-center">${compra.clave_compra}</td>
-            <td class="p-3 text-[#301e1a] text-center">${compra.proveedor.nombre}</td>
-            <td class="p-3 text-[#301e1a] text-center">$ ${compra.total}</td>
+            <td class="p-3 text-[#301e1a] text-center">${compra.proveedor}</td>
+            <td class="p-3 text-[#301e1a] text-center">${compra.total_compra}</td>
             <td class="p-3 text-[#301e1a] flex justify-center">
-                <button onclick="abrirVerCompra(${compra.idCompra}, ${compra.fecha_compra}, '${compra.clave_compra}', '${compra.proveedor.nombre}', '${compra.observacion}')" class="align-middle cursor-pointer">
-                    <img src="../../../static/images/info.png" class="w-7 h-7">
-                </button>
+            <button onclick="abrirVerCompra(${compra.id_compra})" class="align-middle cursor-pointer">
+                <img src="../../../static/images/info.png" class="w-7 h-7">
+            </button>
             </td>
-        </tr>
-        `;
+            </tr>
+            `;
+        });
     });
-    cargarProveedores();
 }
 
 function cargarProveedores(){
-    const selectProveedor = document.querySelector('select[name="proveedor"]');
-    selectProveedor.innerHTML = "";
+    api.getJSON('/provedores/get_all_proveedores')
+        .then(data => {
+            const selectProveedor = document.querySelector('select[name="proveedor"]');
+            selectProveedor.innerHTML = "";
+            
+            const optionDefault = document.createElement("option");
+            optionDefault.textContent = "Selecciona una opción...";
+            optionDefault.value = "";
+            optionDefault.selected = true;
+            optionDefault.disabled = true;
+            selectProveedor.appendChild(optionDefault);
+            
+            data.forEach(proveedor => {
+                const option = document.createElement('option');
+                option.value = proveedor.id_proveedor;
+                option.textContent = proveedor.nombre;
+                selectProveedor.appendChild(option);
+            })
+    });
+}
 
-    const optionDefault = document.createElement("option");
-        optionDefault.textContent = "Selecciona una opción...";
-        optionDefault.value = "";
-        optionDefault.selected = true;
-        optionDefault.disabled = true;
-        selectProveedor.appendChild(optionDefault);
+function consultarInsumos() {
+    api.getJSON('/insumos/get_all_insumos_unidad')
+        .then(data => {
+            if (data) insumosDisponibles = data;
+        })
+        .catch(error => {
+            console.error('Error:', error.message);
+            Swal.fire('Error', error.message || 'Error al cargar insumos', 'error');
+        });
+}
 
-    proveedoresDisponibles.forEach(proveedor => {
-        const option = document.createElement('option');
-        option.value = proveedor.id;
-        option.textContent = proveedor.nombre;
-        selectProveedor.appendChild(option);
-    })
+function inicializarFecha() {
+    const hoy = new Date();
+    const fechaFormateada = hoy.toISOString().split('T')[0]; // Obtiene YYYY-MM-DD
+    document.querySelector('input[name="fecha"]').value = fechaFormateada;
 }
 
 function abrirModal(tipo) {
@@ -107,10 +108,36 @@ function abrirModal(tipo) {
         modalForm = document.getElementById('modalViewCompra');
     }
     modalForm.classList.remove('hidden');
+    inicializarFecha();
 }
 
-function abrirVerCompra(id, clave, fecha, proveedor, observacion){
-    abrirModal('ver');
+function abrirVerCompra(id_compra){
+    api.postJSON('/compras/get_compra', {id_compra: id_compra})
+    .then(data => {
+        if(data){
+            abrirModal('ver');
+            document.getElementById("idCompra").textContent = data.id_compra;
+            document.getElementById("verFechaCompra").textContent = convertirFecha(data.fecha_compra);
+            document.getElementById("verClaveCompra").textContent = data.clave_compra;
+            document.getElementById("verProveedorCompra").textContent = data.proveedor;
+            document.getElementById("verobservacionCompra").textContent = data.observacion;
+
+            if(data.detalles.length > 0){
+                const tbody = document.getElementById('tbody_compras_detalle');
+                tbody.innerHTML = '';
+                data.detalles.forEach(detalle => {
+                    tbody.innerHTML += `
+                    <tr>
+                        <td class="p-3 text-[#301e1a] text-center">${detalle.insumo}</td>
+                        <td class="p-3 text-[#301e1a] text-center">${detalle.presentacion}</td>
+                        <td class="p-3 text-[#301e1a] text-center">${detalle.cantidad}</td>
+                        <td class="p-3 text-[#301e1a] text-center">${detalle.precio_unitario}</td>
+                    </tr>
+                    `;
+                });
+            }
+        }
+    });
 }
 
 function cerrarModal() {
@@ -120,28 +147,36 @@ function cerrarModal() {
     limpiarFormulario();
 }
 
-// SELECCIONAR INSUMOS
+function convertirFecha(fecha){
+    return new Date(fecha).toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+}
+
+// FUNCIONES PARA LOS INSUMOS
 function filtrarInsumos(termino) {
     const sugerencias = document.getElementById('sugerencias-insumos');
-    
+
     sugerencias.innerHTML = '';
 
-    if (termino.length < 3) {
+    if (termino.length < 1) {
         sugerencias.classList.add('hidden');
         return;
     }
 
     const resultados = insumosDisponibles.filter(insumo =>
         insumo.nombre.toLowerCase().includes(termino.toLowerCase()) &&
-        !insumosSeleccionados.has(insumo.id)
+        !insumosSeleccionados.has(insumo.id_insumo)
     );
-    
+
     if (resultados.length > 0) {
         sugerencias.innerHTML = resultados.map(insumo => `
             <div class="p-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between border-b"
-                onclick="seleccionarInsumo(${insumo.id})">
+                onclick="seleccionarInsumo(${insumo.id_insumo})">
                 <span>${insumo.nombre}</span>
-                <span class="text-sm text-gray-500">${insumo.unidad}</span>
+                <span class="text-sm text-gray-500">(${insumo.unidad.simbolo})</span>
             </div>
         `).join('');
         sugerencias.classList.remove('hidden');
@@ -150,20 +185,22 @@ function filtrarInsumos(termino) {
     }
 }
 
-function seleccionarInsumo(idInsumo) {
-    const insumo = insumosDisponibles.find(i => i.id === idInsumo);
+function seleccionarInsumo(id_insumo) {
+    const insumo = insumosDisponibles.find(i => i.id_insumo === id_insumo);
     const contenedor = document.getElementById('insumos-seleccionados');
+    const campo_busqueda = document.getElementById('buscador-insumos');
+
     document.getElementById('header-insumos-seleccionados').hidden=false;
-    if (!insumosSeleccionados.has(idInsumo)) {
+    if (!insumosSeleccionados.has(id_insumo)) {
         const elemento = document.createElement('div');
         elemento.className = 'flex items-center gap-2 p-2 bg-gray-50 rounded-lg';
         elemento.innerHTML = `
-            <input type="hidden" name="insumo_id" value="${idInsumo}">
+            <input type="hidden" name="insumo_id" value="${id_insumo}">
             <span class="flex-1">${insumo.nombre}</span>
             <div class="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2">
-                <input type="number" name="cantidad" min="0" class="block w-20 grow py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6 w-20" required>
+                <input type="number" name="cantidad" min="0" class="block w-20 grow py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6 w-20" required oninput="actualizarInsumo(${id_insumo}, this.value, 'cantidad')">
                     <div class="grid shrink-0 grid-cols-1 focus-within:relative">
-                        <select id="selectPresentacion" name="presentacion" aria-label="presentacion" class="col-start-1 row-start-1 w-24 appearance-none rounded-md py-1.5 pr-7 pl-3 text-base text-gray-500 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6" required>          
+                        <select id="selectPresentacion" name="presentacion" aria-label="presentacion" class="col-start-1 row-start-1 w-24 appearance-none rounded-md py-1.5 pr-7 pl-3 text-base text-gray-500 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6" required oninput="actualizarInsumo(${id_insumo}, this.value, 'presentacion')">      
                         </select>
                     <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                         <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -176,8 +213,9 @@ function seleccionarInsumo(idInsumo) {
                    step="0.1" 
                    placeholder="" 
                    class="w-25 p-1 border border-[#895645] rounded-full text-center"
-                   required>
-            <button onclick="eliminarInsumo(${idInsumo}, this)" 
+                   required
+                   oninput="actualizarInsumo(${id_insumo}, this.value, 'costo')">
+            <button onclick="eliminarInsumo(${id_insumo}, this)" 
                     class="text-red-500 hover:text-red-700 cursor-pointer">
                 ✕
             </button>
@@ -199,12 +237,19 @@ function seleccionarInsumo(idInsumo) {
             selectPresentacion.appendChild(option);
         });
         
+        insumosSeleccionados.set(id_insumo, {
+            insumo_id: id_insumo,
+            presentacion: '',
+            precio_unitario: 0.00,
+            cantidad: 0
+        });
+
         contenedor.appendChild(elemento);
-        insumosSeleccionados.add(idInsumo);
+        campo_busqueda.focus();
     }
     
     document.getElementById('sugerencias-insumos').classList.add('hidden');
-    document.getElementById('buscador-insumos').value = '';
+    campo_busqueda.value = '';
 }
 
 // Función para eliminar insumo
@@ -213,26 +258,75 @@ function eliminarInsumo(idInsumo, elemento) {
     insumosSeleccionados.delete(idInsumo);
 }
 
+function actualizarInsumo(id_insumo, valor, campo) {
+    if (insumosSeleccionados.has(id_insumo)) {
+        const insumo = insumosSeleccionados.get(id_insumo);
+        if (campo === 'cantidad'){
+            insumo.cantidad = parseFloat(valor) || 0;
+        } else if(campo === 'costo'){
+            insumo.precio_unitario = parseFloat(valor) || 0.00;
+        } else {
+            insumo.presentacion = valor;
+        }
+        insumosSeleccionados.set(id_insumo, insumo);
+    }
+}
+
 function guardarCompra(event){
     event.preventDefault();
     const contenedor = document.getElementById('insumos-seleccionados');
     if (contenedor.querySelector('div')) {
         event.preventDefault();
         const errores = validarFormulario();
-        if (errores) {
+        if (errores === false || errores) {
             mostrarErrores(errores);
             return;
         }
-        alertas.procesoTerminadoExito();
-        cerrarModal();
+
+        const formData =  {
+            observacion: document.querySelector('input[name="observacion"]').value,
+            proveedor_id: document.querySelector('select[name="proveedor"]').value,
+            fecha_compra: document.querySelector('input[name="fecha"]').value,
+            estatus: 1,
+            detalles: Array.from(insumosSeleccionados.values()) // Convertir a array de objetos
+        }
+
+        let endpoint = 'compras/create_compra';
+        api.postJSON(endpoint, formData)
+            .then(data => {
+                if(data.id_compra) {
+                    cerrarModal();
+                    alertas.procesoTerminadoExito();
+                    cargarCompras();
+                    insumosSeleccionados.clear();
+                    document.getElementById('header-insumos-seleccionados').hidden=true;
+                    limpiarFormulario();
+                }
+            })
     } else {
         alertas.alertaWarning("Debe existir al menos un insumo seleccionado");
     }
 }
 
 function cancelarCompra(event){    
-    alertas.confirmarEliminar();
-    cerrarModal();
+    let label = document.getElementById('idCompra');
+    if (label) {
+        let idCompra = parseInt(label.textContent, 10);
+        alertas.confirmarEliminar().then(resultado => {
+            if(!resultado.isConfirmed) {
+                return Promise.reject('cancelado');
+            }
+            tabs.mostrarLoader();
+            return api.postJSON('/compras/delete_compra', {id_compra: idCompra});
+        })
+        .then(data => {
+            alertas.procesoTerminadoExito();
+            cargarCompras();
+        })
+        cerrarModal();
+    } else {
+        console.log("id no encontrado");
+    }
 }   
 
 function mostrarErrores(errores) {
@@ -255,30 +349,35 @@ function mostrarErrores(errores) {
 
 function validarFormulario() {
     const compra = {
-        clave: document.querySelector('input[name="clave"]').value,
         fecha: document.querySelector('input[name="fecha"]').value,
         proveedor: document.querySelector('select[name="proveedor"]').value,
         observacion: document.querySelector('input[name="observacion"]').value,
     };
-
     var errores = {};
-
     Object.keys(validacionesCompra).forEach(campo => {
         const error = validacionesCompra[campo](compra[campo]);
         console.log("Despues de consr error");
         console.log(error);
 
         if (error) {
-            console.log("si hay errores");
             errores[campo] = error;
         }
     });
 
+    const insumos = document.querySelectorAll("#insumos-seleccionados input[required], #insumos-seleccionados select[required]");
+    for (let input of insumos) { 
+        if (!input.value.trim()) { 
+            input.classList.add("border-red-500"); // Agregar borde rojo si hay error
+            alertas.alertaWarning("Verifica que la información de insumos se encuentre completa.");
+            return false; // DETIENE la función inmediatamente
+        } else {
+            input.classList.remove("border-red-500");
+        }
+    }
     return Object.keys(errores).length === 0 ? null : errores;
 }
 
 function limpiarFormulario(){
-    document.querySelector('input[name="clave"]').value = '';
     document.querySelector('input[name="fecha"]').value = '';
     document.querySelector('select[name="proveedor"]').value = '';
     document.querySelector('input[name="observacion"]').value = '';
@@ -287,7 +386,7 @@ function limpiarFormulario(){
 
 window.abrirModal = abrirModal;
 window.cerrarModal = cerrarModal;
-window.cargarCompras = cargarCompras;
+window.initCompras = initCompras;
 
 window.filtrarInsumos = filtrarInsumos;
 window.seleccionarInsumo = seleccionarInsumo;
@@ -295,3 +394,4 @@ window.eliminarInsumo = eliminarInsumo;
 window.guardarCompra = guardarCompra;
 window.abrirVerCompra = abrirVerCompra;
 window.cancelarCompra = cancelarCompra;
+window.actualizarInsumo = actualizarInsumo;

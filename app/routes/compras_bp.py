@@ -35,7 +35,7 @@ def delete_compra():
     """
     try:
         data = request.get_json()
-        return jsonify(compras.delete_compra(data))
+        return jsonify(compras.delete_compra(data["id_compra"]))
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500
 

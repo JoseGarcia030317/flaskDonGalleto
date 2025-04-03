@@ -1,0 +1,195 @@
+{% extends "maing-page-landing.html" %}
+
+{% block title %}Cliente{% endblock %}
+
+{% block side_var %}
+<div>
+  <nav >
+    <a href="/landingpage" class="block px-6 py-1  text-[#3C1D0C] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
+      Inicio
+    </a>
+    <a 
+    href="/login" class="block px-6 py-1  text-[#3C1D0C] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black">
+      Inicio de sesión
+    </a>
+    <div class="absolute left-0 w-full text-center">
+    </div>     
+  </nav>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="flex flex-col mx-3 my-4 ">
+  <div class="container">
+      <main class="main-content">
+          <!-- Caja superior (Header) -->
+          <section class="header">
+
+          </section>
+
+          <!-- Caja superior (Header) -->
+          <section class="mid-box1">
+              <h1>"CON EL SABOR DE CASA, QUE TE HACE SENTIR EN EL HOGAR"</h1>
+          </section> <!-- Caja del medio -->
+
+          <section class="mid-box2">
+              <h2>"Nuestros especiales del mes"</h2>
+          </section> <!-- Caja del medio -->
+
+          <div class="grid">
+              <div class="box large-box">
+                  <img src="../../static/images/g1.jpg" alt="">
+              </div> <!-- Caja grande izquierda -->
+              <div class="box large-box">
+                  <img src="../../static/images/g2.jpg" alt="">
+              </div> <!-- Caja grande central -->
+              <div class="box large-box">
+                  <img src="../../static/images/g3.jpg" alt="">
+              </div> <!-- Caja grande derecha -->
+              <div class="box small-box">
+                  <div class="precios">
+                      <h2>Galleta vainilla<h3>$ 12. 00</h3>
+                      </h2>
+                  </div>
+                  <div class="precios">
+                      <h2>Galleta chispas locas<h3>$ 12. 00</h3>
+                      </h2>
+                  </div>
+                  <div class="precios">
+                      <h2>Galleta espacial<h3>$ 12. 00</h3>
+                      </h2>
+                  </div>
+
+                <!--
+                  <div class="btn">
+                      <button type="button">Agregar <img src="../../static/images/shop.png" alt=""></button>
+                  </div>
+                  <div class="btn">
+                      <button type="button">Agregar <img src="../../static/images/shop.png" alt=""></button>
+                  </div>
+                  <div class="btn">
+                      <button type="button">Agregar <img src="../../static/images/shop.png" alt=""></button>
+                  </div>
+                -->
+              </div>
+          </div>
+
+          <section class="mid-box3">
+              <div class="btn-history">
+                  <button type="button">Ordenar en línea</button>
+              </div>
+          </section>
+
+          <div class="grid-history">
+              <div class="box large-box-history">
+                  <h1>
+                      "El sabor de la tradición, antojando a todo México"
+                  </h1>
+              </div>
+              <div class="box large-box-history">
+                  <h3>
+                      Desde 1691 la familia "Don Galleto"
+                      ha estado creando recetas únicas y deliciosas
+                      que han pasado de generación en generación.
+                      Con ingredientes frescos y naturales, nuestras
+                      galletas son el resultado de un amor por la cocina
+                      y la tradición. <br><br> ¡Descubre el sabor
+                      auténtico de nuestras galletas y déjate llevar
+                      por la nostalgia!
+                  </h3>
+              </div>
+          </div>
+
+
+
+
+
+          <div class="grid2">
+              <div class="box large-box-menu">
+                  <div class="menu">
+                      <h1>
+                          Nuestro menú
+                      </h1>
+                      <span>
+                          Alegra tu día con nuestras galletas recién horneadas,
+                          elaboradas con ingredientes frescos y naturales.
+                      </span> <br><br>
+                      <div class="btn-history">
+                          <button type="button">Ordenar en línea</button>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="grid-menu">
+                  <div class="box large-box-me">
+                      <img src="../../static/images/corazon.jpg" alt="">
+                  </div> <!-- Caja grande izquierda -->
+                  <div class="box large-box-me">
+                      <img src="../../static/images/chispas.jpg" alt="">
+                  </div> <!-- Caja grande central -->
+                  <div class="box large-box-me">
+                      <img src="../../static/images/oreja.jpg" alt="">
+                  </div> <!-- Caja grande derecha -->
+                  <div class="box small-box-me">
+                      <div class="precios">
+                          <h2>Galleta vainilla</h2>
+                      </div>
+                      <div class="precios">
+                          <h2>Galleta coco</h2>
+                      </div>
+                      <div class="precios">
+                          <h2>Galleta espacial</h2>
+                      </div>
+
+                  </div>
+                  <div class="box large-box-me">
+                      <img src="../../static/images/rellena.jpg" alt="">
+                  </div> <!-- Caja grande izquierda -->
+                  <div class="box large-box-me">
+                      <img src="../../static/images/rueda.jpg" alt="">
+                  </div> <!-- Caja grande central -->
+                  <div class="box large-box-me">
+                      <img src="../../static/images/extra.jpg" alt="">
+                  </div> <!-- Caja grande derecha -->
+                  <div class="box small-box-me">
+                      <div class="precios">
+                          <h2>Galleta vainilla</h2>
+                      </div>
+                      <div class="precios">
+                          <h2>Galleta angel</h2>
+                      </div>
+                      <div class="precios">
+                          <h2>Galleta espacial</h2>
+                      </div>
+
+                  </div>
+              </div>
+
+          </div>
+          <div class="grid-footer">
+              <div class="box large-box-footer">
+                  <h1>
+                      "El sabor de Don Galleto, antojando a todo México"
+                  </h1>
+              </div>
+
+          </div>
+          <section class="footer">
+              <div class="footer-content">
+                  <p>&copy; 2025 Don Galleto. Todos los derechos reservados.</p>
+                  <p>
+                      <a href="#about">Acerca de</a> |
+                      <a href="#contact">Contacto</a> |
+                      <a href="#privacy">Política de privacidad</a>
+                  </p>
+              </div>
+          </section>
+      </main>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

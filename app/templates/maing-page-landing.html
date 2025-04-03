@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{% endblock %} - Don Galleto</title>
+  <link rel="icon" href="../static/images/LogoGalletaPequeña.png">
+  <link rel="stylesheet" href="../static/css/landing.css"> 
+  <link rel="stylesheet" href="../static/src/output.css">
+  <link rel="stylesheet" href="../static/css/styles.css">
+</head>
+<body class="min-h-screen">
+  <!-- Sidebar -->
+      <aside id="sidebar" class="bg-[#efe6dc] text-[#8A5114] w-[260px] fixed flex flex-col rounded-nav shadow-lg overflow-hidden">
+        <div class="sidebar-container">
+          <div class="flex flex-col items-center mb-8 mt-7">
+            <img src="../../static/images/LogoGalleto.png" alt="Logo" class="sidebar-logo">
+            <h1 class="sidebar-title">Don Galleto</h1>
+            <h2 class="text-[#8A5114]">{{ tipo_user }} {{ user }}</h2>
+          </div>
+          {% block side_var %}{% endblock %}
+        </div>
+      </aside>
+
+  <!-- Contenido principal -->
+
+ {% block content %}
+ {% endblock %}
+
+  {% block scripts %}
+  {% endblock %}
+</body>
+</html>

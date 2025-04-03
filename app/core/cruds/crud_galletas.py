@@ -282,14 +282,15 @@ class GalletaCRUD:
             recetas_list = []
             for rec in recetas:
                 detalles = session.query(DetalleReceta).filter(
-                    DetalleReceta.receta_id == rec.id_receta
+                    DetalleReceta.receta_id == rec.id_receta,
                 ).all()
                 recetas_list.append({
                     "nombre_receta": rec.nombre_receta,
                     "tiempo_horneado": rec.tiempo_horneado,
                     "galletas_producidas": rec.galletas_producidas,
+                    "receta_base": rec.receta_base,
                     "detalle_receta": [
-                        {"insumo_id": det.insumo_id, "cantidad": det.cantidad}
+                        {"insumo_id": det.insumo_id, "cantidad": float(det.cantidad)}
                         for det in detalles
                     ]
                 })
@@ -297,7 +298,7 @@ class GalletaCRUD:
             return {
                 "id_galleta": galleta.id_galleta,
                 "nombre_galleta": galleta.nombre_galleta,
-                "descripcion_galleta": "", # TODO: Implementar
+                "descripcion_galleta": galleta.descripcion_galleta,
                 "proteccion_precio": galleta.proteccion_precio,
                 "gramos_galleta": galleta.gramos_galleta,
                 "precio_unitario": galleta.precio_unitario,
@@ -321,7 +322,7 @@ class GalletaCRUD:
                 result.append({
                     "id_galleta": gal.id_galleta,
                     "nombre_galleta": gal.nombre_galleta,
-                    "descripcion_galleta": "", # TODO: Implementar
+                    "descripcion_galleta": gal.descripcion_galleta,
                     "proteccion_precio": gal.proteccion_precio,
                     "gramos_galleta": gal.gramos_galleta,
                     "precio_unitario": gal.precio_unitario,

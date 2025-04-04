@@ -34,7 +34,7 @@
                 <!-- Formulario -->
                 <form id="galletaForm" class="space-y-4">
                     <!-- Campo para id de la galleta -->
-                    <input type="number" name="galleta_id" value="0" hidden>
+                    <input type="number" name="galleta_id" value="0">
 
                     <!-- Primer fila: nombre de la galleta y dias de vida en anaquel -->
                     <div class="grid grid-cols-3 gap-4">
@@ -165,7 +165,7 @@
                         <!-- campo de galletas producidas -->
                         <div>
                             <label class="block text-[#895645] mb-1">Galletas producidas</label>
-                            <input type="number" min="1" step="1" name="galletas_producidas"
+                            <input oninput="actualizarProporciones()" type="number" min="1" step="1" name="galletas_producidas"
                                 class="w-full p-2 border border-[#895645] rounded-full" required>
                             <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
                         </div>
@@ -173,8 +173,8 @@
 
                     <!-- Costo de la receta -->
                     <div class="grid grid-cols-1 gap-4 pl-2 pr-2">
-                         <!-- Costo receta -->
-                         <div>
+                        <!-- Costo receta -->
+                        <div>
                             <label class="block text-[#895645] bm-1">Costo receta</label>
                             <input value="0.00" type="text" name="costo_receta"
                                 class="w-full p-2 border border-[#895645] rounded-full" disabled>

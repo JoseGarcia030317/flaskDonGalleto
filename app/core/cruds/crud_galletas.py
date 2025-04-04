@@ -285,6 +285,7 @@ class GalletaCRUD:
                     DetalleReceta.receta_id == rec.id_receta,
                 ).all()
                 recetas_list.append({
+                    "id_receta" : rec.id_receta,
                     "nombre_receta": rec.nombre_receta,
                     "tiempo_horneado": rec.tiempo_horneado,
                     "galletas_producidas": rec.galletas_producidas,

@@ -219,23 +219,36 @@ function cerrarModalPrincipal() {
     document.getElementById('recetas-container').innerHTML = '';
 }
 
-function abrirModalSecundario(tipo) {
+function abrirModalSecundario(tipo, idReceta = null) {
     const idGalleta = parseInt(document.querySelector('input[name="galleta_id"]').value);
-    const existeRecetaBase = recetasDisponibles.some(r => r.es_base);
+    const recetaBase = recetasDisponibles.find(r => r.es_base);
 
-    // Validación para nuevas galletas
-    // No permite agregar más de una receta al agregar una nueva receta
-    if (idGalleta === 0 && existeRecetaBase && tipo === 'añadir') {
-        alertas.alertaRecetas("Solo 1 receta base permitida para nuevas galletas");
+    if (idGalleta === 0 && tipo === 'añadir' && recetasDisponibles.length !== 0) {
+        alertas.alertaRecetas('Al crear una galleta nueva, solo puedes añadir la receta base');
         return;
+    }
+
+    // Limpiar formulario si es nueva receta
+    if (tipo === 'añadir') limpiarFormularioReceta();
+
+    // Si es agregar una nueva receta cuando es una edicion de galleta
+    if (tipo === 'añadir' && idGalleta !== 0) {
+        if (!recetaBase) {
+            alertas.alertaRecetas('Primero debe existir una receta base');
+            return;
+        }
+        copiarRecetaBase(recetaBase);
+        generarRecetasCards();
+        tipo = 'editar';
     }
 
     const backdrop = document.getElementById('modalBackdropSecundario');
     const modalForm = document.getElementById('modalFormSecundario');
 
-    backdrop.classList.remove('hidden');
     document.getElementById('modal-titulo-secundario').textContent =
         tipo === 'editar' ? 'Editar receta' : 'Añadir receta';
+
+    backdrop.classList.remove('hidden');
     modalForm.classList.remove('hidden');
 }
 
@@ -246,13 +259,14 @@ function cerrarModalSecundario() {
 }
 
 // ====================================================================
-// Funciones para hacer las conexiones con la aplicaion Flask
+// Funciones para hacer las conexiones con la aplicaion Flask de galletas
 // ====================================================================
 // Inicializar el modulo
 async function inicializarModuloGalletas() {
     await consultarInsumos();
     cargarGalletas();
 }
+
 // Funcion para cargar los insumos inicialmente
 async function consultarInsumos() {
     const container = document.getElementById('galletas-container');
@@ -329,29 +343,98 @@ function generarCards(galletas) {
 
 // funcion para buscar la galleta por id así como sus recetas
 function buscarGalletaPorId(id_galleta) {
+    tabs.mostrarLoader();
+    api.postJSON('/galletas/get_galleta_by_id', { id_galleta })
+        .then(data => {
+            if (data.id_galleta) {
+                cargarGalletaEnFormulario(data);
+                abrirModalPrincipal('editar');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error.message);
+            Swal.fire('Error', error.message || 'Error al cargar la galleta', 'error');
+        })
+        .finally(() => tabs.ocultarLoader());
+}
 
+// Función para cargar datos de galleta en formulario
+function cargarGalletaEnFormulario(galleta) {
+    // Campos principales
+    document.querySelector('input[name="galleta_id"]').value = galleta.id_galleta;
+    document.querySelector('input[name="nombre_galleta"]').value = galleta.nombre_galleta;
+    document.querySelector('input[name="dias_caducidad"]').value = galleta.dias_caducidad;
+    document.querySelector('input[name="gramos_galleta"]').value = galleta.gramos_galleta;
+    document.querySelector('input[name="proteccion_precio"]').value = galleta.proteccion_precio;
+    document.querySelector('textarea[name="descripcion_galleta"]').value = galleta.descripcion_galleta || '';
+    document.querySelector('input[name="precio_sugerido"]').value = galleta.precio_unitario;
+
+    // Cargar recetas
+    recetasDisponibles = galleta.recetas.map(receta => ({
+        id_receta: receta.id_receta,
+        nombre_receta: receta.nombre_receta,
+        tiempo_horneado: receta.tiempo_horneado,
+        galletas_producidas: receta.galletas_producidas,
+        costo_receta: calcularCostoRecetaDesdeDetalle(receta.detalle_receta),
+        es_base: receta.receta_base === 1,
+        detalle_receta: receta.detalle_receta
+    }));
+
+    generarRecetasCards();
+
+    const recetaBase = recetasDisponibles.find(r => r.es_base);
+    if (!recetaBase) return;
+
+    // 1. Calcular nuevo costo unitario
+    const nuevoCostoPorGalleta = recetaBase.costo_receta / recetaBase.galletas_producidas;
+
+    // 2. Obtener valores originales almacenados
+    const precioOriginal = parseFloat(galleta.precio_unitario).toFixed(2);
+    const proteccionOriginal = parseFloat(galleta.proteccion_precio).toFixed(2);
+    const costoProduccionOriginal = precioOriginal - proteccionOriginal;
+
+    // 3. Comparar costos
+    if (nuevoCostoPorGalleta > costoProduccionOriginal) {
+        const aumento = nuevoCostoPorGalleta - costoProduccionOriginal;
+        const nuevoPrecioSugerido = nuevoCostoPorGalleta + proteccionOriginal;
+
+        alertas.alertaAumentoCostoProduccion(
+            aumento.toFixed(2),
+            parseFloat(nuevoPrecioSugerido).toFixed(2)
+        ).then((confirmar) => {
+            if (confirmar) {
+                // Actualizar campo de precio sugerido
+                document.querySelector('input[name="precio_sugerido"]').value = parseFloat(nuevoPrecioSugerido).toFixed(2);
+            }
+        });
+    }
 }
 
 // Funcion para agregar una nueva galleta a la bd
 function guardarGalleta() {
-    // Validar el formulario de galleta
-    let errores = validarFormularioGalleta();
+    const errores = validarFormularioGalleta();
     if (errores) {
         mostrarErrores(errores);
         return;
     }
 
+    const idGalleta = parseInt(document.querySelector('input[name="galleta_id"]').value);
+
+    // Validación específica para edición
+    if (idGalleta !== 0) {
+        const recetasBase = recetasDisponibles.filter(r => r.es_base);
+        if (recetasBase.length !== 1) {
+            alertas.alertaRecetas("Debe haber exactamente 1 receta base");
+            return;
+        }
+    }
+
     if (recetasDisponibles.length === 0) {
-        alertas.alertaRecetas('Debes de agregar al menos la receta base');
+        alertas.alertaRecetas('Debes agregar al menos la receta base');
         return;
     }
 
-    let id_galleta = parseInt(document.querySelector('input[name="galleta_id"]').value);
-    if (id_galleta !== 0) {
-        editarGalleta();
-    } else {
-        agregarGalleta();
-    }
+    idGalleta !== 0 ? editarGalleta() : agregarGalleta();
 }
 
 function agregarGalleta() {
@@ -395,9 +478,82 @@ function agregarGalleta() {
         .finally(() => tabs.ocultarLoader());
 }
 
+// Función para editar galleta
+function editarGalleta() {
+    const formData = obtenerDatosFormularioGalleta();
+    
+    const payload = {
+        id_galleta: formData.id_galleta,
+        nombre_galleta: formData.nombre_galleta,
+        descripcion_galleta: formData.descripcion_galleta,
+        proteccion_precio: formData.proteccion_precio,
+        gramos_galleta: formData.gramos_galleta,
+        precio_unitario: formData.precio_unitario,
+        dias_caducidad: formData.dias_caducidad,
+        recetas: recetasDisponibles.map(receta => ({
+            id_receta: String(receta.id_receta).startsWith('temp_') ? null : parseInt(receta.id_receta),
+            nombre_receta: receta.nombre_receta,
+            tiempo_horneado: receta.tiempo_horneado,
+            galletas_producidas: receta.galletas_producidas,
+            detalle_receta: receta.detalle_receta.map(insumo => ({
+                insumo_id: insumo.insumo_id,
+                cantidad: insumo.cantidad
+            }))
+        }))
+    };
+
+    // Validación extra para nuevas recetas
+    payload.recetas.forEach(receta => {
+        if (!receta.id_receta) {
+            delete receta.id_receta;
+        }
+    });
+
+    tabs.mostrarLoader();
+    console.log(payload);
+    
+    api.postJSON('/galletas/update_galleta', payload)
+        .then(response => {
+            if ((response?.status === 200 || response?.status === 201) && response?.id_galleta) {
+                alertas.procesoTerminadoExito();
+                cerrarModalPrincipal();
+                cargarGalletas();
+            } else {
+                throw new Error(response?.message || 'Error en la actualización');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('Error', error.message || 'Error al actualizar la galleta', 'error');
+        })
+        .finally(() => tabs.ocultarLoader());
+}
+
 // Funcion para eliminar una galleta de la bd
 function eliminarGalleta(id_galleta) {
-    alert('ID de la galleta eliminada: ' + id_galleta);
+    alertas.confirmarEliminar()
+    .then(resultado => {
+        if (!resultado.isConfirmed) return Promise.reject('cancelado');
+        
+        tabs.mostrarLoader();
+        return api.postJSON('/galletas/delete_galleta', { id_galleta: id_galleta });
+    })
+    .then(data => {
+        if ((data?.status === 200 || data?.status === 201) && data?.id_galleta) {
+            alertas.procesoTerminadoExito();
+            cerrarModalPrincipal();
+            cargarGalletas();
+        } else {
+            throw new Error(data?.error || 'Error al eliminar la galleta');
+        }
+    })
+    .catch(error => {
+        if (error !== 'cancelado') {
+            console.error('Error eliminando galleta:', error);
+            Swal.fire('Error', error.message || 'No se pudo eliminar la galleta', 'error');
+        }
+    })
+    .finally(() => tabs.ocultarLoader());
 }
 
 // Obtener datos de la galleta del formulario del modal principal
@@ -434,32 +590,80 @@ function actualizarPrecioSugerido() {
 }
 
 
-// FUNCIONES PROPIAS DE LAS RECETAS
+// ====================================================================
+// Funciones para hacer las conexiones con la aplicaion Flask de recetas
+// ====================================================================
+function agregarRecetaDerivada() {
+    const recetaBase = recetasDisponibles.find(r => r.es_base);
+
+    if (!recetaBase) {
+        alertas.alertaRecetas("Primero debe existir una receta base");
+        return;
+    }
+
+    const nuevaReceta = {
+        id_receta: `temp_${Date.now()}`,
+        nombre_receta: `Copia de ${recetaBase.nombre_receta}`,
+        tiempo_horneado: recetaBase.tiempo_horneado,
+        galletas_producidas: recetaBase.galletas_producidas,
+        es_base: false,
+        detalle_receta: recetaBase.detalle_receta.map(insumo => ({
+            ...insumo,
+            cantidad: insumo.cantidad
+        }))
+    };
+
+    recetasDisponibles.push(nuevaReceta);
+    generarRecetasCards();
+    abrirModalSecundario('editar', nuevaReceta.id_receta);
+}
+
+function editarReceta(id_receta) {
+    const idBuscado = String(id_receta);
+
+    const receta = recetasDisponibles.find(r =>
+        String(r.id_receta) === idBuscado
+    );
+
+    if (!receta) {
+        Swal.fire('Error', 'Receta no encontrada', 'error');
+        return;
+    }
+
+    cargarRecetaEnFormulario(receta);
+    abrirModalSecundario('editar');
+}
+
 // Obtener datos de la receta del fomulario
 function obtenerDatosFormularioReceta() {
-    const idGalleta = parseInt(document.querySelector('input[name="galleta_id"]').value);
     const recetaId = document.getElementById('receta_id').value;
-    const esRecetaExistente = recetasDisponibles.some(r => r.id_receta === recetaId);
-    const esBase = esRecetaExistente
-        ? recetasDisponibles.find(r => r.id_receta === recetaId).es_base
-        : idGalleta === 0 && recetasDisponibles.length === 0;
+    const galletaId = parseInt(document.querySelector('input[name="galleta_id"]').value);
+
+    const esRecetaExistente = recetasDisponibles.some(r => String(r.id_receta) === recetaId);
+    let esRecetaBase = recetasDisponibles.some(r => String(r.id_receta) === recetaId && r.es_base);
+    if (galletaId === 0 && !esRecetaExistente && !esRecetaBase) {
+        esRecetaBase = true;
+    }
 
     return {
-        id_receta: recetaId !== '0' ? recetaId : `temp_${Date.now()}`,
+        id_receta: esRecetaExistente ? recetaId : `temp_${Date.now()}`,
         nombre_receta: document.querySelector('input[name="nombre_receta"]').value,
         tiempo_horneado: parseInt(document.querySelector('input[name="tiempo_horneado"]').value),
         galletas_producidas: parseInt(document.querySelector('input[name="galletas_producidas"]').value),
-        costo_receta: parseFloat(document.querySelector('input[name="costo_receta"]').value),
-        es_base: esBase,
-        detalle_receta: Array.from(insumosSeleccionados).map(([id_insumo, datos]) => ({
-            insumo_id: id_insumo,
-            cantidad: parseFloat(datos.cantidad)
+        es_base: esRecetaBase,
+        costo_receta: parseFloat(document.querySelector('input[name="costo_receta"]').value).toFixed(2) || 0.00,
+        detalle_receta: Array.from(insumosSeleccionados).map(([id, data]) => ({
+            insumo_id: id,
+            cantidad: data.cantidad
         }))
     };
 }
 
 function guardarRecetaLocal() {
-    // Validar campos estáticos primero
+    const recetaId = document.getElementById('receta_id').value;
+    const index = recetasDisponibles.findIndex(r => String(r.id_receta) === String(recetaId));
+
+    // Validar campos dinámicos de insumos
     const erroresReceta = validarFormularioReceta();
 
     // Validar campos dinámicos de insumos
@@ -473,24 +677,66 @@ function guardarRecetaLocal() {
     }
 
     // Ahora validar cantidad mínima de insumos
-    if (insumosSeleccionados.size < 5) {
-        alertas.alertaRecetas('La receta debe de tener por lo menos 5 insumos');
+    if (insumosSeleccionados.size < 1) {
+        alertas.alertaRecetas('La receta debe tener al menos 1 insumos');
         return;
     }
 
-    let formDataReceta = obtenerDatosFormularioReceta();
-    const index = recetasDisponibles.findIndex(r => r.id_receta === formDataReceta.id_receta);
+    // Obtener datos ACTUALIZADOS del formulario
+    const formData = obtenerDatosFormularioReceta();
 
-    if (index === -1) {
-        // Nueva receta
-        recetasDisponibles.push(formDataReceta);
+    // Preservar propiedades críticas
+    if (index !== -1) {
+        formData.id_receta = recetasDisponibles[index].id_receta;
+        formData.es_base = recetasDisponibles[index].es_base;
+        recetasDisponibles[index] = formData;
     } else {
-        // Actualizar existente
-        recetasDisponibles[index] = formDataReceta;
+        recetasDisponibles.push(formData);
+    }
+
+    // Nueva validación: Margen de protección
+    if (formData.es_base && !String(formData.id_receta).startsWith('temp_')) {
+        const proteccion = parseFloat(document.querySelector('input[name="proteccion_precio"]').value) || 0;
+        const costoPorGalleta = formData.costo_receta / formData.galletas_producidas;
+        const precioActual = parseFloat(document.querySelector('input[name="precio_sugerido"]').value) || 0;
+        const nuevoPrecio = costoPorGalleta + proteccion;
+
+        // Si el nuevo precio supera al actual + 1% o el margen es negativo
+        if (nuevoPrecio > precioActual * 1.01 || nuevoPrecio > precioActual) {
+            alertas.alertaCambioMargen(
+                costoPorGalleta.toFixed(2),
+                nuevoPrecio.toFixed(2)
+            ).then((confirmar) => {
+                if (confirmar) {
+                    document.querySelector('input[name="precio_sugerido"]').value = nuevoPrecio.toFixed(2);
+                    formData.precio_sugerido = nuevoPrecio.toFixed(2);
+                }
+            });
+        }
     }
 
     generarRecetasCards();
     cerrarModalSecundario();
+}
+
+function copiarRecetaBase(recetaBase) {
+    // Crear copia de la receta base
+    const nuevaReceta = {
+        id_receta: `temp_${Date.now()}`,
+        nombre_receta: `Copia de ${recetaBase.nombre_receta}`,
+        tiempo_horneado: recetaBase.tiempo_horneado,
+        galletas_producidas: recetaBase.galletas_producidas,
+        es_base: false,
+        detalle_receta: recetaBase.detalle_receta.map(insumo => ({
+            insumo_id: insumo.insumo_id,
+            cantidad: insumo.cantidad
+        }))
+    };
+
+    // Agregar a las recetas disponibles
+    recetasDisponibles.push(nuevaReceta);
+
+    cargarRecetaEnFormulario(nuevaReceta);
 }
 
 // funcion para generar las cards de las recetas
@@ -501,32 +747,40 @@ function generarRecetasCards() {
 
     recetasDisponibles.forEach(receta => {
         const card = document.createElement('div');
-        card.className = 'w-full min-w-[250px] h-[210px] bg-[#efe6dc] rounded-xl shadow-md overflow-hidden border border-gray-200';
+        card.className = 'w-full min-w-[250px] h-[220px] bg-[#efe6dc] rounded-xl shadow-md overflow-hidden border border-gray-200';
 
-        // Mostrar costo solo si es receta base
+        let costo_receta = receta.costo_receta || calcularCostoRecetaDesdeDetalle(receta.detalle_receta);
+        costo_receta = parseFloat(costo_receta).toFixed(2);
+
         const costoHTML = receta.es_base
-            ? `<p class="text-sm text-black">Costo receta: $${receta.costo_receta.toFixed(2)}</p>
-                <p class="text-sm text-black">Costo galleta: $${(receta.costo_receta.toFixed(2) / receta.galletas_producidas).toFixed(2)}</p>    
-            `
+            ? `<p class="text-sm text-black">Costo receta: $${costo_receta}</p>
+           <p class="text-sm text-black">Costo/galleta: $${(costo_receta / receta.galletas_producidas).toFixed(2)}</p>`
             : '';
+
+        const esBase = receta.es_base ?
+            '<span class="text-green-600 text-xs">(Receta Base)</span>' :
+            '<span class="text-blue-600 text-xs">(Receta Derivada)</span>';
 
         card.innerHTML = `
             <div class="flex flex-col p-3 space-y-2 h-full">
                 <div class="space-y-1 flex-1">
                     <h3 class="text-lg font-semibold text-black break-words">${receta.nombre_receta}</h3>
-                    <p class="text-black text-sm">${receta.tiempo_horneado} min</p>
-                    <p class="text-black text-sm">${receta.galletas_producidas} und</p>
+                    ${esBase}
+                    <div class="grid grid-cols-2">
+                        <p class="text-black text-sm">${receta.tiempo_horneado} min</p>
+                        <p class="text-black text-sm">${receta.galletas_producidas} und</p>
+                    </div>
                     ${costoHTML}
                     <p class="text-sm text-black">Insumos: ${receta.detalle_receta.length}</p>
                 </div>
 
                 <div class="flex border-t border-black pt-1 mt-1">
-                    <button onclick="editarReceta('${receta.id_receta}')" 
+                    <button onclick="editarReceta('${String(receta.id_receta)}')" 
                             class="flex-1 flex items-center justify-center p-1 cursor-pointer">
                         <img src="../../../static/images/lapiz.png" class="w-7 h-7">
                     </button>
                     
-                    <button onclick="eliminarReceta('${receta.id_receta}')" 
+                    <button onclick="eliminarReceta('${String(receta.id_receta)}')" 
                             class="flex-1 flex items-center justify-center p-1 cursor-pointer">
                         <img src="../../../static/images/bote basura.png" class="w-7 h-7">
                     </button>
@@ -538,68 +792,99 @@ function generarRecetasCards() {
     });
 }
 
-function buscarRecetasPorId(id_galleta) {
-
-}
-
-function editarReceta(id_receta) {
-    // Determinar si es receta temporal o de BD
-    const esTemporal = id_receta.startsWith('temp_');
-
-    if (esTemporal) {
-        const receta = recetasDisponibles.find(r => r.id_receta === id_receta);
-        cargarRecetaEnFormulario(receta);
-    } else {
-        console.log('receta existente cargando...')
-    }
-    abrirModalSecundario('editar');
-}
-
 function eliminarReceta(id_receta) {
-    const idGalleta = parseInt(document.querySelector('input[name="galleta_id"]').value);
-    const receta = recetasDisponibles.find(r => r.id_receta === id_receta);
+    const idBuscado = String(id_receta);
+    const index = recetasDisponibles.findIndex(r => String(r.id_receta) === idBuscado);
 
-    // Validar si es receta base de galleta nueva
-    if (idGalleta === 0 && receta.es_base) {
-        alertas.alertaRecetas("No puedes eliminar la receta base");
+    // Validación de receta base
+    if (recetasDisponibles[index]?.es_base) {
+        alertas.alertaRecetas('No se puede eliminar la receta base')
         return;
     }
 
-    if (confirm('¿Eliminar esta receta?')) {
-        recetasDisponibles = recetasDisponibles.filter(r => r.id_receta !== id_receta);
-        generarRecetasCards();
-    }
+    alertas.confirmarEliminar()
+        .then(resultado => {
+            if (!resultado.isConfirmed) return ;
+
+            // Eliminación local para IDs temporales
+            if (idBuscado.startsWith('temp_')) {
+                recetasDisponibles.splice(index, 1);
+                generarRecetasCards();
+                alertas.procesoTerminadoExito();
+                return ;
+            } else {
+                alertas.alertaRecetas('Para eliminar la receta, debe eliminar la galleta que la contiene')
+                return ;
+            }
+        })
 }
 
-function cargarRecetaEnFormulario(receta) {
-    limpiarFormularioReceta();
+async function cargarRecetaEnFormulario(receta) {
+    tabs.mostrarLoader();
+    await consultarInsumos()
+        .then(() => {
+            limpiarFormularioReceta();
 
-    // Campo oculto para el ID de la receta
-    document.getElementById('receta_id').value = receta.id_receta;
+            // Resetear estado GLOBAL de insumos
+            insumosSeleccionados.clear();
+            document.getElementById('insumos-seleccionados').innerHTML = '';
 
-    // Campos básicos
-    document.querySelector('input[name="nombre_receta"]').value = receta.nombre_receta;
-    document.querySelector('input[name="tiempo_horneado"]').value = receta.tiempo_horneado;
-    document.querySelector('input[name="galletas_producidas"]').value = receta.galletas_producidas;
-    document.querySelector('input[name="costo_receta"]').value = receta.costo_receta.toFixed(2);
+            // Calcular y mostrar costo inicial
+            let costo = receta.costo_receta || calcularCostoRecetaDesdeDetalle(receta.detalle_receta);
+            costo = parseFloat(costo).toFixed(2);
+            document.querySelector('input[name="costo_receta"]').value = costo;
 
-    // Cargar insumos con sus cantidades
-    receta.detalle_receta.forEach(insumo => {
-        // Verificar si el insumo ya está seleccionado
-        if (!insumosSeleccionados.has(insumo.insumo_id)) {
-            seleccionarInsumo(insumo.insumo_id);
-        }
+            // Cargar datos PRIMARIOS
+            document.getElementById('receta_id').value = receta.id_receta;
+            document.querySelector('input[name="nombre_receta"]').value = receta.nombre_receta;
+            document.querySelector('input[name="tiempo_horneado"]').value = receta.tiempo_horneado;
+            document.querySelector('input[name="galletas_producidas"]').value = receta.galletas_producidas;
+            if (receta.es_base) {
+                document.querySelector('input[name="galletas_producidas"]').removeAttribute('oninput');
+            } else {
+                document.querySelector('input[name="galletas_producidas"]').setAttribute('oninput', 'actualizarProporciones()');
+            }
 
-        // Obtener el input de cantidad específico
-        const inputCantidad = document.querySelector(
-            `input[name="insumo_id"][value="${insumo.insumo_id}"]`
-        ).closest('div').querySelector('input[type="number"]');
 
-        if (inputCantidad) {
-            inputCantidad.value = insumo.cantidad;
-            actualizarCantidadInsumo(insumo.insumo_id, insumo.cantidad);
-        }
-    });
+            // Cargar INSUMOS con referencia DIRECTA
+            receta.detalle_receta.forEach(insumo => {
+                const insumoCompleto = insumosDisponibles.find(i => i.id_insumo === insumo.insumo_id);
+
+                if (insumoCompleto) {
+                    const divInsumo = document.createElement('div');
+                    divInsumo.className = 'flex items-center gap-2 p-2 bg-gray-50 rounded-lg';
+                    divInsumo.innerHTML = `
+                        <input type="hidden" name="insumo_id" value="${insumo.insumo_id}">
+                        <span class="flex-1">${insumoCompleto.nombre}</span>
+                        <span class="flex-1">$${insumoCompleto.precio_unitario.toFixed(2)}</span>
+                        <input type="number" 
+                            min="0.0" 
+                            step="0.1" 
+                            value="${insumo.cantidad}"
+                            class="w-24 p-1 border border-[#895645] rounded-full text-center"
+                            ${!receta.es_base ? 'readonly' : ''}
+                            oninput="actualizarCantidadInsumo(${insumo.insumo_id}, this.value); limpiarErroresInsumo(this)">
+                        <span class="w-12 text-sm">${insumoCompleto.unidad.simbolo}</span>
+                        ${receta.es_base ? `
+                        <button onclick="eliminarInsumo(${insumo.insumo_id})" 
+                                class="text-red-500 hover:text-red-700 cursor-pointer">
+                            ✕
+                        </button>
+                        ` : ''}
+                        <span class="error-insumo text-red-500 text-sm hidden ml-2"></span>
+                    `;
+
+                    document.getElementById('insumos-seleccionados').appendChild(divInsumo);
+                    insumosSeleccionados.set(insumo.insumo_id, {
+                        ...insumoCompleto,
+                        cantidad: insumo.cantidad
+                    });
+                }
+            });
+
+            document.getElementById('buscador-insumos').disabled = !receta.es_base;
+        })
+        .finally(() => tabs.ocultarLoader());
 }
 
 // FUNCIONES PARA LOS INSUMOS
@@ -632,10 +917,17 @@ function filtrarInsumos(termino) {
     }
 }
 
-function seleccionarInsumo(id_insumo) {
+function seleccionarInsumo(id_insumo, esProgramatico = false) {
     const insumo = insumosDisponibles.find(i => i.id_insumo === id_insumo);
     const contenedor = document.getElementById('insumos-seleccionados');
     const campo_busqueda = document.getElementById('buscador-insumos');
+    const recetaId = document.getElementById('receta_id').value;
+    const receta = recetasDisponibles.find(r => r.id_receta === recetaId);
+
+    if (!esProgramatico && receta && !receta.es_base) {
+        alertas.alertaRecetas("Solo puedes modificar insumos en la receta base");
+        return;
+    }
 
     if (!insumosSeleccionados.has(id_insumo)) {
         const elemento = document.createElement('div');
@@ -673,20 +965,23 @@ function seleccionarInsumo(id_insumo) {
 }
 
 function eliminarInsumo(id_insumo) {
-    const inputInsumo = document.querySelector(`input[name="insumo_id"][value="${id_insumo}"]`);
-    if (inputInsumo) {
-        const contenedor = inputInsumo.closest('div');
-        // Eliminar el error asociado
-        const errorSpan = contenedor.querySelector('.error-insumo');
-        if (errorSpan) {
-            errorSpan.remove();
-        }
-        contenedor.remove();
+    const recetaId = document.getElementById('receta_id').value;
+    const receta = recetasDisponibles.find(r => r.id_receta == recetaId);
+
+    if (receta && !receta.es_base) {
+        alertas.alertaRecetas("Solo puedes eliminar insumos en la receta base");
+        return;
     }
-    insumosSeleccionados.delete(id_insumo);
-    calcularCostoReceta();
+
+    const elemento = document.querySelector(`input[name="insumo_id"][value="${id_insumo}"]`)?.closest('div');
+    if (elemento) {
+        elemento.remove();
+        insumosSeleccionados.delete(id_insumo);
+        calcularCostoReceta();
+    }
 }
 
+// Funcion para actualizar la cantidad de un insumo seleccionado y actualizar el costo de la receta
 function actualizarCantidadInsumo(id_insumo, cantidad) {
     if (insumosSeleccionados.has(id_insumo)) {
         const insumo = insumosSeleccionados.get(id_insumo);
@@ -696,6 +991,7 @@ function actualizarCantidadInsumo(id_insumo, cantidad) {
     }
 }
 
+// Funcion para calcular el costo total de la receta
 function calcularCostoReceta() {
     let costoTotal = 0;
 
@@ -706,10 +1002,64 @@ function calcularCostoReceta() {
 
     // Actualizamos el campo
     document.querySelector('input[name="costo_receta"]').value = costoTotal.toFixed(2);
+
+    // Solo si es receta base y está en modo edición
+    const recetaId = document.getElementById('receta_id').value;
+    const receta = recetasDisponibles.find(r => String(r.id_receta) === String(recetaId));
+
+    if (receta?.es_base) {
+        // Forzar actualización en el modal principal
+        actualizarPrecioSugerido();
+    }
+}
+
+// Funcion para actualizar el valor de las cantidades de los insumos en base a una proporcion con la receta base
+function actualizarProporciones() {
+    const recetaActualId = document.getElementById('receta_id').value;
+    const recetaActual = recetasDisponibles.find(r => String(r.id_receta) === String(recetaActualId));
+    
+    // Solo para recetas derivadas
+    if (!recetaActual || recetaActual.es_base) return;
+
+    const recetaBase = recetasDisponibles.find(r => r.es_base);
+    if (!recetaBase) {
+        alertas.alertaRecetas('No se encontró la receta base');
+        return;
+    }
+
+    const nuevasGalletas = parseFloat(document.querySelector('input[name="galletas_producidas"]').value) || 1;
+    const proporcion = nuevasGalletas / recetaBase.galletas_producidas;
+
+    // Actualizar cada insumo visible en el formulario
+    document.querySelectorAll('#insumos-seleccionados div').forEach(divInsumo => {
+        const inputId = divInsumo.querySelector('input[name="insumo_id"]').value;
+        const inputCantidad = divInsumo.querySelector('input[type="number"]');
+        const insumoBase = recetaBase.detalle_receta.find(i => String(i.insumo_id) === inputId);
+
+        if (insumoBase && inputCantidad) {
+            const nuevoValor = (insumoBase.cantidad * proporcion).toFixed(2);
+            inputCantidad.value = nuevoValor;
+            
+            // Actualizar en el estado global aunque sea readonly
+            if (insumosSeleccionados.has(parseInt(inputId))) {
+                insumosSeleccionados.get(parseInt(inputId)).cantidad = parseFloat(nuevoValor);
+            }
+        }
+    });
+
+    // Recalcular costo
+    calcularCostoReceta();
+}
+
+function calcularCostoRecetaDesdeDetalle(detalle) {
+    return detalle.reduce((total, insumo) => {
+        const insumoDB = insumosDisponibles.find(i => i.id_insumo === insumo.insumo_id);
+        return insumoDB ? total + (insumoDB.precio_unitario * insumo.cantidad) : total;
+    }, 0);
 }
 
 // FUNCIONES PARA LIMPIAR CAMPOS O ERRORES
-function limpiarFormularioGalleta() {
+export function limpiarFormularioGalleta() {
     // campos de galleta
     document.querySelector('input[name="galleta_id"]').value = 0;
     document.querySelector('input[name="nombre_galleta"]').value = '';
@@ -722,7 +1072,7 @@ function limpiarFormularioGalleta() {
     limpiarErrores();
 }
 
-function limpiarFormularioReceta() {
+export function limpiarFormularioReceta() {
     // campos de receta
     document.querySelector('input[name="nombre_receta"]').value = '';
     document.querySelector('input[name="tiempo_horneado"]').value = '';
@@ -753,6 +1103,7 @@ window.cerrarModalSecundario = cerrarModalSecundario;
 window.guardarRecetaLocal = guardarRecetaLocal;
 window.actualizarCantidadInsumo = actualizarCantidadInsumo;
 window.limpiarErroresInsumo = limpiarErroresInsumo;
+window.actualizarProporciones = actualizarProporciones;
 
 // Funciones para el modal primario
 window.abrirModalPrincipal = abrirModalPrincipal;
@@ -760,6 +1111,7 @@ window.cerrarModalPrincipal = cerrarModalPrincipal;
 
 window.guardarGalleta = guardarGalleta;
 window.eliminarGalleta = eliminarGalleta;
+window.buscarGalletaPorId = buscarGalletaPorId;
 
 window.filtrarInsumos = filtrarInsumos;
 window.seleccionarInsumo = seleccionarInsumo;
@@ -769,6 +1121,7 @@ window.actualizarPrecioSugerido = actualizarPrecioSugerido;
 
 window.editarReceta = editarReceta;
 window.eliminarReceta = eliminarReceta;
+window.agregarRecetaDerivada = agregarRecetaDerivada;
 
 // exponer funciones del conversor de unidades globalmente
 window.cambiarPestana = cambiarPestana;

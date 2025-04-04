@@ -4,7 +4,11 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    
+}
+
+body{
+    background-color: #efe6dc;
+    width: 100%;
 }
 /* SIDE BAR */
 .sidebar-logo {
@@ -43,27 +47,23 @@
     display: flex;
     justify-content: center;
     min-height: 100vh;
-    margin-left: 15%;
     flex-wrap: nowrap;
+    margin: 0px;
 }
 
 
 .main-content {
     width: 100%;
-    padding: 5px 20px;
     display: flex;
-    flex-direction: column;
-    gap: 20px;
-  
+    flex-direction: column;  
 }
 
 /* Header */
 .header {
-    background-image: url(../images/fondo7.jpg);
-    background-size: contain; /* Ajusta la imagen para cubrir todo el contenedor */
+    background-image: url(../images/fondo_3.jpg);
+    background-size: cover; /* Ajusta la imagen para cubrir todo el contenedor */
     background-position: center; /* Centra la imagen */
     background-repeat: no-repeat; /* Evita que la imagen se repita */
-    /*background-attachment: fixed;*/
     height:100vh;
 }
 
@@ -85,11 +85,12 @@
 }
 
 .mid-box2 {
-    height: 60px;
+    height: auto;  /* Permite que el contenedor ajuste su altura según el contenido */
     text-align: center;
     align-items: center;
     font-size: 25px;
-    margin-bottom: 20px;
+    margin: 50px 0px;
+    padding-top: 50px;
 }
 
 .mid-box2 h1 {
@@ -130,7 +131,9 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-    margin-bottom: 100px;
+    padding-bottom: 100px;
+    padding: 20px;
+    margin-top: 100px;
 }
 
 .grid2 {
@@ -152,6 +155,24 @@
 
 .large-box-history img {
     height: 50vh;
+}
+
+/* Contenedor de la imagen */
+.box {
+    perspective: 1000px; /* Establece la perspectiva 3D para el contenedor */
+}
+
+/* Imagen */
+.large-box-me img {
+    transition: transform 0.6s ease; /* Hace que la transformación sea suave */
+    transform-style: preserve-3d; /* Habilita el efecto 3D */
+    width: 100%; /* Asegúrate de que la imagen ocupe todo el espacio */
+    height: auto; /* Mantiene la proporción de la imagen */
+}
+
+/* Efecto hover */
+.large-box-me:hover img {
+    transform: rotateY(180deg); /* Gira la imagen completamente */
 }
 
 
@@ -204,6 +225,7 @@
 .precios {
     display: flex;
     justify-content: space-between;
+    padding: 0 20px;
 }
 .large-box-history {
     height: 50vh;
@@ -217,6 +239,7 @@
     text-align: justify;
     font-size: 20px;
     color: #540b0e;
+    padding: 40px;
 }
 
 .large-box-history h1 {
@@ -238,20 +261,20 @@
 }
 
 .btn-history button {
-    width: 170px;
+    width: 240px;
     height: 40px;
+    padding: 0px 5px;
     border-radius: 10px;
-    background-color: #540b0d00;
-    color: #540b0e;
+    background-color: #FFF;
+    color: #6f473d;
     font-family: "Poppins", sans-serif;
-    font-weight: 300;
+    font-weight: 500;
     font-style: normal;
     cursor: pointer;
-    transition: background-color 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid #540b0e;
+    border: 1px solid #6f473d;
     font-size: 15px;
 }
 
@@ -269,13 +292,15 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    padding: 40px;
 }
 
 .grid-menu {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    gap: 10px;
     justify-content: center;
+    padding-bottom: 50px;
 }
 
 .grid-menu img {
@@ -335,7 +360,8 @@
     grid-template-columns: repeat(1, 1fr);
     gap: 15px;
     justify-content: center;
-    height: 50vh;
+    align-items: center;
+    height: 70vh;
 }
 
 .grid-footer h1{
@@ -356,7 +382,6 @@
 .footer {
     color: #5b3b33;
     text-align: center;
-    padding: 20px 0;
 }
 
 .footer a {

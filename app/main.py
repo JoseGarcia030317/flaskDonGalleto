@@ -30,8 +30,10 @@ from routes.insumos_bp import insumos_bp
 from routes.unidad_bp import unidad_bp
 from routes.clientes_bp import clientes_bp
 from routes.mermas_bp import mermas_bp
+from routes.dashboard_bp import dashboard_bp
 from routes.galletas_bp import galletas_bp
 from routes.compras_bp import compras_bp
+
 # Inicializar extensiones de Flask
 # db = SQLAlchemy()
 login_manager = LoginManager()
@@ -88,9 +90,9 @@ app.register_blueprint(insumos_bp)
 app.register_blueprint(unidad_bp)
 app.register_blueprint(clientes_bp)
 app.register_blueprint(mermas_bp)
+app.register_blueprint(dashboard_bp)
 app.register_blueprint(galletas_bp)
 app.register_blueprint(compras_bp)
-
 # Ruta raíz de la aplicacion
 @app.route("/")
 def inicio():

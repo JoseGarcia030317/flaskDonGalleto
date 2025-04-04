@@ -22,6 +22,7 @@ from routes.routes_templates.mod_mermas_bp import mod_mermas_bp
 from routes.routes_templates.mod_portalCliente_bp import mod_portalCliente_bp
 from routes.routes_templates.mod_seguridad_bp import mod_seguridad_bp
 from routes.routes_templates.mod_ventas_bp import mod_ventas_bp
+from routes.routes_templates.mod_landingpage_bp import mod_landingpage_bp
 
 # Blueprints para comunicarse con la BD
 from routes.proveedores_bp import prov_bp
@@ -29,8 +30,10 @@ from routes.insumos_bp import insumos_bp
 from routes.unidad_bp import unidad_bp
 from routes.clientes_bp import clientes_bp
 from routes.mermas_bp import mermas_bp
+from routes.dashboard_bp import dashboard_bp
 from routes.galletas_bp import galletas_bp
 from routes.compras_bp import compras_bp
+
 # Inicializar extensiones de Flask
 # db = SQLAlchemy()
 login_manager = LoginManager()
@@ -52,7 +55,7 @@ cors.init_app(app)
 limiter.init_app(app)
 
 # Definición de ruta para usuario no autenticados, cuando se inicia la aplicacion
-login_manager.login_view = "auth_bp.login"
+login_manager.login_view = "mod_landingpage_bp.landing_page"
 login_manager.session_protection = "strong"
 
 # Headers de seguridad, restringue recursos externos, en
@@ -79,6 +82,7 @@ app.register_blueprint(mod_mermas_bp)
 app.register_blueprint(mod_portalCliente_bp)
 app.register_blueprint(mod_seguridad_bp)
 app.register_blueprint(mod_ventas_bp)
+app.register_blueprint(mod_landingpage_bp)
 
 # Registro de blueprints para comunicarse con la BD
 app.register_blueprint(prov_bp)
@@ -86,14 +90,14 @@ app.register_blueprint(insumos_bp)
 app.register_blueprint(unidad_bp)
 app.register_blueprint(clientes_bp)
 app.register_blueprint(mermas_bp)
+app.register_blueprint(dashboard_bp)
 app.register_blueprint(galletas_bp)
 app.register_blueprint(compras_bp)
-
 # Ruta raíz de la aplicacion
 @app.route("/")
 def inicio():
     if not current_user.is_authenticated:
-        return redirect(url_for('auth_bp.login'))
+        return redirect(url_for('mod_landingpage_bp.landing_page'))
     else:
         if current_user.tipo == 1:
             return redirect(url_for("main_page_bp.mp_admin"))

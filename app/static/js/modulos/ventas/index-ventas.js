@@ -45,7 +45,7 @@ function cargarContenidoVentas(endpoint) {
                 // Ejemplo:
                 if (endpoint === 'registro-ventas') window.cargarRegistroVentas();
                 if (endpoint === 'listado-ventas') window.cargarListadoVentas();
-                if (endpoint === 'listado-pedidos') window.cargarListadoPedidos();
+                if (endpoint === 'listado-pedidos') window.inicializarModuloListadoPedidos();
                 if (endpoint === 'corte-caja') window.cargarCorteCaja();
                 if (endpoint === 'solicitud-produccion') window.inicializarModuloSolicitudProduccion();
             };

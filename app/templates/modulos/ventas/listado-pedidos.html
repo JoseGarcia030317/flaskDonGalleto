@@ -1,14 +1,14 @@
 <div id="listado-pedidos-content" class="p-2">
     <div class="items-center justify-center w-full">
         <!-- Barra de búsqueda -->
-        <div class="flex justify-between mb-2 max-w-4xl">
+        <div class="flex justify-between mb-2 mx-auto">
             <!-- Campo de búsqueda -->
             <div class="relative w-96 mx-auto">
                 <input type="text" name="buscar" placeholder="Buscar..." oninput="filtrarTabla()"
                     class="w-full pl-4 pr-10 py-1 border border-[#8A5114] rounded-full">
 
                 <!-- Icono de lupa -->
-                <div class="absolute right-3 top-1/3 pt-1 transform -translate-y-1/2">
+                <div class="absolute right-3 top-1/2 pt-1 transform -translate-y-1/2">
                     <img src="./../../../static/images/magnifying glass.png" class="w-6 h-6">
                 </div>
             </div>
@@ -24,9 +24,9 @@
                 <tr class="bg-[#efe6dc] align-middle">
                     <th class="p-2 text-center text-[#915A17]">FECHA</th>
                     <th class="p-2 text-center text-[#915A17]">CLAVE</th>
-                    <th class="p-2 text-center text-[#915A17]">OBERVACIONES</th>
+                    <th class="p-2 text-center text-[#915A17]">OBSERVACIONES</th>
                     <th class="p-2 text-center text-[#915A17]">DESCUENTO</th>
-                    <th class="p-2 text-center text-[#915A17]">Acciones</th>
+                    <th class="p-2 text-center text-[#915A17]">ACCIONES</th>
                 </tr>
             </thead>
             <tbody id="tbody_listado_pedidos">
@@ -49,7 +49,7 @@
             <!-- Formulario -->
             <form id="mermaProductoForm" class="space-y-4">
                 <!-- Campo para id de merma de producto -->
-                <input type="number" name="venta_id" value="0" hidden>
+                <input type="number" name="pedido_id" value="0" hidden>
 
                 <!-- Primera fila: clave y fecha -->
                 <div class="grid grid-cols-3 gap-4">
@@ -59,7 +59,7 @@
                         <label name="clave" class="block text-black mb-1"></label>
                     </div>
 
-                    <!-- Campo Teléfono -->
+                    <!-- Campo Fecha -->
                     <div>
                         <label class="block text-[#895645] mb-1">Fecha</label>
                         <label name="fecha" class="block text-black mb-1"></label>
@@ -72,8 +72,14 @@
                     </div>
                 </div>
 
-                <!-- Primera fila: clave y fecha -->
-                <div class="grid grid-cols-3 gap-4">
+                <!-- Segunda fila: clave y fecha -->
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Campo total -->
+                    <div>
+                        <label class="block text-[#895645] mb-1">Total del pedido</label>
+                        <label name="total" class="block text-black mb-1"></label>
+                    </div>
+
                     <!-- Campo observaciones -->
                     <div>
                         <label class="block text-[#895645] mb-1">Observaciones</label>
@@ -88,6 +94,7 @@
                     <tr class="bg-[#efe6dc] align-middle">
                         <th class="p-2 text-center text-[#915A17]">PRODUCTO</th>
                         <th class="p-2 text-center text-[#915A17]">TIPO DE VENTA</th>
+                        <th class="p-2 text-center text-[#915A17]">PRECIO UNITARIO</th>
                         <th class="p-2 text-center text-[#915A17]">CANTIDAD</th>
                         <th class="p-2 text-center text-[#915A17]">SUBTOTAL</th>
                     </tr>
@@ -97,11 +104,22 @@
                 </tbody>
             </table>
 
-            <button type="submit" onclick="aceptarPedido()"
-                class="w-full py-2 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#895645] font-semibold flex items-center justify-center gap-2 hover:bg-[#a46a52] cursor-pointer">
-                <img src="../../../static/images/cancelar.png" class="w-5 h-5">
-                Aceptar pedido
-            </button>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <button type="submit" onclick="aceptarPedido()"
+                        class="w-full py-2 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#895645] font-semibold flex items-center justify-center gap-2 hover:bg-[#a46a52] cursor-pointer">
+                        <img src="../../../static/images/cancelar.png" class="w-5 h-5">
+                        Aceptar pedido
+                    </button>
+                </div>
+                <div>
+                    <button type="submit" onclick="rechazarPedido()"
+                        class="w-full py-2 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#895645] font-semibold flex items-center justify-center gap-2 hover:bg-[#a46a52] cursor-pointer">
+                        <img src="../../../static/images/cancelar.png" class="w-5 h-5">
+                        Rechazar pedido
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -49,7 +49,8 @@ function cargarContenidoHorneados(endpoint) {
             // TO DO: aquí tiene que colocar los if's necesarios para poder iniciarlizar cada uno de los submodulos
             // Ejemplo:
             if (endpoint === 'inventario-galletas') window.cargarInventarioGalletas();
-            // if (endpoint === 'produccion') window.cargarProduccion();
+            if (endpoint === 'produccion') window.cargarModuloProduccion();
+            if (endpoint === 'solicitudes') window.cargarModuloSolicitudes();
         };
 
         document.body.appendChild(script);

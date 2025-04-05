@@ -125,7 +125,7 @@ const recetas = [
 function cargarInventarioGalletas() {
     const container = document.getElementById("galletas-container");
     tabs.mostrarEsqueletoCardGalleta(container);
-    generarCards(galletas);
+    generarCards();
 }
 
 function abrirModal(id_galleta) {
@@ -138,14 +138,14 @@ function abrirModal(id_galleta) {
 }
 
 // Función para generar las cards de las galletas
-function generarCards(galletas) {
+function generarCards() {
     const container = document.getElementById('galletas-container');
     container.innerHTML = "";
     galletas.forEach(galleta => {
         const card = document.createElement('div');
         card.className = 'bg-[#efe6dc] rounded-xl shadow-md overflow-hidden border border-gray-200';
         card.innerHTML = `
-            <div class="flex p-1">
+            <div class="flex p-1 mb-1">
                 <div class="w-1/3 flex items-center justify-center">
                     <img src="${galleta.imagen}" 
                          alt="${galleta.nombre}" 
@@ -161,7 +161,7 @@ function generarCards(galletas) {
             </div>
 
             <div class="border-t border-[#8A5114] p-1 flex items-center justify-center hover:bg-[rgba(145,90,23,0.15)]">
-                <button onclick="abrirModal(${galleta.id_galleta})" class="text-[#8A5114] p-0 cursor-pointer flex flex-nowrap">
+                <button onclick="abrirModal(${galleta.id_galleta})" class="text-[#8A5114] p-1 cursor-pointer flex flex-nowrap">
                     <img src="../../../static/images/horneado.png" class="w-5 h-5">
                     Añadir horneado
                 </button>
@@ -169,9 +169,7 @@ function generarCards(galletas) {
         `;
         
         container.appendChild(card);
-    });
-
-    
+    }); 
 }
 
 function cargarRecetas(id_galleta){

@@ -29,3 +29,10 @@ def horneados_inventario_galletas():
 @role_required(4)
 def horneados_produccion():
     return render_template('modulos/horneados/produccion.html')
+
+@mod_horneados_bp.route('/horneados/solicitudes')
+@login_required
+@fresh_login_required
+@role_required(4)
+def horneados_solicitudes():
+    return render_template('modulos/horneados/solicitudes.html')

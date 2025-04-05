@@ -22,24 +22,22 @@
                     </li>
                     <li
                         class="hover:underline hover:underline-offset-4 hover:w-fit transition-all duration-100 ease-linear">
-                        <a href="#">Our services</a>
+                        <a href="#menu">Menú</a>
                     </li>
                     <li
                         class="hover:underline hover:underline-offset-4 hover:w-fit transition-all duration-100 ease-linear">
-                        <a href="#">About</a>
+                        <a href="#historia">Nuestra historia</a>
                     </li>
                     <li
                         class="hover:underline hover:underline-offset-4 hover:w-fit transition-all duration-100 ease-linear">
-                        <a href="#">Contact</a>
+                        <a href="#contacto">Contáctanos</a>
                     </li>
                 </ul>
             </div>
             <div class="hidden lg:flex lg:items-center gap-x-2">
-                <button class="flex items-center text-[#6f473d] dark:text-white justify-center pxx-6 font-semibold"
-                    style="padding-right: 8px;">Sign
-                    up</button>
-                <button
-                    class="mt-4 w-[130px] h-[40px] p-2 rounded-[10px] bg-[#6f473d] hover:bg-[#3a080a] text-white border-none font-['Poppins'] font-light cursor-pointer transition-colors duration-300 ease-in-out flex items-center justify-center">Login</button>
+                <button onclick="location.href='/login'"
+                    class="mt-4 w-[130px] h-[40px] p-2 rounded-[10px] bg-[#6f473d] hover:bg-[#301E1A] text-white border-none font-['Poppins'] font-light cursor-pointer transition-colors duration-300 ease-in-out flex items-center justify-center">
+                    Login</button>
             </div>
         </div>
     </nav>
@@ -50,16 +48,13 @@
             <br><br>
             <!-- Caja superior (Header) -->
             <section class="header">
-
             </section>
             <br>
             <!-- Caja superior (Header) -->
             <section class="mid-box1">
                 <h1>"CON EL SABOR DE CASA, QUE TE HACE SENTIR EN EL HOGAR"</h1>
             </section> <!-- Caja del medio -->
-
-
-            <div class="grid2 bg-linear-to-t from-[#fff] to-[#efe6dc]">
+            <div class="grid2 bg-linear-to-t from-[#fff] to-[#efe6dc] " id="menu">
                 <div class="box large-box-menu">
                     <div class="menu">
                         <h1>
@@ -69,12 +64,11 @@
                             Alegra tu día con nuestras galletas recién horneadas,
                             elaboradas con ingredientes frescos y naturales.
                         </span> <br><br>
-                        <div class="btn-history">
-                            <button type="button">Ordenar en línea</button>
-                        </div>
+                        <button onclick="location.href='/login'" class="w-[240px] h-10 px-1.5 rounded-[10px] bg-white text-[#6f473d] font-[500] font-poppins cursor-pointer flex items-center justify-center border border-[#6f473d] text-[15px] hover:bg-[#f0e0d6] transition-colors duration-300">
+                            Ordenar en línea
+                          </button>
                     </div>
                 </div>
-
                 <div class="grid-menu">
                     <div class="box large-box-me">
                         <img src="../../static/images/corazon.jpg" alt="">
@@ -95,7 +89,6 @@
                         <div class="precios">
                             <h2>Galleta espacial</h2>
                         </div>
-
                     </div>
                     <div class="box large-box-me">
                         <img src="../../static/images/rellena.jpg" alt="">
@@ -116,14 +109,10 @@
                         <div class="precios">
                             <h2>Galleta espacial</h2>
                         </div>
-
                     </div>
                 </div>
-
             </div>
-
-
-            <div class="flex justify-center px-4">
+            <div class="flex justify-center px-4" id="historia">
                 <div class="grid-history bg-white max-w-15/16 rounded-[40px] shadow-md bg-[#efe6dc]">
                     <div class="box large-box-history">
                         <h1 class="text-center">
@@ -144,16 +133,13 @@
                     </div>
                 </div>
             </div>
-
-
-
             <div class="flex justify-center">
                 <div>
                     <div class="mid-box2 text-center mb-6">
                         <h2 class="text-2xl font-bold">Nuestros especiales del mes</h2>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6" style="margin: 0px 30px">
+                    <div class="grid-1 grid-cols-1 md:grid-cols-3 gap-6 mb-6" style="margin: 0px 30px">
                         <div class="box large-box">
                             <img src="../../static/images/g1.jpg" alt="Galleta 1"
                                 class="w-full h-auto object-cover rounded-md">
@@ -168,7 +154,7 @@
                         </div>
                     </div>
 
-                    <div class="grid gap-4 text-center" style="margin: 0px 30px">
+                    <div class="grid-1 gap-4 text-center" style="margin: 0px 30px">
                         <div class="precios">
                             <h2 class="text-xl font-semibold">Galleta vainilla</h2>
                             <h3 class="text-lg">$12.00</h3>
@@ -182,50 +168,64 @@
                             <h3 class="text-lg">$12.00</h3>
                         </div>
                     </div>
-
                     <section class="mid-box3 mt-8 text-center">
-                        <div class="btn-history">
-                            <button type="button">Ordenar en línea</button>
-                        </div>
+                        <button onclick="location.href='/login'" class="w-[240px] h-10 px-1.5 rounded-[10px] bg-white text-[#6f473d] font-[500] font-poppins cursor-pointer flex items-center justify-center border border-[#6f473d] text-[15px] hover:bg-[#D2B79F] hover:text-[#6f473d] transition-colors duration-300">
+                            Ordenar en línea
+                          </button>
                     </section>
+                </div>
+            </div>
+            <!-- footer -->
+            <div class="grid-rows-3 grid-flow-col w-full mt-8" id="contacto">
+                <div class="grid-col gap-4 flex justify-center " style="margin-bottom: 60px;">
+                    <h2 class="text-4xl font-bold m-10" style="color: #540b0e;">Contáctanos</h2><br>
+                </div>
+                <div class="box box-contact m-w-full px-6 ">
+                    <div class=" pl-6 border-amber-950 px-6">
+                        <div class="flex justify-center items-center mb-2">
+                            <img src="../../static/images/tienda.png" alt="" class="w-7 h-7 mb-2 px-4">
+                        </div>
+                        <h3 class="font-['Poppins'] text-lg text-black px-5">Las galletas</h3>
+                        <p class="text-black">4556 Blue berry</p>
+                        <p class="text-black">Las galletas, CA 90210</p>
+                    </div>
+                    <div class=" pl-6 border-blue-600 px-4">
+                        <div class="flex justify-center items-center mb-2">
+                            <img src="../../static/images/phone.png" alt="" class="w-7 h-7 mb-2 px-4">
+                        </div>
+                        <h3 class="font-['Poppins'] text-lg text-black px-5">Teléfono</h3>
+                        <p class="text-black">(477)123-145-62</p>
+                        <p class="text-black">(477)152-855-92</p>
+                    </div>
+                    <div class=" pl-6 border-blue-600 px-4">
+                        <div class="flex justify-center items-center mb-2">
+                            <img src="../../static/images/mail.png" alt="" class="w-7 h-7 mb-2 px-4">
+                        </div>
+                        <h3 class="font-['Poppins'] text-lg text-black px-5">Correo electrónico</h3>
+                        <p class="text-black">galletitas@dongalleto.com</p>
+                        <p class="text-black">galletotas@dongalleto.com</p>
+                    </div>
+                    <div class=" pl-6 border-blue-600 px-4">
+                        <div class="flex justify-center items-center mb-2">
+                            <img src="../../static/images/whatsapp.png" alt="" class="w-7 h-7px-4">
+                        </div>
+                        <h3 class="font-['Poppins'] text-lg text-black px-5">WhatsApp</h3>
+                        <p class="text-black">(477)548-956-22</p>
+                        <p class="text-black">(477)548-956-22</p>
+                    </div>
 
+                </div>
+                <div class=" w-full text-lg flex justify-center" style="padding: 20px; color: #540b0e;">
+                    <p>© 2024 Your Company, Inc. All rights reserved.</p>
                 </div>
             </div>
 
 
-
-
-
-
-            
-
-
-
-            <div class="bg-linear-to-t from-[#d2b79f] to-[#efe6dc]">
-                <div class="grid-footer">
-                    <div class="box large-box-footer">
-                        <h1>
-                            "El sabor de Don Galleto, antojando a todo México"
-                        </h1>
-                    </div>
-                </div>
-                <section class="footer">
-                    <div class="footer-content">
-                        <p>&copy; 2025 Don Galleto. Todos los derechos reservados.</p>
-                        <p>
-                            <a href="#about">Acerca de</a> |
-                            <a href="#contact">Contacto</a> |
-                            <a href="#privacy">Política de privacidad</a>
-                        </p>
-                    </div>
-                </section>
-            </div>
         </main>
     </div>
-
 </div>
 {% endblock %}
 
 {% block scripts %}
-
+<script type="modale" src="../../static/js/modulos/portalCliente/portal-cliente.js"></script>
 {% endblock %}

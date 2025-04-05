@@ -56,3 +56,14 @@ def get_compra(id_compra: int) -> dict:
     except Exception as e:
         logger.error("Error al obtener la compra: %s", e)
         raise e from e
+
+
+def list_compras_almacen() -> list:
+    """
+    Obtiene todas las compras activas.
+    """
+    try:
+        return crud.list_all(estatus=1)
+    except Exception as e:
+        logger.error("Error al obtener las compras activas: %s", e)
+        raise e from e

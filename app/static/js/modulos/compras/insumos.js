@@ -124,7 +124,7 @@ function cargarInsumos() {
                 <td class="p-3 text-center">${insumo.nombre}</td>
                 <td class="p-3 text-center">${insumo.descripcion}</td>
                 <td class="p-3 text-center">${insumo.existencias || 0}</td>
-                <td class="p-3 text-center">${insumo.unidad.nombre + ' (' + insumo.unidad.simbolo + ')'}</td>
+                <td class="p-3 text-center">${insumo.unidad + ' (' + insumo.simbolo + ')'}</td>
                 <td class="p-3 flex justify-center">
                     <button onclick="buscarInsumoId(${insumo.id_insumo})" class="align-middle cursor-pointer">
                         <img src="../../../static/images/lapiz.png" class="w-7 h-7">

@@ -89,13 +89,7 @@ function consultarInsumos() {
         .catch(error => {
             console.error('Error:', error.message);
             Swal.fire('Error', error.message || 'Error al cargar insumos', 'error');
-        });
-}
-
-function inicializarFecha() {
-    const hoy = new Date();
-    const fechaFormateada = hoy.toISOString().split('T')[0]; // Obtiene YYYY-MM-DD
-    document.querySelector('input[name="fecha"]').value = fechaFormateada;
+        }).finally( () => tabs.desbloquearTabs());
 }
 
 function abrirModal(tipo) {
@@ -108,7 +102,6 @@ function abrirModal(tipo) {
         modalForm = document.getElementById('modalViewCompra');
     }
     modalForm.classList.remove('hidden');
-    inicializarFecha();
 }
 
 function abrirVerCompra(id_compra){
@@ -273,6 +266,7 @@ function actualizarInsumo(id_insumo, valor, campo) {
 }
 
 function guardarCompra(event){
+    document.getElementById('btnGuardarCompra').disabled = true;
     event.preventDefault();
     const contenedor = document.getElementById('insumos-seleccionados');
     if (contenedor.querySelector('div')) {
@@ -282,7 +276,6 @@ function guardarCompra(event){
             mostrarErrores(errores);
             return;
         }
-
         const formData =  {
             observacion: document.querySelector('input[name="observacion"]').value,
             proveedor_id: document.querySelector('select[name="proveedor"]').value,
@@ -321,6 +314,7 @@ function cancelarCompra(event){
         })
         .then(data => {
             alertas.procesoTerminadoExito();
+            tabs.ocultarLoader();
             cargarCompras();
         })
         cerrarModal();
@@ -378,10 +372,10 @@ function validarFormulario() {
 }
 
 function limpiarFormulario(){
-    document.querySelector('input[name="fecha"]').value = '';
     document.querySelector('select[name="proveedor"]').value = '';
     document.querySelector('input[name="observacion"]').value = '';
     document.getElementById('insumos-seleccionados').innerHTML = '';
+    document.getElementById('btnGuardarCompra').disabled = false;
 }
 
 window.abrirModal = abrirModal;

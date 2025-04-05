@@ -52,7 +52,7 @@ function mostrarEsqueletoTabla(tbody, rows = 5, columns = 4) {
 
 function mostrarEsqueletoMainContent() {
     return `
-        <div class="flex flex-col h-screen animate-pulse">
+        <div class="flex flex-col mx-3 my-4 border-content animate-pulse">
             <!-- Tabs Skeleton -->
             <div class="border-b border-gray-200 mb-4">
                 <div class="flex space-x-4">

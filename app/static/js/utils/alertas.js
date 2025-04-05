@@ -88,6 +88,16 @@ function alertaCambioMargen(costoUnitario, nuevoPrecio) {
     });
 }
 
+function confirmarProcesoFinalizar() {
+    Swal.fire({
+        position: 'center',
+        icon: "question",
+        title: "¿Está seguro de realizar la acción?",
+        showConfirmButton : true,
+        showCancelButton: true
+      });
+}
+
 export const alertas = {
     confirmarEliminar : () => confirmarEliminar(),
     procesoTerminadoExito : () => procesoTerminadoExito(),
@@ -95,5 +105,7 @@ export const alertas = {
     procesoTerminadoSinExito : () => procesoTerminadoSinExito(),
     alertaRecetas : (texto) => alertaRecetas(texto),
     alertaCambioMargen : (costoUnitario, nuevoPrecio) => alertaCambioMargen(costoUnitario, nuevoPrecio),
-    alertaAumentoCostoProduccion : (aumento, nuevoPrecio) => alertaAumentoCostoProduccion(aumento, nuevoPrecio)
+    alertaAumentoCostoProduccion : (aumento, nuevoPrecio) => alertaAumentoCostoProduccion(aumento, nuevoPrecio), 
+    procesoTerminadoSinExito : () => procesoTerminadoSinExito(),
+    confirmarProcesoFinalizar: () => confirmarProcesoFinalizar()
 }

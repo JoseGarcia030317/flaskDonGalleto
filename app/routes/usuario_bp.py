@@ -35,3 +35,17 @@ def delete_user():
         return jsonify(result)
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500
+    
+@usuario_bp.route("/usuarios/get_all_tipo_usuarios", methods=['GET'])
+def get_all_tipo_usuarios():
+    try:
+        result = usuarios.get_all_tipo_usuarios()
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500 
+    
+@usuario_bp.route("/usuarios/get_tipo_usuario_by_id", methods=['POST'])
+def get_tipo_usuario_by_id():
+    data = request.get_json()
+    id_tipo_usuario = data.get("id_tipo_usuario")
+    return jsonify(usuarios.get_tipo_usuario_by_id(id_tipo_usuario))    

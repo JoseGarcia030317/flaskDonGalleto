@@ -1,4 +1,4 @@
-from core.classes.Tb_usuarios import Usuario
+from core.classes.Tb_usuarios import Usuario, TipoUsuario
 import json
 import bcrypt
 from utils.connectiondb import DatabaseConnector 
@@ -36,9 +36,13 @@ class UsuarioCRUD:
         Session = DatabaseConnector().get_session
         with Session() as session:
             try:
-                session.add(usuario)
-                session.commit()
-                return self._usuario_to_dict(usuario)
+                validation = session.query(Usuario).filter_by(usuario=usuario.usuario, estatus=1).first()
+                if validation:
+                    return 'El nombre de usuario ya existe'
+                else:
+                    session.add(usuario)
+                    session.commit()
+                    return self._usuario_to_dict(usuario)
             except Exception as e:
                 session.rollback()
                 raise e
@@ -122,3 +126,33 @@ class UsuarioCRUD:
                 return {}
             
             return self._usuario_to_dict(usuario)
+
+    def list_tipo_usuarios(self):
+        """
+        Obtiene el listado completo de tipos de usuarios y los retorna como lista de dicts.
+        Si no hay registros, retorna una lista vacía.
+        """
+        Session = DatabaseConnector().get_session
+        with Session() as session:
+            tipos_usuarios = session.query(TipoUsuario).all()
+            return [self._tipo_usuario_to_dict(t) for t in tipos_usuarios]
+
+    def _tipo_usuario_to_dict(self, tipo_usuario):
+        return {
+            "id_tipo_usuario": tipo_usuario.id_tipo_usuario,
+            "nombre": tipo_usuario.nombre,
+            "descripcion": tipo_usuario.descripcion
+        }
+
+    def get_tipo_usuario(self, id):
+        """
+        Obtiene un tipo de usuario por su id, retornándolo como dict.
+        Si no existe, retorna {}.
+        """
+        Session = DatabaseConnector().get_session
+        with Session() as session:
+            tipo_usuario = session.query(TipoUsuario).filter_by(id_tipo_usuario=id).first()
+            if not tipo_usuario:
+                return {}
+            return self._tipo_usuario_to_dict(tipo_usuario)
+        

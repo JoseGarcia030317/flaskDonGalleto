@@ -37,8 +37,9 @@ class InventarioInsumo(Base):
     merma_id = Column(Integer, nullable=True)
     horneado_id = Column(Integer, nullable=True)
     id_estatus = Column(Integer, nullable=False, default = 1)
+    fecha_caducidad = Column(DateTime, nullable=True)
     
-    def __init__(self, insumo_id=None, tipo_registro=None, cantidad=None, tipo_movimiento=None, fecha=None, compra_id=None, merma_id=None, horneado_id=None, id_estatus=None):
+    def __init__(self, insumo_id=None, tipo_registro=None, cantidad=None, tipo_movimiento=None, fecha=None, compra_id=None, merma_id=None, horneado_id=None, id_estatus=None, fecha_caducidad=None):
         """
         Constructor para crear una instancia de InventarioInsumo.
         
@@ -50,6 +51,7 @@ class InventarioInsumo(Base):
         :param compra_id: ID de la compra asociada
         :param merma_id: ID de la merma asociada
         :param horneado_id: ID del horneado asociado
+        :param fecha_caducidad: Fecha de caducidad
         """
         self.insumo_id = insumo_id
         self.tipo_registro = tipo_registro
@@ -60,3 +62,4 @@ class InventarioInsumo(Base):
         self.merma_id = merma_id if merma_id else 0
         self.horneado_id = horneado_id if horneado_id else 0
         self.id_estatus = id_estatus if id_estatus else 1
+        self.fecha_caducidad = fecha_caducidad

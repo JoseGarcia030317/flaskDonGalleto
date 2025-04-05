@@ -4,7 +4,6 @@ from core.cruds.crud_usuarios import UsuarioCRUD
 from core.cruds.crud_clientes import ClienteCRUD
 
 
-
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
@@ -45,3 +44,4 @@ def create_user(data):
     """Crea un nuevo usuario."""
     crud = UsuarioCRUD()
     return crud.create(data)
+

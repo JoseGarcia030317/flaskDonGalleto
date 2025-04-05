@@ -42,36 +42,23 @@ const horneados = [
         fecha_horneado: "30/10/2024 13:00",
         estatus: "En proceso"
     },
-    {
-        id_horneado: 4,
-        lote: "234546",
-        receta: {
-            id: 1,
-            nombre: "Receta Clásica",
-            tiempo: 45,
-            cantidad: 120,
-            insumos: ["Harina", "Huevos", "Mantequilla"]
-        },
-        fecha_horneado: "30/10/2024 13:00",
-        estatus: "En proceso"
-    }
 ]
 
-function cargarModuloProduccion() {
-    const container = document.getElementById("horneados-container");
+function cargarModuloSolicitudes(){
+    const container = document.getElementById("solicitudes-container");
     tabs.mostrarEsqueletoCardGalleta(container);
     generarCards();
 }
 
 function generarCards() {
-    const container = document.getElementById('horneados-container');
+    const container = document.getElementById('solicitudes-container');
     container.innerHTML = "";
     horneados.forEach(horneado => {
         const card = document.createElement('div');
         card.className = 'bg-[#efe6dc] rounded-xl shadow-md overflow-hidden border border-gray-200';
         card.innerHTML = `
             <div class="flex flex-col relative mb-1">
-                <span class="absolute top-2 right-2 w-5 h-5 bg-green-500 rounded-full"></span>
+                <span class="absolute top-2 right-2 w-5 h-5 bg-yellow-500 rounded-full"></span>
                 <div class="flex items-center h-24">
                     <div class="w-1/3 flex items-center justify-center">
                       <img src="../../../static/images/galleta ejemplo.png" 
@@ -90,14 +77,14 @@ function generarCards() {
 
                 <div class="border-t border-[#8A5114] flex items-center justify-between w-full">
                     <div class="flex justify-center w-1/2">
-                        <button onclick="finalizarHorneado(${horneado.id_horneado})" class="w-full justify-center p-1 text-[#8A5114] p-0 cursor-pointer flex flex-nowrap border-r border-[#8A5114] hover:bg-[rgba(145,90,23,0.15)]">
-                            CANCELAR
+                        <button onclick="rechazarHorneado(${horneado.id_horneado})" class="w-full justify-center p-1 text-[#8A5114] p-0 cursor-pointer flex flex-nowrap border-r border-[#8A5114] hover:bg-[rgba(145,90,23,0.15)]">
+                            RECHAZAR
                         </button>
                     </div>
     
                     <div class="flex justify-center w-1/2">
-                      <button onclick="cancelarHorneado(${horneado.id_horneado})" class="w-full justify-center p-1 text-[#8A5114] p-0 cursor-pointer flex flex-nowrap hover:bg-[rgba(145,90,23,0.15)]">
-                            FINALIZAR
+                      <button onclick="aceptarHorneado(${horneado.id_horneado})" class="w-full justify-center p-1 text-[#8A5114] p-0 cursor-pointer flex flex-nowrap hover:bg-[rgba(145,90,23,0.15)]">
+                            ACEPTAR
                       </button>
                     </div>
                 </div>
@@ -108,13 +95,13 @@ function generarCards() {
     });
 }
 
-function finalizarHorneado(){
-    alertas.confirmarEliminar();
+function aceptarHorneado(id_horneado){
+    alertas.procesoTerminadoExito();
 }
 
-function cancelarHorneado(id_horneado){
+function rechazarHorneado(id_horneado){
     alertas.confirmarProcesoFinalizar();
 }
-window.cargarModuloProduccion = cargarModuloProduccion;
-window.cancelarHorneado = cancelarHorneado;
-window.finalizarHorneado = finalizarHorneado;
+window.cargarModuloSolicitudes = cargarModuloSolicitudes;
+window.rechazarHorneado = rechazarHorneado;
+window.aceptarHorneado = aceptarHorneado;

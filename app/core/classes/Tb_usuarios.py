@@ -39,3 +39,17 @@ class Usuario(UserMixin, Base):
     
     def get_id(self):
         return str(f'usuario: {self.id_usuario}')
+
+
+class TipoUsuario(Base):
+    __tablename__ = 'Tb_catalogo_tipo_usuario'
+
+    id_tipo_usuario = Column(Integer, primary_key=True, autoincrement=True)
+    nombre = Column(String(65), nullable=False)
+    descripcion = Column(String(250), nullable=False)
+
+    def __init__(self, nombre, descripcion, id_tipo_usuario=None):
+        self.nombre = nombre
+        self.descripcion = descripcion
+        self.id_tipo_usuario = id_tipo_usuario
+    

@@ -46,9 +46,20 @@ function procesoTerminadoSinExito() {
       });
 }
 
+function confirmarProcesoFinalizar() {
+    Swal.fire({
+        position: 'center',
+        icon: "question",
+        title: "¿Está seguro de realizar la acción?",
+        showConfirmButton : true,
+        showCancelButton: true
+      });
+}
+
 export const alertas = {
     confirmarEliminar : () => confirmarEliminar(),
     procesoTerminadoExito : () => procesoTerminadoExito(),
     alertaWarning : (mensaje) => alertaWarning(mensaje),
-    procesoTerminadoSinExito : () => procesoTerminadoSinExito()
+    procesoTerminadoSinExito : () => procesoTerminadoSinExito(),
+    confirmarProcesoFinalizar: () => confirmarProcesoFinalizar()
 }

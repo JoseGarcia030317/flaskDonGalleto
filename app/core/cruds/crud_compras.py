@@ -16,8 +16,9 @@ class CompraCRUD:
     ATTRIBUTES_DONT_UPDATE = ["clave_compra","insumo_id"]
 
     # Constantes para manejo de estados (por ejemplo, 1: Activo, 0: Inactivo)
-    STATUS_ACTIVO = 1
+    STATUS_INVENTARIAR = 1
     STATUS_INACTIVO = 0
+    STATUS_COMPLETADA = 2
 
     @staticmethod
     def _filter_data(data: dict, allowed: list) -> dict:
@@ -179,7 +180,7 @@ class CompraCRUD:
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            compra = session.query(Compra).filter_by(id_compra=id_compra, estatus=self.STATUS_ACTIVO).first()
+            compra = session.query(Compra).filter_by(id_compra=id_compra).first()
             if not compra:
                 return {}
             try:
@@ -203,7 +204,7 @@ class CompraCRUD:
                 Proveedor.nombre
             ).join(
                 Proveedor, Compra.proveedor_id == Proveedor.id_proveedor
-            ).filter(Compra.estatus == self.STATUS_ACTIVO).all()
+            ).filter(Compra.estatus != self.STATUS_INACTIVO).all()
             result_list = []
             for compra in compras:
                 total_compra = 0  # Inicializamos el acumulador para cada compra
@@ -237,5 +238,63 @@ class CompraCRUD:
                         "cantidad": cantidad
                     })
                 compra_dict["total_compra"] = total_compra  # Se asigna el total calculado a la compra
+                result_list.append(compra_dict)
+            return result_list
+
+
+    def list_all(self, estatus: int = None) -> list:
+        """
+        Obtiene el listado completo de compras activas, incluyendo sus detalles.
+        Retorna una lista vacía si no hay registros.
+        """
+        Session = DatabaseConnector().get_session
+        with Session() as session:
+            query = session.query(
+                Compra,
+                Proveedor.nombre
+            ).join(
+                Proveedor, Compra.proveedor_id == Proveedor.id_proveedor
+            )
+
+            if estatus is not None:
+                query = query.filter(Compra.estatus == estatus)
+            else:
+                query = query.filter(Compra.estatus != 0)
+
+            compras = query.all()
+            
+            result_list = []
+            for compra in compras:
+                total_compra = 0
+                compra_dict = {
+                    "id_compra": compra.Compra.id_compra,
+                    "clave_compra": compra.Compra.clave_compra,
+                    "fecha_compra": compra.Compra.fecha_compra,
+                    "observacion": compra.Compra.observacion,
+                    "estatus": compra.Compra.estatus,
+                    "proveedor_id": compra.Compra.proveedor_id,
+                    "proveedor": compra.nombre,
+                    "detalles": [],
+                    "total_compra": 0
+                }
+                detalles = session.query(
+                    CompraDetalle,
+                    Insumo.nombre
+                ).join(
+                    Insumo, CompraDetalle.insumo_id == Insumo.id_insumo
+                ).filter(CompraDetalle.compra_id == compra.Compra.id_compra).all()
+                for detalle in detalles:
+                    precio_unitario = float(detalle.CompraDetalle.precio_unitario)
+                    cantidad = detalle.CompraDetalle.cantidad
+                    importe = precio_unitario * cantidad
+                    total_compra += importe
+                    compra_dict["detalles"].append({
+                        "insumo_id": detalle.CompraDetalle.insumo_id,
+                        "insumo": detalle.nombre,
+                        "presentacion": detalle.CompraDetalle.presentacion,
+                        "precio_unitario": precio_unitario,
+                        "cantidad": cantidad
+                    })
+                compra_dict["total_compra"] = total_compra
                 result_list.append(compra_dict)
             return result_list

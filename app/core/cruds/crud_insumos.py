@@ -1,9 +1,9 @@
 from core.classes.Tb_catalogoUnidad import Unidad
-from core.classes.Tb_insumos import Insumo
+from core.classes.Tb_insumos import Insumo, InventarioInsumo
 import json
 from utils.connectiondb import DatabaseConnector
 from core.cruds.crud_unidad import UnidadCRUD
-
+from sqlalchemy import func, case
 
 class InsumoCRUD:
     def _insumo_unidad_to_dict(self, insumo, unidad):
@@ -133,8 +133,33 @@ class InsumoCRUD:
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            insumos = session.query(Insumo).filter_by(estatus=1).all()
-            return [self._insumo_to_dict(i) for i in insumos]
+            subquery = session.query(
+                InventarioInsumo.insumo_id,
+                func.sum(
+                    case(
+                        (InventarioInsumo.tipo_registro == 1, InventarioInsumo.cantidad),
+                        else_=-InventarioInsumo.cantidad
+                    )
+                ).label("existencias")
+            ).group_by(InventarioInsumo.insumo_id).subquery()
+
+            insumos = session.query(
+                Insumo,
+                subquery.c.existencias
+            ).outerjoin(
+                subquery, Insumo.id_insumo == subquery.c.insumo_id
+            ).filter(Insumo.estatus == 1).all()
+
+            result = []
+            for insumo, existencias in insumos:
+                result.append({
+                    "id_insumo": insumo.id_insumo,
+                    "nombre": insumo.nombre,
+                    "descripcion": insumo.descripcion,
+                    "existencias": existencias if existencias is not None else 0
+                })
+            return result
+            
 
     def list_all_insumo_unidad(self):
         """

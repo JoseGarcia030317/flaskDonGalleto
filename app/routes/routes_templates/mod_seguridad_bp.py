@@ -21,3 +21,10 @@ def index_seguridad():
 @role_required(1)
 def seguridad_usuarios():
     return render_template('modulos/seguridad/usuarios.html')
+
+@mod_seguridad_bp.route('/seguridad/clientes')
+@login_required
+@fresh_login_required
+@role_required(1)
+def seguridad_clientes():
+    return render_template('modulos/seguridad/clientes.html')

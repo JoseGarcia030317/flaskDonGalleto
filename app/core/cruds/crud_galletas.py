@@ -1,7 +1,8 @@
 import json
 import logging
-from core.classes.Tb_galletas import Galleta, Receta, DetalleReceta
+from core.classes.Tb_galletas import Galleta, Receta, DetalleReceta, InventarioGalleta
 from utils.connectiondb import DatabaseConnector
+from sqlalchemy import func, case
 
 logger = logging.getLogger(__name__)
 
@@ -307,19 +308,37 @@ class GalletaCRUD:
                 "recetas": recetas_list
             }
 
-    def get_all(self) -> list:
+    def get_all_galletas(self) -> list:
         """
         Consulta y retorna todas las galletas activas.
         Cada galleta se retorna con la siguiente estructura:
-        
+
         Retorna:
             list: Lista de galletas activas.
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            galletas = session.query(Galleta).filter(Galleta.estatus == 1).all()
+            # Subconsulta que calcula las existencias netas para cada galleta
+            subquery = session.query(
+                InventarioGalleta.galleta_id,
+                func.sum(
+                    case(
+                        (InventarioGalleta.tipo_registro == 1, InventarioGalleta.cantidad),
+                        else_=-InventarioGalleta.cantidad
+                    )
+                ).label("existencias")
+            ).group_by(InventarioGalleta.galleta_id).subquery()
+
+            # Consulta principal: se hace outer join para incluir todas las galletas activas
+            galletas = session.query(
+                Galleta,
+                subquery.c.existencias
+            ).outerjoin(
+                subquery, Galleta.id_galleta == subquery.c.galleta_id
+            ).filter(Galleta.estatus == 1).all()
+
             result = []
-            for gal in galletas:
+            for gal, existencias in galletas:
                 result.append({
                     "id_galleta": gal.id_galleta,
                     "nombre_galleta": gal.nombre_galleta,
@@ -327,6 +346,7 @@ class GalletaCRUD:
                     "proteccion_precio": gal.proteccion_precio,
                     "gramos_galleta": gal.gramos_galleta,
                     "precio_unitario": gal.precio_unitario,
-                    "dias_caducidad": gal.dias_caducidad
+                    "dias_caducidad": gal.dias_caducidad,
+                    "existencias": existencias if existencias is not None else 0
                 })
             return result

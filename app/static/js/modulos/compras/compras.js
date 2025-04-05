@@ -36,7 +36,7 @@ function initCompras(){
 
 function cargarCompras() {  
     const tbody = document.getElementById('tbody_compras');
-    tabs.mostrarEsqueletoTabla(tbody);
+    tabs.mostrarEsqueletoTabla(tbody,5,5);
 
     api.getJSON('/compras/list_compras')
     .then(data => {

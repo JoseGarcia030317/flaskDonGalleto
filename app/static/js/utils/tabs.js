@@ -28,18 +28,20 @@ function cambiarTab(tabId) {
 }
 
 // Función helper para mostrar esqueletos
-function mostrarEsqueletoTabla(tbody, rows = 5) {
+function mostrarEsqueletoTabla(tbody, rows = 5, columns = 4) {
+    // Aseguramos que siempre haya al menos 1 columna de datos + botones
+    const dataColumns = Math.max(columns - 1, 1);
+    
     tbody.innerHTML = Array.from({ length: rows }, () => `
         <tr class="animate-pulse">
-            <td class="p-3">
-                <div class="h-4 bg-gray-200 rounded-full w-3/4 mx-auto"></div>
-            </td>
-            <td class="p-3">
-                <div class="h-4 bg-gray-200 rounded-full w-1/2 mx-auto"></div>
-            </td>
-            <td class="p-3">
-                <div class="h-4 bg-gray-200 rounded-full w-1/3 mx-auto"></div>
-            </td>
+            ${Array.from({ length: dataColumns }, (_, i) => {
+                const widthCycle = ['w-3/4', 'w-1/2', 'w-1/3'];
+                return `
+                    <td class="p-3">
+                        <div class="h-4 bg-gray-200 rounded-full ${widthCycle[i % 3]} mx-auto"></div>
+                    </td>
+                `;
+            }).join('')}
             <td class="p-3 flex justify-center space-x-2">
                 <div class="w-6 h-6 bg-gray-200 rounded-full"></div>
                 <div class="w-6 h-6 bg-gray-200 rounded-full"></div>
@@ -132,7 +134,7 @@ function ocultarLoader() {
 
 export const tabs = {
     cambiarTab: (endpoint) => cambiarTab(endpoint),
-    mostrarEsqueletoTabla: (tbody) => mostrarEsqueletoTabla(tbody, 5),
+    mostrarEsqueletoTabla: (tbody, rows = 5, columns = 4) => mostrarEsqueletoTabla(tbody, rows, columns),
     mostrarEsqueletoMainContent: () => mostrarEsqueletoMainContent(),
     mostrarEsqueletoModuloContent: () => mostrarEsqueletoModuloContent(),
     mostrarEsqueletoCardGalleta : (container, cantidad = 10) => mostrarEsqueletoCardGalleta(container),

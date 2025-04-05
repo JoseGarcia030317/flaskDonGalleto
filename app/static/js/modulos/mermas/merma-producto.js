@@ -135,7 +135,7 @@ function cargarSelectProductos() {
 // Funcion para cargar las mermas de productos al iniciar la aplicacion
 function cargarMermaProducto() {
     const tbody = document.getElementById('tbody_merma_producto');
-    tabs.mostrarEsqueletoTabla(tbody);
+    tabs.mostrarEsqueletoTabla(tbody, 5, 5);
     consultarProductos().then(() => {
         cargarSelectProductos();
     });

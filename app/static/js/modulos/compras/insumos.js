@@ -111,7 +111,7 @@ function cargarSelectUnidad() {
 
 function cargarInsumos() {
     const tbody = document.getElementById('tbody_insumos');
-    tabs.mostrarEsqueletoTabla(tbody)
+    tabs.mostrarEsqueletoTabla(tbody, 5,4);
     cargarSelectUnidad()
 
     api.getJSON('/insumos/get_all_insumos_unidad')

@@ -32,6 +32,7 @@ def login():
         if user:
             login_user(user, remember=form.remember_me.data)
             return redirect(url_for(endpoint))
+            # return redirect(url_for('main_page_bp.mp_usuario'))
         else:
             flash("Usuario y/o contraseña incorrectos", "danger")
     

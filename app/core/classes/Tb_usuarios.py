@@ -42,7 +42,7 @@ class Usuario(UserMixin, Base):
 
 
 class TipoUsuario(Base):
-    __tablename__ = 'Tb_tipo_usuario'
+    __tablename__ = 'Tb_catalogo_tipo_usuario'
 
     id_tipo_usuario = Column(Integer, primary_key=True, autoincrement=True)
     nombre = Column(String(65), nullable=False)

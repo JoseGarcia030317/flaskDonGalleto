@@ -144,12 +144,15 @@ class UsuarioCRUD:
             "descripcion": tipo_usuario.descripcion
         }
 
-    def get_tipo_usuario(self, id_tipo_usuario):
+    def get_tipo_usuario(self, id):
         """
         Obtiene un tipo de usuario por su id, retornándolo como dict.
         Si no existe, retorna {}.
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            tipo_usuario = session.query(TipoUsuario).filter_by(id_tipo_usuario=id_tipo_usuario).first()
+            tipo_usuario = session.query(TipoUsuario).filter_by(id_tipo_usuario=id).first()
+            if not tipo_usuario:
+                return {}
             return self._tipo_usuario_to_dict(tipo_usuario)
+        

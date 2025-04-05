@@ -1,6 +1,5 @@
 import logging
 from core.cruds.crud_usuarios import UsuarioCRUD
-
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
@@ -35,3 +34,24 @@ def delete_user(uduario_id: int) -> dict:
     except Exception as e:
         logger.error("Error al eliminar el usuario con id %d: %s", uduario_id, e)
         raise
+
+def get_all_tipo_usuarios() -> list:
+    """Obtiene todos los tipos de usuarios de la base de datos."""
+    try:
+        result = crud.list_tipo_usuarios()
+        logger.info("Se han obtenido todos los tipos de usuarios.")
+        return result
+    except Exception as e:
+        logger.error("Error al obtener los tipos de usuarios: %s", e)
+        raise
+
+def get_tipo_usuario_by_id(id_tipo_usuario: int) -> dict:
+    """Obtiene un tipo de usuario por su id de la base de datos."""
+    try:
+        result = crud.get_tipo_usuario(id_tipo_usuario)
+        logger.info("Se ha obtenido el tipo de usuario con id %d.", id_tipo_usuario)
+        return result
+    except Exception as e:
+        logger.error("Error al obtener el tipo de usuario con id %d: %s", id_tipo_usuario, e)
+        raise
+

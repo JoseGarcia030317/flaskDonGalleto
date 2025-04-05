@@ -1,7 +1,8 @@
+import { tabs } from '../../utils/tabs.js';
 // Funcion para cargar la vista principal de horneados en el main
 function cargarModuloHorneados() {
     const main_content = document.getElementById('main-content')
-    main_content.innerHTML = '';
+    main_content.innerHTML = tabs.mostrarEsqueletoMainContent();
     fetch('/horneados')
     .then(response => response.text())
     .then(html => {
@@ -42,12 +43,12 @@ function cargarContenidoHorneados(endpoint) {
         const script = document.createElement('script');
         script.src = `../../static/js/modulos/horneados/${endpoint}.js?_=${timestamp}`;
         script.setAttribute('data-submodule', endpoint);
-
+        script.type = "module";
         script.onload = () => {
             console.log(`Script de ${endpoint} cargado`);
             // TO DO: aquí tiene que colocar los if's necesarios para poder iniciarlizar cada uno de los submodulos
             // Ejemplo:
-            // if (endpoint === 'inventario-galletas') window.cargarInventarioGalletas();
+            if (endpoint === 'inventario-galletas') window.cargarInventarioGalletas();
             // if (endpoint === 'produccion') window.cargarProduccion();
         };
 

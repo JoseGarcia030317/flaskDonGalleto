@@ -1,1 +1,52 @@
-<h1>Inventario de galletas ya esta trabajando</h1>
+<div id="productos-content" class="p-2">
+    <div class="items-center justify-center w-full">
+        <!-- Grid de cards de galletas -->
+        <div class="overflow-x-auto overflow-y-auto">
+            <div id="galletas-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <!-- Las cards se insertarán aquí -->
+            </div>
+        </div>
+    </div>
+
+
+    <div id="modalBackdrop" class="fixed inset-0 bg-black/50 z-50 hidden">
+        <!-- Modal añadir/editar -->
+        <div id="modalForm"
+            class="bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/3 max-h-[90vh] flex flex-col">
+            <!-- Encabezado del modal -->
+            <div class="bg-[#efe6dc] rounded-t-lg p-4 -m-6 mb-4 flex justify-center items-center relative">
+                <h2 id="modal-titulo" class="text-[#3C1D0C] font-semibold text-center">Agregar horneado</h2>
+                <button onclick="cerrarModal()"
+                    class="text-black hover:text-gray-700 absolute right-4 cursor-pointer">
+                    <img src="../../../static/images/cerrar.png" class="w-6 h-6">
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto space-y-4">
+                <!-- Formulario -->
+                <form id="galletaForm">
+                    <!-- Campo para id de la galleta -->
+                    <input type="number" name="galleta_id" value="0" hidden>
+                    <div class="text-right">
+                        <p>30/10/2024 13:00</p>
+                    </div>
+                    <div class="text-center mt-4">
+                        <h3 class="block text-xl text-[#895645] mb-1">Galleta loca</h3>
+                    </div>
+                    <div>
+                        <select type="text" name="receta" class="w-full p-2 border border-[#895645] rounded-full"
+                            required>
+                        </select>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                    <button type="submit" onclick="guardarHorneado()"
+                        class="w-full mt-6 py-2 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#895645] font-semibold flex items-center justify-center gap-2 hover:bg-[#a46a52] cursor-pointer">
+                        <img src="../../../static/images/guardar 3C1D0C.png" class="w-5 h-5">
+                        Guardar
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -2,7 +2,7 @@ import logging
 from sqlalchemy import text
 from core.cruds.crud_usuarios import UsuarioCRUD
 from core.cruds.crud_clientes import ClienteCRUD
-
+from core.cruds.crud_usuarios import TipoUsuarioCRUD
 
 
 logger = logging.getLogger(__name__)
@@ -45,3 +45,16 @@ def create_user(data):
     """Crea un nuevo usuario."""
     crud = UsuarioCRUD()
     return crud.create(data)
+
+def get_all_tipo_usuarios():
+    """Obtiene todos los tipos de usuarios."""
+    crud = UsuarioCRUD()
+    return crud.list_tipo_usuarios()
+
+def get_tipo_usuario_by_id(id_tipo_usuario):
+    """Obtiene un tipo de usuario por su id."""
+    crud = UsuarioCRUD()
+    return crud.get_tipo_usuario(id_tipo_usuario)
+
+
+

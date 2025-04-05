@@ -36,9 +36,13 @@ class UsuarioCRUD:
         Session = DatabaseConnector().get_session
         with Session() as session:
             try:
-                session.add(usuario)
-                session.commit()
-                return self._usuario_to_dict(usuario)
+                validation = session.query(Usuario).filter_by(usuario=usuario.usuario, estatus=1).first()
+                if validation:
+                    return 'El nombre de usuario ya existe'
+                else:
+                    session.add(usuario)
+                    session.commit()
+                    return self._usuario_to_dict(usuario)
             except Exception as e:
                 session.rollback()
                 raise e

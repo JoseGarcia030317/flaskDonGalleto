@@ -42,12 +42,14 @@ function cargarContenidoSeguridad(endpoint) {
         const script = document.createElement('script');
         script.src = `../../static/js/modulos/seguridad/${endpoint}.js?_=${timestamp}`;
         script.setAttribute('data-submodule', endpoint);
+        script.type = 'module'
 
         script.onload = () => {
             console.log(`Script de ${endpoint} cargado`);
             // TO DO: aquí tiene que colocar los if's necesarios para poder iniciarlizar cada uno de los submodulos
             // Ejemplo:
-            // if (endpoint === 'usuarios') window.cargarUsuarios();
+            if (endpoint === 'usuarios') window.cargarUsuarios();
+            if (endpoint === 'clientes') window.cargarClientes();
         };
 
         document.body.appendChild(script);

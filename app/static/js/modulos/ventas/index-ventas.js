@@ -14,7 +14,7 @@ function cargarModuloVentas() {
                 const endpoint = tab.dataset.target;
                 cargarContenidoVentas(endpoint);
             });
-            cargarContenidoVentas("listado-pedidos");
+            cargarContenidoVentas("solicitud-produccion");
         })
         .catch(err => console.error("Error cargando el módulo de ventas: ", err));
 }
@@ -46,7 +46,7 @@ function cargarContenidoVentas(endpoint) {
                 if (endpoint === 'registro-ventas') window.cargarRegistroVentas();
                 if (endpoint === 'listado-ventas') window.cargarListadoVentas();
                 if (endpoint === 'listado-pedidos') window.inicializarModuloListadoPedidos();
-                if (endpoint === 'corte-caja') window.cargarCorteCaja();
+                if (endpoint === 'corte-caja') window.inicializarModuloCorteCaja();
                 if (endpoint === 'solicitud-produccion') window.inicializarModuloSolicitudProduccion();
             };
 

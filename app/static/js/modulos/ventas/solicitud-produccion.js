@@ -8,13 +8,11 @@ let recetasDisponibles = [];
 // ====================================================================
 // Funciones para manejar el DOM y mostrar modales y alertas
 // ====================================================================
-function abrirModal(tipo) {
+function abrirModal() {
     const backdrop = document.getElementById('modalBackdrop');
     const modalForm = document.getElementById('modalForm');
 
     backdrop.classList.remove('hidden');
-    document.getElementById('modal-titulo').textContent =
-        tipo === 'editar' ? 'Editar galleta' : 'Añadir galleta';
     modalForm.classList.remove('hidden');
 }
 
@@ -108,7 +106,7 @@ function buscarGalletaPorId(id_galleta) {
                 console.log(data);
                 console.log(data.recetas);
                 generarRecetasCards();
-                abrirModal('añadir');
+                abrirModal();
             }
         })
         .catch(error => {

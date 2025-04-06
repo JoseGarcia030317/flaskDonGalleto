@@ -35,6 +35,7 @@ from routes.galletas_bp import galletas_bp
 from routes.compras_bp import compras_bp
 from routes.usuario_bp import usuario_bp
 from routes.almacen_bp import almacen_bp
+from routes.horneado_bp import horneado_bp
 
 # Inicializar extensiones de Flask
 # db = SQLAlchemy()
@@ -97,6 +98,7 @@ app.register_blueprint(galletas_bp)
 app.register_blueprint(compras_bp)
 app.register_blueprint(usuario_bp)
 app.register_blueprint(almacen_bp)
+app.register_blueprint(horneado_bp)
 
 # Ruta raíz de la aplicacion
 @app.route("/")

@@ -1,5 +1,6 @@
 import json
 import logging
+from datetime import datetime
 from utils.connectiondb import DatabaseConnector
 from core.classes.Tb_horneado import Horneado
 from core.classes.Tb_galletas import Receta, DetalleReceta
@@ -13,32 +14,19 @@ class HorneadoCRUD:
     __STATUS_TERMINADO__ = 2
     __STATUS_CANCELADO__ = 3
 
-    def get_all_horneados(self):
+    def get_all_horneados(self, id_horneado:int = None):
         """
         Obtiene todos los horneados activos junto con su receta e insumos asociados.
         Retorna una lista de diccionarios con la estructura requerida:
-        [
-            {
-                "id_horneado": ...,
-                "lote": ...,
-                "receta": {
-                    "id": ...,
-                    "nombre": ...,
-                    "tiempo": ...,
-                    "cantidad": ...,
-                    "insumos": [ ... ]
-                },
-                "fecha_horneado": "dd/mm/yyyy HH:MM",
-                "estatus": "En proceso" | "Terminado" | "Cancelado"
-            },
-            ...
-        ]
         """
         try:
             Session = DatabaseConnector().get_session
             with Session() as session:
                 # Se obtienen todos los horneados que no estén cancelados
-                horneados = session.query(Horneado).filter(Horneado.estatus != self.__STATUS_CANCELADO__).all()
+                if id_horneado:
+                    horneados = session.query(Horneado).filter(Horneado.id_horneado == id_horneado).all()
+                else:
+                    horneados = session.query(Horneado).filter(Horneado.estatus != self.__STATUS_CANCELADO__).all()
 
                 result = []
                 estatus_map = {
@@ -89,3 +77,51 @@ class HorneadoCRUD:
         except Exception as e:
             logger.error("Error al obtener los horneados: %s", e)
             raise e
+
+    def crear_horneado(self, json_horneado: dict):
+        """
+        Crea un nuevo horneado.
+        """
+
+        horneado = Horneado(**json_horneado)
+
+        try:
+            Session = DatabaseConnector().get_session
+            with Session() as session:
+                session.add(horneado)
+                session.commit()
+                return {
+                    "status": 200,
+                    "message": "Horneado creado correctamente",
+                    "id_horneado": horneado.id_horneado
+                }
+        except Exception as e:
+            logger.error("Error al crear el horneado: %s", e)
+            raise e
+
+
+    def cancelar_horneado(self, id_horneado: int):
+        """
+        Cancela un horneado.
+        """
+        try:
+            Session = DatabaseConnector().get_session
+            with Session() as session:
+                horneado = session.query(Horneado).filter(Horneado.id_horneado == id_horneado).first()
+                if horneado:
+                    horneado.estatus = self.__STATUS_CANCELADO__
+                    horneado.fecha_cancelacion = datetime.now()
+                    session.commit()
+                    return {
+                        "status": 200,
+                        "message": "Horneado cancelado correctamente"
+                    }
+                else:
+                    return {
+                        "status": 404,
+                        "message": "Horneado no encontrado"
+                    }
+        except Exception as e:
+            logger.error("Error al cancelar el horneado: %s", e)
+            raise e
+        

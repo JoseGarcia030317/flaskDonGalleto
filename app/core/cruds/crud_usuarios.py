@@ -55,8 +55,35 @@ class UsuarioCRUD:
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            usuario = session.query(Usuario).filter_by(id_usuario=id_usuario, estatus=1).first()
-            return self._usuario_to_dict(usuario)
+            usuario = session.query(Usuario, TipoUsuario).join(
+                TipoUsuario,
+                Usuario.tipo == TipoUsuario.id_tipo_usuario
+            ).filter(Usuario.id_usuario==id_usuario, Usuario.estatus==1).first()
+            
+            modulos = session.query(Modulo).join(
+                TipoUsuarioModulo,
+                Modulo.id_modulo == TipoUsuarioModulo.id_modulo
+            ).join(
+                TipoUsuario,
+                TipoUsuarioModulo.id_tipo_usuario == TipoUsuario.id_tipo_usuario
+            ).filter(
+                TipoUsuario.id_tipo_usuario == usuario.Usuario.tipo
+            ).all()
+            
+            roles = session.query(Modulo, TipoUsuarioModulo).join(
+                TipoUsuarioModulo,
+                Modulo.id_modulo == TipoUsuarioModulo.id_modulo
+            ).all()
+            
+            user = self._usuario_to_dict(usuario.Usuario)
+            user["modules"] = [{"id_modulo": m.id_modulo, 
+                                "descripcion": m.descripcion, 
+                                "ruta": m.ruta, 
+                                "funcion": m.funcion,
+                                "roles" : [roles.TipoUsuarioModulo.id_tipo_usuario for roles in roles if roles.Modulo.id_modulo == m.id_modulo]
+                                } for m in modulos]
+            user["tipo_usuario"] = usuario.TipoUsuario.nombre
+            return user
 
     def update(self, id_usuario, usuario_json):
         """

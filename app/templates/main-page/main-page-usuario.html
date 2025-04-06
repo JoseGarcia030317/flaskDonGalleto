@@ -1,14 +1,14 @@
 {% extends "main-page-base.html" %}
 
-{% block title %}{{ user.tipo_usuario }}{% endblock %}
+{% block title %}{{ user }}{% endblock %}
 
 {% block side_var %}
 <div>
   <nav class="space-y-2 bg-[#efe6dc] border-0 w-full">
     {% for modulo in modulos %}
-    <a onclick="{{ modulo.funcion_js }}" 
+    <a onclick="{{ modulo.funcion }}" 
        class="block px-6 py-1 text-nav text-[#3C1D0C] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black cursor-pointer">
-      {{ modulo.nombre_modulo }}
+      {{ modulo.descripcion }}
     </a>
     {% endfor %}
     
@@ -26,6 +26,6 @@
 
 {% block scripts %}
 {% for modulo in modulos %}
-<script type="module" src="../../static/js/modulos/{{ modulo.nombre_modulo }}/{{ modulo.js_principal }}"></script>
+<script type="module" src="../../static/js/modulos/{{ modulo.ruta }}"></script>
 {% endfor %}
 {% endblock %}

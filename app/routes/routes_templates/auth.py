@@ -59,17 +59,17 @@ def login():
             user = Cliente(**user_data)
             user.tipo_usuario = autentication.get("tipo_usuario")
             user.modules = autentication.get("modules")
-            endpoint = retornarUsuario(3) # main_page_bp.mp_cliente
+            # endpoint = retornarUsuario(3) # main_page_bp.mp_cliente
         elif user_data.get("id_usuario") is not None:
             user = Usuario(**user_data)
             user.tipo_usuario = autentication.get("tipo_usuario")
             user.modules = autentication.get("modules")
-            endpoint = retornarUsuario(user.tipo)
+            # endpoint = retornarUsuario(user.tipo)
 
         if user:
             login_user(user, remember=form.remember_me.data)
-            return redirect(url_for(endpoint))
-            # return redirect(url_for('main_page_bp.mp_usuario'))
+            # return redirect(url_for(endpoint))
+            return redirect(url_for('main_page_bp.mp_usuario'))
         else:
             flash("Usuario y/o contraseña incorrectos", "danger")
     

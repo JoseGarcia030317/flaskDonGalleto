@@ -6,10 +6,10 @@
     <div id="modalBackdropAlmacen" class="hidden fixed inset-0 bg-black/50 z-50">
         <!-- Modal Añadir/Editar -->
         <div id="modalFormAlmacen"
-            class="hidden bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[50rem]">
+            class="hidden bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[60rem]">
             <!-- Encabezado del modal -->
             <div class="bg-[#efe6dc] rounded-t-lg p-4 -m-6 mb-4 flex justify-center items-center relative">
-                <h2 id="modalTitulo" class="text-[#3C1D0C] font-semibold text-center">Ingresar insumos</h2>
+                <h2 id="modalTitulo" class="text-[#3C1D0C] font-semibold text-center">Ingresar a almacén</h2>
                 <button onclick="cerrarModal()" class="text-black hover:text-gray-700 absolute right-4 cursor-pointer">
                     <img src="../../../static/images/cerrar.png" class="w-6 h-6">
                 </button>
@@ -24,37 +24,20 @@
 
             <div class="w-full flex flex-col py-4 px-3 justify-between overflow-y-auto">
                 <!-- Header Table -->
-                <div id="header-table-almacen" class="grid grid-cols-5 gap-4 pt-2">
-                    <span class="text-[#895645] font-semibold ml-6">Producto</span>
+                <div id="header-table-almacen" class="grid grid-cols-6 gap-4 pt-2">
+                    <span class="text-[#895645] font-semibold ml-2">Producto</span>
                     <span class="text-[#895645] font-semibold text-center">Cantidad</span>
                     <span class="text-[#895645] font-semibold text-center">Presentación</span>
-                    <span class="text-[#895645] font-semibold">Cant. Estándar</span>
+                    <span class="text-[#895645] font-semibold">Contenido por presentación</span>
+                    <span class="text-[#895645] font-semibold">Total ingresado</span>
                     <span class="text-[#895645] font-semibold">Fecha de caducidad</span>
                 </div>
+                <p id="id_compra" hidden></p>
+                <div id="insumos" class="max-h-60 overflow-y-auto">
+                    <!-- Items Row -->
 
-                <div class="max-h-60 overflow-y-auto">
-                    <!-- Item Row -->
-                    <div class="gap-1 flex ml-0">
-                        <button id="btn-agregar" onclick="agregarGrupoInsumo()" class="text-white ml-0 rounded-full cursor-pointer">
-                            <img src="../../../static/images/plus.png" class="w-5 h-5">
-                        </button>
-                        <div class="flex items-center w-full gap-4 p-3 bg-gray-50 rounded-lg shadow-sm">
-                            <p class="w-1/5">Leche</p>
-                            <p class="text-center w-1/5">3</p>
-                            <p class="text-center w-1/5">Caja</p> 
-                            <div class="flex w-1/5 justify-center items-center space-x-2">
-                                <span>=</span>                    
-                                <input type="number" name="cantidad" min="0.0" step="0.1" placeholder="" class="w-20 p-2 border border-[#895645] rounded-full text-center" required>
-                                <p class="text-center w-auto">Lt</p>
-                            </div>
-                            <input type="date" name="fecha_caducidad" class="w-1/5 p-2 border border-[#895645] rounded-full text-center" required>
-                        </div>
-                    </div>
-                    <div id="grupo-agregado">
-                    
-                    </div>
                 </div>
-                <button type="submit" onclick="guardarAlmacen()" class="w-full py-2 mt-4 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#895645] font-semibold flex items-center justify-center gap-2 hover:bg-[#a46a52] cursor-pointer">
+                <button id="btnGuardarAlmacen" type="submit" onclick="guardarAlmacen(event)" class="w-full py-2 mt-4 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#895645] font-semibold flex items-center justify-center gap-2 hover:bg-[#a46a52] cursor-pointer">
                     <img src="../../../static/images/guardar 3C1D0C.png" class="w-5 h-5">
                     Guardar
                 </button>
@@ -150,6 +133,13 @@
                     Limpiar
                 </button>
             </div>
+        </div>
+    </div>
+
+    <div id="loader" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" hidden>
+        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
+            <img src="../../../static/images/LogoGalleto.png" alt="Cargando..." class="h-16 w-16 animate-spin">
+            <span class="mt-4 text-gray-700 font-semibold">Cargando...</span>
         </div>
     </div>
 </div>

@@ -179,7 +179,21 @@ function cargarRecetasLocal(recetas) {
 function calcularCostoRecetaDesdeDetalle(detalle) {
     return detalle.reduce((total, insumo) => {
         const insumoDB = insumosDisponibles.find(i => i.id_insumo === insumo.insumo_id);
-        return insumoDB ? total + (insumoDB.precio_unitario * insumo.cantidad) : total;
+        
+        if (!insumoDB) {
+            console.error(`Insumo con ID ${insumo.insumo_id} no encontrado.`);
+            return total;
+        }
+
+        const precio = parseFloat(insumoDB.precio_unitario);
+        const cantidad = parseFloat(insumo.cantidad);
+        
+        if (isNaN(precio) || isNaN(cantidad)) {
+            console.error(`Valores inválidos en insumo ${insumo.insumo_id}: Precio=${insumoDB.precio_unitario}, Cantidad=${insumo.cantidad}`);
+            return total;
+        }
+
+        return total + (precio * cantidad);
     }, 0);
 }
 

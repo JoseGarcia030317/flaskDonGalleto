@@ -79,8 +79,7 @@ class UsuarioCRUD:
             user["modules"] = [{"id_modulo": m.id_modulo, 
                                 "descripcion": m.descripcion, 
                                 "ruta": m.ruta, 
-                                "funcion": m.funcion,
-                                "roles" : [roles.TipoUsuarioModulo.id_tipo_usuario for roles in roles if roles.Modulo.id_modulo == m.id_modulo]
+                                "funcion": m.funcion
                                 } for m in modulos]
             user["tipo_usuario"] = usuario.TipoUsuario.nombre
             return user
@@ -211,4 +210,29 @@ class UsuarioCRUD:
             if not tipo_usuario:
                 return {}
             return self._tipo_usuario_to_dict(tipo_usuario)
-        
+
+    def get_modules(self):
+        """
+        Obtiene el listado completo de módulos y los retorna como lista de dicts.
+        Si no hay registros, retorna una lista vacía.
+        """
+        Session = DatabaseConnector().get_session
+        with Session() as session:
+            try:
+                modulos = session.query(Modulo).all()
+                roles = session.query(Modulo, TipoUsuarioModulo).join(
+                    TipoUsuarioModulo,
+                    Modulo.id_modulo == TipoUsuarioModulo.id_modulo
+                ).all()
+
+                return [{
+                        "id_modulo": m.id_modulo, 
+                        "descripcion": m.descripcion, 
+                        "ruta": m.ruta, 
+                        "funcion": m.funcion, 
+                        "roles": [r.TipoUsuarioModulo.id_tipo_usuario for r in roles if r.Modulo.id_modulo == m.id_modulo]
+                    } for m in modulos]
+            except Exception as e:
+                session.rollback()
+                raise e
+

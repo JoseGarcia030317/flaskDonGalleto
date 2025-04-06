@@ -1,5 +1,6 @@
 import requests
 from forms.login_form import LoginForm
+from flask import session
 from flask import Blueprint, app, current_app, flash, redirect, render_template, url_for, request
 from flask_login import current_user, fresh_login_required, login_required, login_user, logout_user
 from extensions import limiter
@@ -7,7 +8,7 @@ import copy
 from core.logic import login as log
 from core.classes.Tb_usuarios import Usuario
 from core.classes.Tb_clientes import Cliente
-
+from core.cruds.crud_usuarios import UsuarioCRUD
 auth_bp = Blueprint("auth_bp", __name__)
 
 
@@ -68,6 +69,8 @@ def login():
 
         if user:
             login_user(user, remember=form.remember_me.data)
+            session["modules"] = UsuarioCRUD().get_modules()
+            print(session["modules"])
             # return redirect(url_for(endpoint))
             return redirect(url_for('main_page_bp.mp_usuario'))
         else:

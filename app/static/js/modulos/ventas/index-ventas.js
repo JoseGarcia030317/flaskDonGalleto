@@ -14,7 +14,7 @@ function cargarModuloVentas() {
                 const endpoint = tab.dataset.target;
                 cargarContenidoVentas(endpoint);
             });
-            cargarContenidoVentas("solicitud-produccion");
+            cargarContenidoVentas("listado-ventas");
         })
         .catch(err => console.error("Error cargando el módulo de ventas: ", err));
 }
@@ -44,7 +44,7 @@ function cargarContenidoVentas(endpoint) {
                 // TO DO: aquí tienes que colocar los if's necesarios para poder inicializar cada uno de los submodulos
                 // Ejemplo:
                 if (endpoint === 'registro-ventas') window.cargarRegistroVentas();
-                if (endpoint === 'listado-ventas') window.cargarListadoVentas();
+                if (endpoint === 'listado-ventas') window.inicializarModuloListadoVentas();
                 if (endpoint === 'listado-pedidos') window.inicializarModuloListadoPedidos();
                 if (endpoint === 'corte-caja') window.inicializarModuloCorteCaja();
                 if (endpoint === 'solicitud-produccion') window.inicializarModuloSolicitudProduccion();

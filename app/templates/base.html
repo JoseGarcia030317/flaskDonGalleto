@@ -15,6 +15,11 @@
     {% block content %}
     {% endblock %}
   </main>
+
+  <script src="../static/js/modulos/auth/login.js"></script>
+  <!-- Cargar reCAPTCHA solo si se define la clave -->
+  {% if recaptcha_site_key_v3 %}
+  <script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_site_key_v3 }}"></script>
+  {% endif %}
 </body>
-<script src="../static/js/modulos/auth/login.js"></script>
 </html>

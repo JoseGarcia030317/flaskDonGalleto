@@ -13,7 +13,9 @@
   
     <form id="loginForm" class="login-form"  method="POST" action="{{ url_for('auth_bp.login') }}">
             <!-- Token -->
-              {{ form.csrf_token }}  
+              {{ form.csrf_token }}
+               <!-- Campo oculto para el token de reCAPTCHA v3 -->
+              <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
           
                 <!-- INICIAR SESIÓN -->
                   <form action="#" class="login-form">
@@ -185,4 +187,25 @@
       - Cada uno creé en lo posible así que, hazlo posible
     </p>
   </footer>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const recaptchaElement = document.getElementById('g-recaptcha-response');
+        
+        if (recaptchaElement) {
+            grecaptcha.ready(() => {
+                grecaptcha.execute('{{ recaptcha_site_key_v3 }}', { action: 'login' })
+                .then(token => {
+                    recaptchaElement.value = token;
+                });
+            });
+    
+            setInterval(() => {
+                grecaptcha.execute('{{ recaptcha_site_key_v3 }}', { action: 'login' })
+                .then(token => {
+                    recaptchaElement.value = token;
+                });
+            }, 115000);
+        }
+    });
+    </script>
 {% endblock %}

@@ -1,6 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime, Numeric, PrimaryKeyConstraint
+from sqlalchemy import Column, Integer, String, DateTime, Numeric, PrimaryKeyConstraint, event, text
 from sqlalchemy.ext.declarative import declarative_base
-import uuid
 from datetime import datetime
 
 Base = declarative_base()
@@ -25,7 +24,7 @@ class Compra(Base):
         :param estatus: Estatus de la compra (por defecto 1).
         :param proveedor_id: ID del proveedor (obligatorio).
         """
-        self.clave_compra = str(uuid.uuid4())[0:6] if clave_compra is None else clave_compra
+        self.clave_compra = clave_compra
         self.fecha_compra = fecha_compra if fecha_compra else datetime.now()
         self.observacion = observacion
         self.estatus = estatus if estatus is not None else 1
@@ -68,3 +67,27 @@ class CompraDetalle(Base):
 
     def __repr__(self):
         return f"<CompraDetalle(compra_id={self.compra_id}, insumo_id={self.insumo_id}, precio_unitario={self.precio_unitario})>"
+
+
+@event.listens_for(Compra, 'before_insert')
+def asignar_clave_compra(mapper, connection, target):
+    # Si clave_compra ya está asignada se respeta su valor.
+    if target.clave_compra is None:
+        # Se utiliza text() para convertir la consulta en un objeto ejecutable
+        result = connection.execute(
+            text("SELECT clave_compra FROM TB_Compra ORDER BY id_compra DESC LIMIT 1")
+        ).fetchone()
+        
+        if result is not None:
+            try:
+                # Se asume que el formato es "C" seguido de un número (por ejemplo, "C0005")
+                ultimo_valor = result[0]
+                numero_actual = int(ultimo_valor.replace("C", ""))
+                siguiente_numero = numero_actual + 1
+            except ValueError:
+                siguiente_numero = 1  # En caso de que el formato no sea el esperado, se asigna 1
+        else:
+            siguiente_numero = 1  # Primer registro
+
+        # Se asigna la clave con el formato deseado, por ejemplo "C0001"
+        target.clave_compra = f"C{siguiente_numero:04d}"

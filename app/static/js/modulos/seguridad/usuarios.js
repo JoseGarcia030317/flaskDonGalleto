@@ -1,7 +1,7 @@
 import { api } from "../../utils/api.js";
 import { tabs } from "../../utils/tabs.js";
 import { alertas } from "../../utils/alertas.js";
-import { validarCaracteresProhibidos, validarSelectRequerido, mostrarErrores, validarRequerido, validarLongitud, limpiarErrores, validarSoloNumeros, validarLetrasYNumeros } from "../../utils/validaciones.js";
+import { validarCaracteresProhibidos, validarSelectRequerido, mostrarErrores, validarRequerido, validarLongitud, limpiarErrores, validarSoloNumeros, validarLetrasYNumeros, validarTelefono, validarSoloTexto, validarContrasena } from "../../utils/validaciones.js";
 
 // ====================================================================
 // Funciones para realizar validaciones del lado del Cliente
@@ -41,6 +41,13 @@ const validacionesUsuarios = {
         if (longitud) return longitud;
         return null;
     },
+    telefono : (input) => {
+        const requerido = validarSoloNumeros(input, 'telefono');
+        if (requerido) return requerido;
+        const telefono = validarTelefono(input);
+        if (telefono) return telefono;
+        return null;
+    },
     tipoUsuario : (input) => {
         return validarSelectRequerido(input, 'tipoUsuario');
     },
@@ -69,8 +76,8 @@ function cargarUsuarios(){
 
 function obtener_usuarios() {
     const tbody = document.getElementById('tbody_usuario');
-    tbody.innerHTML = ''; // 👈 Limpia la tabla antes de volver a llenarla
-
+    tbody.innerHTML = ''; 
+    cargarSelectRol();
     api.getJSON('/usuarios/get_user_all')
     .then(data => {
         if (data && Array.isArray(data)) {
@@ -117,7 +124,7 @@ function eliminarUsuario(id_usuario) {
     .then(data => {
         if (data.id_usuario) {
             alertas.procesoTerminadoExito();
-            cargarUsuarios(); // Aquí recargas la tabla completa
+            cargarUsuarios();
         } else {
             Swal.fire('Error', data.error || 'Error al eliminar usuario', 'error');
         }
@@ -128,6 +135,47 @@ function eliminarUsuario(id_usuario) {
             Swal.fire('Error', error.message || 'Error al eliminar', 'error');
         }
     });
+};
+
+function guardar_usuario(event){
+    event.preventDefault(); 
+    const errores = validarFormulario();
+        if (errores) {
+            mostrarErrores(errores);
+            return;
+        }
+
+    const payload = {
+        nombre : document.querySelector('input[name="nombre"]').value,
+        apellido_pat : document.querySelector('input[name="app"]').value,
+        apellido_mat : document.querySelector('input[name="apm"]').value,
+        telefono : document.querySelector('input[name="telefono"]').value,
+        tipo : document.getElementById('tipoUsuario').value,
+        usuario : document.querySelector('input[name="nombreUsuario"]').value,
+        contrasenia : document.querySelector('input[name="contrasenia"]').value,
+        estatus: 1
+    }
+        
+    api.postJSON('/usuarios/create_user', payload)
+        .then(data => {
+            if (data.id_usuario) {
+                cerrarModal();
+                alertas.procesoTerminadoExito();
+                cargarUsuarios();
+                limpiarFormulario();
+            } else {
+                alert('Error al guardar el usuaro: ' + (data.error || 'Error desconocido'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error.message);
+            Swal.fire('Error', error.message || 'Error al guardar usuaro', 'error');
+        })
+    
+};
+
+function editarUsuario(){
+    abrirModal(modalFormE)
 }
 
 
@@ -144,13 +192,14 @@ function abrirModal(tipo) {
         modalForm = document.getElementById('modalFormE');
     }
     modalForm.classList.remove('hidden');
-}
+};
 
 function cerrarModal() {
     document.getElementById('modalBackdropUsuarios').classList.add('hidden');
     document.getElementById('modalFormA').classList.add('hidden');
     document.getElementById('modalFormE').classList.add('hidden');
-}
+    limpiarFormulario()
+};
 
 function filtrarTabla() {
     const textoBusqueda = document.querySelector('input[name="buscar"]').value.toLowerCase();
@@ -166,10 +215,65 @@ function filtrarTabla() {
     });
 };
 
+function cargarSelectRol() {
+    const select = document.getElementById('tipoUsuario')
+
+    api.getJSON('/usuarios/get_all_tipo_usuarios')
+    .then(data => {
+        select.innerHTML = '<option value="">Seleccione Rol Usuario</option>';
+        data.forEach(tipo => {
+            select.innerHTML += `
+                    <option value="${tipo.id_tipo_usuario}">
+                        ${tipo.nombre}
+                    </option>`;
+        });
+    })
+    .catch(error => {
+        console.error('Error:', error.message);
+        Swal.fire('Error', error.message || 'Error al cargar unidades', 'error');
+    })
+};
+
+function validarFormulario() {
+    const validacion = {
+        nombre : document.querySelector('input[name="nombre"]').value,
+        app : document.querySelector('input[name="app"]').value,
+        apm : document.querySelector('input[name="apm"]').value,
+        telefono : document.querySelector('input[name="telefono"]').value,
+        tipoUsuario : document.getElementById('tipoUsuario').value,
+        nombreUsuario : document.querySelector('input[name="nombreUsuario"]').value,
+        contrasenia : document.querySelector('input[name="contrasenia"]').value
+    }
+
+    const errores = {};
+
+    Object.keys(validacionesUsuarios).forEach(campo => {
+        const error = validacionesUsuarios[campo](validacion[campo]);
+        if (error) {
+            errores[campo] = error;
+        }
+    });
+
+    return Object.keys(errores).length === 0 ? null : errores;
+};
+
+function limpiarFormulario(){
+    document.querySelector('input[name="nombre"]').value = '',
+    document.querySelector('input[name="app"]').value = '',
+    document.querySelector('input[name="apm"]').value = '',
+    document.querySelector('input[name="telefono"]').value = '',
+    document.querySelector('input[name="nombreUsuario"]').value = '',
+    document.querySelector('input[name="contrasenia"]').value = '',
+    cargarSelectRol();
+    limpiarErrores();
+}
+
 
 window.cargarUsuarios = cargarUsuarios;
 window.obtener_usuarios =  obtener_usuarios;
+window.guardar_usuario = guardar_usuario;
 window.eliminarUsuario = eliminarUsuario;
+window.editarUsuario = editarUsuario;
 
 window.filtrarTabla = filtrarTabla;
 window.abrirModal = abrirModal;

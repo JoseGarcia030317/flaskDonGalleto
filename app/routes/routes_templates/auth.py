@@ -3,7 +3,7 @@ from forms.login_form import LoginForm
 from flask import Blueprint, app, current_app, flash, redirect, render_template, url_for, request
 from flask_login import current_user, fresh_login_required, login_required, login_user, logout_user
 from extensions import limiter
-
+import copy
 from core.logic import login as log
 from core.classes.Tb_usuarios import Usuario
 from core.classes.Tb_clientes import Cliente
@@ -48,14 +48,22 @@ def login():
             return redirect(url_for('auth_bp.login'))
         
     if request.method == 'POST' and form.validate_on_submit():
-        user_data = log.autenticar_usuario(form.usuario.data, form.contrasenia.data)
+        autentication = log.autenticar_usuario(form.usuario.data, form.contrasenia.data)
+        user_data = copy.deepcopy(autentication)
+        user_data.pop("modules")
+        user_data.pop("tipo_usuario")
         
+        user = None
         # Se instancia el usuario como Cliente o Usuario según la presencia de "id_cliente"
         if user_data.get("id_cliente") is not None:
             user = Cliente(**user_data)
+            user.tipo_usuario = autentication.get("tipo_usuario")
+            user.modules = autentication.get("modules")
             endpoint = retornarUsuario(3) # main_page_bp.mp_cliente
-        else:
+        elif user_data.get("id_usuario") is not None:
             user = Usuario(**user_data)
+            user.tipo_usuario = autentication.get("tipo_usuario")
+            user.modules = autentication.get("modules")
             endpoint = retornarUsuario(user.tipo)
 
         if user:

@@ -65,8 +65,13 @@
                     </div>
                     <div>
                         <label class="block text-[#895645] mb-1">Tipo Usuario:</label>
-                        <select type="text" name="tipoUsuario" class="w-full p-2 border border-[#895645] rounded-full" required>
+                        <select type="text" id="tipoUsuario" name="tipoUsuario" class="w-full p-2 border border-[#895645] rounded-full" required>
                         </select>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                    <div>
+                        <label class="block text-[#895645] mb-1">Telefono:</label>
+                        <input type="text" name="telefono" class="w-full p-2 border border-[#895645] rounded-full" required>
                         <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
                     </div>
                     <div>
@@ -76,12 +81,12 @@
                     </div>
                     <div>
                         <label class="block text-[#895645] mb-1">Contraseña:</label>
-                        <input type="text" name="contrasenia" class="w-full p-2 border border-[#895645] rounded-full" required>
+                        <input type="password" name="contrasenia" class="w-full p-2 border border-[#895645] rounded-full" required>
                         <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
                     </div>
                     
                     <!-- Botón Guardar -->
-                    <button type="submit"
+                    <button type="submit" onclick="guardar_usuario(event)"
                         class="w-full py-2 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#8A5114] font-semibold flex items-center justify-center gap-2 hover:bg-gray-50 cursor-pointer">
                         <img src="../../../static/images/guardar 3C1D0C.png" class="w-5 h-5">
                         Guardar
@@ -91,22 +96,59 @@
 
 
             <div id="modalFormE"
-            class="hidden bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[40rem]">
-            <!-- Encabezado del modal -->
-            <div class="bg-[#efe6dc] rounded-t-lg p-4 -m-6 mb-4 flex justify-center items-center relative">
-                <h2 id="modalTitulo" class="text-[#3C1D0C] font-semibold text-center">Editar usuario</h2>
-                <button onclick="cerrarModal()" class="text-black hover:text-gray-700 absolute right-4 cursor-pointer">
-                    <img src="../../../static/images/cerrar.png" class="w-6 h-6">
+                class="hidden bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[40rem]">
+                <!-- Encabezado del modal -->
+                <div class="bg-[#efe6dc] rounded-t-lg p-4 -m-6 mb-4 flex justify-center items-center relative">
+                    <h2 id="modalTitulo" class="text-[#3C1D0C] font-semibold text-center">Editar usuario</h2>
+                    <button onclick="cerrarModal()" class="text-black hover:text-gray-700 absolute right-4 cursor-pointer">
+                        <img src="../../../static/images/cerrar.png" class="w-6 h-6">
+                    </button>
+                </div>
+                <form  id="usuarioForm" class="space-y-4">
+                    <div>
+                        <label class="block text-[#895645] mb-1">Nombre:</label>
+                        <input type="text" name="nombre" class="w-full p-2 border border-[#895645] rounded-full" required>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                    <div>
+                        <label class="block text-[#895645] mb-1">Apelldio Paterno:</label>
+                        <input type="text" name="app" class="w-full p-2 border border-[#895645] rounded-full" required>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                    <div>
+                        <label class="block text-[#895645] mb-1">Apelldio Materno:</label>
+                        <input type="text" name="apm" class="w-full p-2 border border-[#895645] rounded-full" required>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                    <div>
+                        <label class="block text-[#895645] mb-1">Tipo Usuario:</label>
+                        <select type="text" id="tipoUsuario" name="tipoUsuario" class="w-full p-2 border border-[#895645] rounded-full" required>
+                        </select>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                    <div>
+                        <label class="block text-[#895645] mb-1">Telefono:</label>
+                        <input type="text" name="telefono" class="w-full p-2 border border-[#895645] rounded-full" required>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                    <div>
+                        <label class="block text-[#895645] mb-1">Nombre Usuario:</label>
+                        <input type="text" name="nombreUsuario" class="w-full p-2 border border-[#895645] rounded-full" required>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                    <div>
+                        <label class="block text-[#895645] mb-1">Contraseña:</label>
+                        <input type="password" name="contrasenia" class="w-full p-2 border border-[#895645] rounded-full" required>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                </form>
+                <!-- Botón Actualizar -->
+                <button type="submit"
+                    class="w-full py-2 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#8A5114] font-semibold flex items-center justify-center gap-2 hover:bg-gray-50 cursor-pointer">
+                    <img src="../../../static/images/guardar 3C1D0C.png" class="w-5 h-5">
+                    Actualizar
                 </button>
-            </div>
-            
-            <!-- Botón Guardar -->
-            <button type="submit"
-                class="w-full py-2 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#8A5114] font-semibold flex items-center justify-center gap-2 hover:bg-gray-50 cursor-pointer">
-                <img src="../../../static/images/guardar 3C1D0C.png" class="w-5 h-5">
-                Guardar
-            </button>
-        </div>
+         </div>
         </div>
     </div>
 </div>

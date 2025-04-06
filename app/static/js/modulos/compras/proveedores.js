@@ -125,7 +125,7 @@ function cerrarModal() {
 // Funcion para cargar los proveedores al iniciar la aplicacion
 function cargarProveedores() {  
     const tbody = document.getElementById('tbody_proveedores');
-    tabs.mostrarEsqueletoTabla(tbody);
+    tabs.mostrarEsqueletoTabla(tbody,5,4);
     
     api.getJSON('/provedores/get_all_proveedores')
         .then(data => {

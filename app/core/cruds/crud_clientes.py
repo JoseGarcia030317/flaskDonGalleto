@@ -1,9 +1,13 @@
 from core.classes.Tb_clientes import Cliente
+from core.classes.Tb_usuarios import Modulo, TipoUsuario, TipoUsuarioModulo
 import json
 import bcrypt
 from utils.connectiondb import DatabaseConnector
 
 class ClienteCRUD:
+    TIPO_USUARIO_CLIENTE = 7 # EN BASE A CATALOGOS
+    ESTADO_ACTIVO = 1
+
     def _cliente_to_dict(self, cliente):
         """
         Convierte un objeto Cliente en un diccionario.
@@ -118,12 +122,33 @@ class ClienteCRUD:
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            cliente = session.query(Cliente).filter_by(correo=email, estatus=1).first()
+            cliente = session.query(Cliente, TipoUsuario).join(
+                TipoUsuario,
+                TipoUsuario.id_tipo_usuario == self.TIPO_USUARIO_CLIENTE
+            ).filter(
+                Cliente.correo==email, 
+                Cliente.estatus==self.ESTADO_ACTIVO
+            ).first()
             
+            modules = session.query(Modulo).join(
+                TipoUsuarioModulo,
+                Modulo.id_modulo == TipoUsuarioModulo.id_modulo
+            ).join(
+                TipoUsuario,
+                TipoUsuarioModulo.id_tipo_usuario == TipoUsuario.id_tipo_usuario
+            ).filter(
+                TipoUsuario.id_tipo_usuario == self.TIPO_USUARIO_CLIENTE
+            ).all()
+
+
             if not cliente:
                 return {}
             
-            if not bcrypt.checkpw(plain_password.encode('utf-8'), cliente.contrasenia.encode('utf-8')):
+            if not bcrypt.checkpw(plain_password.encode('utf-8'), cliente.Cliente.contrasenia.encode('utf-8')):
                 return {}
             
-            return self._cliente_to_dict(cliente)
+            cliente_dict = self._cliente_to_dict(cliente.Cliente)
+            cliente_dict["tipo_usuario"] = cliente.TipoUsuario.nombre
+            cliente_dict["modules"] = [{"id_modulo": m.id_modulo, "descripcion": m.descripcion, "ruta": m.ruta, "funcion": m.funcion} for m in modules]
+
+            return cliente_dict

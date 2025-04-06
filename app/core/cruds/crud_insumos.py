@@ -199,6 +199,7 @@ class InsumoCRUD:
                     "nombre": insumo.Insumo.nombre,
                     "descripcion": insumo.Insumo.descripcion,
                     "existencias": insumo.existencias if insumo.existencias is not None else 0,
+                    "precio_unitario" : insumo.Insumo.precio_unitario,
                     "unidad_id": insumo.Unidad.id_unidad,
                     "unidad": insumo.Unidad.nombre,
                     "simbolo": insumo.Unidad.simbolo

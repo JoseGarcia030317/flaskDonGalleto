@@ -133,7 +133,7 @@ function cargarSelectInsumos() {
 // Funcion para cargar las mermas de insumos al iniciar la aplicacion
 function cargarMermaInsumo() {
     const tbody = document.getElementById('tbody_merma_insumo');
-    tabs.mostrarEsqueletoTabla(tbody)
+    tabs.mostrarEsqueletoTabla(tbody,5,5);
     consultarInsumos().then(() => {
         cargarSelectInsumos();
     });

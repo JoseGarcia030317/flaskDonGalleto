@@ -111,7 +111,7 @@ function cargarSelectUnidad() {
 
 function cargarInsumos() {
     const tbody = document.getElementById('tbody_insumos');
-    tabs.mostrarEsqueletoTabla(tbody)
+    tabs.mostrarEsqueletoTabla(tbody, 5,5);
     cargarSelectUnidad()
 
     api.getJSON('/insumos/get_all_insumos_unidad')
@@ -123,7 +123,8 @@ function cargarInsumos() {
             <tr data-id="${insumo.id_insumo}" class="hover:bg-gray-100">
                 <td class="p-3 text-center">${insumo.nombre}</td>
                 <td class="p-3 text-center">${insumo.descripcion}</td>
-                <td class="p-3 text-center">${insumo.unidad.nombre + ' (' + insumo.unidad.simbolo + ')'}</td>
+                <td class="p-3 text-center">${insumo.existencias || 0}</td>
+                <td class="p-3 text-center">${insumo.unidad + ' (' + insumo.simbolo + ')'}</td>
                 <td class="p-3 flex justify-center">
                     <button onclick="buscarInsumoId(${insumo.id_insumo})" class="align-middle cursor-pointer">
                         <img src="../../../static/images/lapiz.png" class="w-7 h-7">

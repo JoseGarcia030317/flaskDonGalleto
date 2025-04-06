@@ -1,4 +1,4 @@
-from core.classes.Tb_usuarios import Usuario, TipoUsuario
+from core.classes.Tb_usuarios import Usuario, TipoUsuario, Modulo, TipoUsuarioModulo
 import json
 import bcrypt
 from utils.connectiondb import DatabaseConnector 
@@ -37,6 +37,7 @@ class UsuarioCRUD:
         with Session() as session:
             try:
                 validation = session.query(Usuario).filter_by(usuario=usuario.usuario, estatus=1).first()
+
                 if validation:
                     return 'El nombre de usuario ya existe'
                 else:
@@ -117,15 +118,43 @@ class UsuarioCRUD:
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            usuario = session.query(Usuario).filter_by(usuario=username, estatus=1).first()
-            
+            usuario = session.query(Usuario, TipoUsuario).join(
+                TipoUsuario,
+                Usuario.tipo == TipoUsuario.id_tipo_usuario
+            ).filter(
+                Usuario.usuario==username, 
+                Usuario.estatus==1
+            ).first()
+    
+            modules = session.query(Modulo).join(
+                TipoUsuarioModulo,
+                Modulo.id_modulo == TipoUsuarioModulo.id_modulo
+            ).join(
+                TipoUsuario,
+                TipoUsuarioModulo.id_tipo_usuario == TipoUsuario.id_tipo_usuario
+            ).filter(
+                TipoUsuario.id_tipo_usuario == usuario.Usuario.tipo
+            ).all()
+
             if not usuario:
                 return {}
             
-            if not bcrypt.checkpw(plain_password.encode('utf-8'), usuario.contrasenia.encode('utf-8')):
+            if not bcrypt.checkpw(plain_password.encode('utf-8'), usuario.Usuario.contrasenia.encode('utf-8')):
                 return {}
             
-            return self._usuario_to_dict(usuario)
+            return {
+                    "id_usuario": usuario.Usuario.id_usuario,
+                    "nombre": usuario.Usuario.nombre,
+                    "apellido_pat": usuario.Usuario.apellido_pat,
+                    "apellido_mat": usuario.Usuario.apellido_mat,
+                    "telefono": usuario.Usuario.telefono,
+                    "tipo": usuario.Usuario.tipo,
+                    "usuario": usuario.Usuario.usuario,
+                    "contrasenia": usuario.Usuario.contrasenia,
+                    "estatus": usuario.Usuario.estatus,
+                    "tipo_usuario": usuario.TipoUsuario.nombre,
+                    "modules": [{"id_modulo": m.id_modulo, "descripcion": m.descripcion, "ruta": m.ruta, "funcion": m.funcion} for m in modules]
+                }
 
     def list_tipo_usuarios(self):
         """

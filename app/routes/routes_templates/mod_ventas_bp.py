@@ -45,3 +45,11 @@ def ventas_listado_venta():
 @role_required(2)
 def ventas_corte_caja():
     return render_template('modulos/ventas/corte-caja.html')
+
+# Pagina inicial para el modulo de ventas con el submodulo de solicitud de produccion
+@mod_ventas_bp.route('/ventas/solicitud-produccion')
+@login_required
+@fresh_login_required
+@role_required(2)
+def ventas_solicitud_produccion():
+    return render_template('modulos/ventas/solicitud-produccion.html')

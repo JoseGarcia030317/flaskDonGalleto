@@ -38,7 +38,7 @@ function cargarContenidoGalletas(endpoint) {
 
         script.onload = () => {
             console.log(`Script de ${endpoint} cargado`);
-            if (endpoint === 'productos') window.cargarGalletas();
+            if (endpoint === 'productos') window.inicializarModuloGalletas();
             // if (endpoint === 'recetas') window.cargarRecetas();
         };
 

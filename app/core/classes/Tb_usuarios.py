@@ -1,5 +1,5 @@
 from flask_login import UserMixin
-from sqlalchemy import create_engine, Column, Integer, String, UniqueConstraint, func
+from sqlalchemy import Column, Integer, String, UniqueConstraint, PrimaryKeyConstraint
 from sqlalchemy.ext.declarative import declarative_base
 import bcrypt
 
@@ -21,7 +21,7 @@ class Usuario(UserMixin, Base):
     contrasenia  = Column(String(65), nullable=False)
     estatus      = Column(Integer, nullable=False, default=1)
 
-    def __init__(self, nombre, apellido_pat, apellido_mat, telefono, tipo, usuario, contrasenia, ultimo_token=None, fecha_token=None, estatus=1, id_usuario=None):
+    def __init__(self, nombre, apellido_pat, apellido_mat, telefono, tipo, usuario, contrasenia, estatus=1, id_usuario=None):
         self.nombre = nombre
         self.apellido_pat = apellido_pat
         self.apellido_mat = apellido_mat
@@ -52,4 +52,40 @@ class TipoUsuario(Base):
         self.nombre = nombre
         self.descripcion = descripcion
         self.id_tipo_usuario = id_tipo_usuario
-    
+
+class TipoUsuarioModulo(Base):
+    __tablename__ = 'Tb_tipo_usuario_modulo'
+
+    id_tipo_usuario = Column(Integer, nullable=False)
+    id_modulo = Column(Integer, nullable=False)
+
+    __table_args__ = (
+        PrimaryKeyConstraint('id_tipo_usuario', 'id_modulo', name='pk_tipo_usuario_modulo'),
+    )
+
+    def __init__(self, id_tipo_usuario, id_modulo):
+        self.id_tipo_usuario = id_tipo_usuario
+        self.id_modulo = id_modulo
+
+    def __repr__(self):
+        return f"<TipoUsuarioModulo(id_tipo_usuario={self.id_tipo_usuario}, id_modulo={self.id_modulo})>"
+
+class Modulo(Base):
+    __tablename__ = 'Tb_catalogo_modulos'
+
+    id_modulo = Column(Integer, primary_key=True, autoincrement=True)
+    descripcion = Column(String(250), nullable=False)
+    ruta = Column(String(500), nullable=False)
+    funcion = Column(String(500), nullable=False)
+    estatus = Column(Integer, nullable=False, default=1)
+
+    def __init__(self, descripcion, ruta, funcion, estatus=1, id_modulo=None):
+        self.descripcion = descripcion
+        self.ruta = ruta
+        self.funcion = funcion
+        self.estatus = estatus
+        self.id_modulo = id_modulo
+
+    def __repr__(self):
+        return f"<Modulo(id_modulo={self.id_modulo}, descripcion={self.descripcion}, ruta={self.ruta}, funcion={self.funcion}, estatus={self.estatus})>"
+

@@ -39,3 +39,11 @@ def mp_cocinero():
 @role_required(5)
 def mp_almacenista():
     return render_template("main-page/main-page-almacenista.html", tipo_user='Almacenista: ', user=current_user.usuario)
+
+@main_page_bp.route('/inicio', methods=['GET'])
+@login_required
+@fresh_login_required
+def mp_usuario():
+    modulos_usuario = current_user.modulos if hasattr(current_user, 'modulos') else []
+    tipo_usuario = current_user.tipo if hasattr(current_user, 'tipo') else 'Usuario'
+    return render_template("main-page/main-page-usuario.html", modulos = modulos_usuario, user={'tipo_usuario': tipo_usuario, 'nombre': current_user.usuario if hasattr(current_user, 'usuario') else current_user.correo})

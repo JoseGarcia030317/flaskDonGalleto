@@ -21,7 +21,7 @@ class Usuario(UserMixin, Base):
     contrasenia  = Column(String(65), nullable=False)
     estatus      = Column(Integer, nullable=False, default=1)
 
-    def __init__(self, nombre, apellido_pat, apellido_mat, telefono, tipo, usuario, contrasenia, ultimo_token=None, fecha_token=None, estatus=1, id_usuario=None):
+    def __init__(self, nombre, apellido_pat, apellido_mat, telefono, tipo, usuario, contrasenia, estatus=1, id_usuario=None):
         self.nombre = nombre
         self.apellido_pat = apellido_pat
         self.apellido_mat = apellido_mat

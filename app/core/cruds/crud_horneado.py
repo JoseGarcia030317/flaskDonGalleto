@@ -228,6 +228,7 @@ class ExplosionInsumos:
                     if insumo.cantidad > insumo_actual["existencias"]:
                         insumos_requeridos_no_validos.append({
                             "id_insumo": insumo.insumo_id,
+                            "nombre": insumo_actual["nombre"],
                             "cantidad": insumo.cantidad,
                             "existencias": insumo_actual["existencias"],
                             "unidad": insumo_actual["unidad"]

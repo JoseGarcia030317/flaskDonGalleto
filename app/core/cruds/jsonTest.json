@@ -1,28 +1,54 @@
-[
-    {
-        "id_horneado": 1,
-        "lote": "234546",
-        "receta": {
-            "id": 1,
-            "nombre": "Receta Clásica",
-            "tiempo": 45,
-            "cantidad": 120,
-            "insumos": ["Harina", "Huevos", "Mantequilla"]
-        },
-        "fecha_horneado": "30/10/2024 13:00",
-        "estatus": "En proceso"
-    },
-    {
-        "id_horneado": 2,
-        "lote": "234546",
-        "receta": {
-            "id": 1,
-            "nombre": "Receta Clásica",
-            "tiempo": 45,
-            "cantidad": 120,
-            "insumos": ["Harina", "Huevos", "Mantequilla"]
-        },
-        "fecha_horneado": "30/10/2024 13:00",
-        "estatus": "Enproceso"
-    }
-]
+// crear venta
+{
+    "observacion": "Venta de prueba",
+    "descuento": 10,
+    "detalle_venta": [
+        {
+            "galleta_id": 1,
+            "tipo_venta_id": 1,
+            "factor_venta": 1.00,
+            "precio_unitario": 10.00
+        }
+    ]
+}
+
+// CANCELAR VENTA
+{
+    "id_venta": 1
+}
+
+// DETALLE GET BY ID
+{
+    "id_venta": 1,
+    "clave_venta": "VENT-000001",
+    "observacion": "Venta de prueba",
+    "descuento": 10,
+    "fecha": "2024-10-30 13:00:00",
+    "estatus": 1,
+    "total_venta": 100.00,
+    "detalle_venta": [
+        {
+            "galleta_id": 1,
+            "galleta_nombre": "Galleta de prueba",
+            "tipo_venta_id": 1,
+            "tipo_venta": "Paquete kilogramo",
+            "factor_venta": 10.00,
+            "precio_unitario": 10.00,
+            "subtotal": 100.00
+        }
+    ]
+}
+
+// DETALLE GET all
+// CON FILTRADO POR FECHA
+{
+    "id_venta": 1,
+    "clave_venta": "VENT-000001",
+    "observacion": "Venta de prueba",
+    "descuento": 10,
+    "fecha": "2024-10-30 13:00:00",
+    "estatus": 1,
+    "total_venta": 100.00,
+    "id_pedido": 1
+}
+

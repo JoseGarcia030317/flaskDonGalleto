@@ -1,15 +1,16 @@
 from flask import Blueprint, request, jsonify
 from flasgger.utils import swag_from
 from flask_login import current_user, fresh_login_required, login_required
-from utils.decorators import role_required
+from utils.decorators import modulos_permitidos
 from core.logic import mermas
 
 mermas_bp = Blueprint('mermas_bp', __name__)
+__modulo_name__ = "MERMAS"
 
 @mermas_bp.route("/mermas/get_all_mermas_insumos", methods=['GET'])
 @login_required
 @fresh_login_required
-@role_required(4,5)
+@modulos_permitidos(__modulo_name__)
 def get_all_mermas_insumos():
     try:
         result = mermas.get_all_mermas_insumos()
@@ -20,7 +21,7 @@ def get_all_mermas_insumos():
 @mermas_bp.route("/mermas/get_all_mermas_galletas", methods=['GET'])
 @login_required
 @fresh_login_required
-@role_required(4,5)
+@modulos_permitidos(__modulo_name__)
 def get_all_mermas_galletas():
     try:
         result = mermas.get_all_mermas_galletas()
@@ -31,7 +32,7 @@ def get_all_mermas_galletas():
 @mermas_bp.route("/mermas/get_merma_insumo", methods=['POST'])
 @login_required
 @fresh_login_required
-@role_required(4,5)
+@modulos_permitidos(__modulo_name__)
 def get_merma_insumo():
     data = request.get_json()
     merma_id = data.get("id_merma")
@@ -44,7 +45,7 @@ def get_merma_insumo():
 @mermas_bp.route("/mermas/get_merma_galleta", methods=['POST'])
 @login_required
 @fresh_login_required
-@role_required(4,5)
+@modulos_permitidos(__modulo_name__)
 def get_merma_galleta():
     data = request.get_json()
     merma_id = data.get("id_merma")
@@ -57,7 +58,7 @@ def get_merma_galleta():
 @mermas_bp.route("/mermas/create_merma", methods=['POST'])
 @login_required
 @fresh_login_required
-@role_required(4,5)
+@modulos_permitidos(__modulo_name__)
 def create_merma():
     """
     Crea una nueva merma.
@@ -75,7 +76,7 @@ def create_merma():
 @mermas_bp.route("/mermas/update_merma", methods=['POST'])
 @login_required
 @fresh_login_required
-@role_required(4,5)
+@modulos_permitidos(__modulo_name__)
 def update_merma():
     """
     Actualiza una merma.
@@ -93,7 +94,7 @@ def update_merma():
 @mermas_bp.route("/mermas/delete_merma", methods=['POST'])
 @login_required
 @fresh_login_required
-@role_required(4,5)
+@modulos_permitidos(__modulo_name__)
 #@swag_from('../docs/mermas/delete_mermas.yaml')
 def delete_merma():
     data = request.get_json()

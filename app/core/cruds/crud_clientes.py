@@ -101,10 +101,8 @@ class ClienteCRUD:
             cliente = session.query(Cliente).filter(Cliente.id_cliente==id_cliente).first()
             if cliente:
                 for key, value in data.items():
-                    if key == 'contrasenia':
-                        # Se vuelve a encriptar la contraseña usando el método del modelo.
-                        value = cliente.hash_password(value)
-                    setattr(cliente, key, value)
+                    if key != 'contrasenia':
+                        setattr(cliente, key, value)
                 try:
                     session.commit()
                 except Exception as e:

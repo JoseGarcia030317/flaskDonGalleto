@@ -19,9 +19,20 @@ class VentaCRUD:
             with Session() as session:
                 venta = Venta(
                     observacion=data["observacion"],
-                    descuento=data["descuento"]
+                    descuento=data["descuento"],
                 )
                 session.add(venta)
+                session.flush()
+                id_venta = venta.id_venta
+                for detalle in data["detalle_venta"]:
+                    venta_detalle = VentaDetalle(
+                        galleta_id=detalle["galleta_id"],
+                        tipo_venta_id=detalle["tipo_venta_id"],
+                        factor_venta=detalle["factor_venta"],
+                        precio_unitario=detalle["precio_unitario"],
+                        id_venta=id_venta
+                    )
+                    session.add(venta_detalle)
                 session.commit()
                 return {"message": "Venta guardada correctamente"}
         except Exception as e:

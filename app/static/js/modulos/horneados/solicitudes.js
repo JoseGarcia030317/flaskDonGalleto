@@ -60,7 +60,9 @@ function aceptarHorneado(id_horneado){
     tabs.mostrarLoader();
     api.postJSON('horneado/terminar_horneado', {id_horneado: id_horneado})
     .then(respuesta => {
-        if(respuesta.status === 200){
+        if(respuesta.status === 404){
+            alertas.alertaWarning(respuesta.message);
+        } else if(respuesta.status === 200){
             alertas.procesoTerminadoExito();
             cargarModuloSolicitudes();
         }

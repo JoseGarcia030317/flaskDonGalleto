@@ -175,9 +175,11 @@ function agregarHorneado(id_receta){
     api.postJSON('/horneado/crear_horneado', {receta_id : id_receta})
             .then(data => {
                 if (data.status === 400) {
-                    const mensaje = data.insumos_faltantes
-                    .map(insumo => insumo.id_insumo)
-                    .join('<br>');
+                    let mensaje = '';
+                    data.insumos_faltantes.forEach(insumo => {
+                        console.log(insumo);
+                        mensaje += insumo.nombre + '<br>'
+                    });
                     alertas.alertaFaltaDeInsumos(mensaje);
                 } else if (data.id_horneado) {
                     alertas.procesoTerminadoExito();

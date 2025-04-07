@@ -94,8 +94,7 @@ function alertaFaltaDeInsumos(texto) {
         html: `Para realizar la acción, es necesaria la compra de: <br> <strong>${texto}</strong>.`,
         icon: 'warning',
         showCancelButton: false,
-        confirmButtonText: 'Actualizar precio',
-        cancelButtonText: 'Mantener precio actual',
+        confirmButtonText: 'Aceptar',
         confirmButtonColor: '#3C1D0C',
     })
 }
@@ -120,5 +119,5 @@ export const alertas = {
     alertaAumentoCostoProduccion : (aumento, nuevoPrecio) => alertaAumentoCostoProduccion(aumento, nuevoPrecio), 
     procesoTerminadoSinExito : () => procesoTerminadoSinExito(),
     confirmarProcesoFinalizar: () => confirmarProcesoFinalizar(),
-    alertaFaltaDeInsumos: () => alertaFaltaDeInsumos()
+    alertaFaltaDeInsumos: (mensaje) => alertaFaltaDeInsumos(mensaje)
 }

@@ -70,7 +70,6 @@ def login():
         if user:
             login_user(user, remember=form.remember_me.data)
             session["modules"] = UsuarioCRUD().get_modules()
-            print(session["modules"])
             # return redirect(url_for(endpoint))
             return redirect(url_for('main_page_bp.mp_usuario'))
         else:

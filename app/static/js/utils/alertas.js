@@ -88,6 +88,18 @@ function alertaCambioMargen(costoUnitario, nuevoPrecio) {
     });
 }
 
+function alertaFaltaDeInsumos(texto) {
+    return Swal.fire({
+        title: '¡Insumos insuficientes!',
+        html: `Para realizar la acción, es necesaria la compra de: <br> <strong>${texto}</strong>.`,
+        icon: 'warning',
+        showCancelButton: false,
+        confirmButtonText: 'Actualizar precio',
+        cancelButtonText: 'Mantener precio actual',
+        confirmButtonColor: '#3C1D0C',
+    })
+}
+
 function confirmarProcesoFinalizar() {
     Swal.fire({
         position: 'center',
@@ -107,5 +119,6 @@ export const alertas = {
     alertaCambioMargen : (costoUnitario, nuevoPrecio) => alertaCambioMargen(costoUnitario, nuevoPrecio),
     alertaAumentoCostoProduccion : (aumento, nuevoPrecio) => alertaAumentoCostoProduccion(aumento, nuevoPrecio), 
     procesoTerminadoSinExito : () => procesoTerminadoSinExito(),
-    confirmarProcesoFinalizar: () => confirmarProcesoFinalizar()
+    confirmarProcesoFinalizar: () => confirmarProcesoFinalizar(),
+    alertaFaltaDeInsumos: () => alertaFaltaDeInsumos()
 }

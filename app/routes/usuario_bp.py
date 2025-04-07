@@ -25,6 +25,17 @@ def get_user_all():
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500
     
+@usuario_bp.route("/usuarios/get_user_by_id", methods=['POST'])
+def get_user_by_id():
+    data = request.get_json()
+    data["id_usuario_registro"] = 1
+    usuario_id = data.get("usuario_id")
+    try:
+        result = usuarios.get_user_by_id(usuario_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500
+    
 @usuario_bp.route("/usuarios/delete_user", methods=['POST'])
 def delete_user():
     data = request.get_json()
@@ -32,6 +43,17 @@ def delete_user():
     uduario_id = data.get("id_usuario")
     try:
         result = usuarios.delete_user(uduario_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500
+    
+@usuario_bp.route("/usuarios/update_user", methods=['POST'])
+def update_user():
+    data = request.get_json()
+    data["id_usuario_registro"] = 1  # current_user.id_usuario
+    usuario_id = data.get("id_usuario")
+    try:
+        result = usuarios.update_user(usuario_id,data)
         return jsonify(result)
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500

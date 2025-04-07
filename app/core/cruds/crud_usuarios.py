@@ -70,10 +70,6 @@ class UsuarioCRUD:
                 TipoUsuario.id_tipo_usuario == usuario.Usuario.tipo
             ).all()
             
-            roles = session.query(Modulo, TipoUsuarioModulo).join(
-                TipoUsuarioModulo,
-                Modulo.id_modulo == TipoUsuarioModulo.id_modulo
-            ).all()
             
             user = self._usuario_to_dict(usuario.Usuario)
             user["modules"] = [{"id_modulo": m.id_modulo, 

@@ -107,16 +107,17 @@ def inicio():
     if not current_user.is_authenticated:
         return redirect(url_for('mod_landingpage_bp.landing_page'))
     else:
-        if current_user.tipo == 1:
-            return redirect(url_for("main_page_bp.mp_admin"))
-        if current_user.tipo == 2:
-            return redirect(url_for("main_page_bp.mp_vendedor"))
-        if current_user.tipo == 3:
-            return redirect(url_for("main_page_bp.mp_cliente"))
-        if current_user.tipo == 4:
-            return redirect(url_for("main_page_bp.mp_cocinero"))
-        if current_user.tipo == 5:
-            return redirect(url_for("main_page_bp.mp_almacenista"))
+        return redirect(url_for('main_page_bp.mp_usuario'))
+        # if current_user.tipo == 1:
+        #     return redirect(url_for("main_page_bp.mp_admin"))
+        # if current_user.tipo == 2:
+        #     return redirect(url_for("main_page_bp.mp_vendedor"))
+        # if current_user.tipo == 3:
+        #     return redirect(url_for("main_page_bp.mp_cliente"))
+        # if current_user.tipo == 4:
+        #     return redirect(url_for("main_page_bp.mp_cocinero"))
+        # if current_user.tipo == 5:
+        #     return redirect(url_for("main_page_bp.mp_almacenista"))
 
 @app.before_request
 def make_session_permanent():
@@ -173,15 +174,17 @@ def handle_500(error):
 def forbidden_error(e):
     logout_user()
 
-    # Si el cliente pide algun JSON, devuelve JSON para que puedar una respuesta en el frontend
-    if request.accept_mimetypes.accept_json:
+    # Determinar si el cliente prefiere JSON sobre HTML
+    prefers_json = request.accept_mimetypes.best == 'application/json'
+    
+    if prefers_json:
         return jsonify({
             "error": "Acceso denegado",
             "message": "No tienes permisos para este recurso",
         }), 403
 
     # Si no, es una ruta normal que ha solicitado HTML
-    flash("Tu sesión ha expirado o no tienes permisos. Vuelve a ingresar", "danger")
+    flash("No tienes permisos para este recurso. Vuelve a ingresar", "danger")
     return redirect(url_for('auth_bp.login'))
     # return jsonify({"error": "No puedes acceder a esa ruta, mejor vuelve."}), 403
 

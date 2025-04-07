@@ -15,6 +15,17 @@ function confirmarEliminar() {
 
 }
 
+function confirmarYRegistrarVenta() {
+    return Swal.fire({
+      title: '¿Confirmas la venta?',
+      text: 'Estas por generar una nueva venta',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Registrar venta',
+      cancelButtonText: 'Cancelar'
+    });
+  }
+
 function procesoTerminadoExito() {
     Swal.fire({
         position: "center",
@@ -128,5 +139,6 @@ export const alertas = {
     alertaAumentoCostoProduccion: (aumento, nuevoPrecio) => alertaAumentoCostoProduccion(aumento, nuevoPrecio),
     procesoTerminadoSinExito: () => procesoTerminadoSinExito(),
     confirmarProcesoFinalizar: () => confirmarProcesoFinalizar(),
-    corteCajaInicio : () => corteCajaInicio()
+    corteCajaInicio : () => corteCajaInicio(),
+    confirmarYRegistrarVenta : () => confirmarYRegistrarVenta()
 }

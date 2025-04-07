@@ -17,7 +17,8 @@ auth_bp = Blueprint("auth_bp", __name__)
 def login():
     if current_user.is_authenticated:
         endpoint = retornarUsuario(current_user.tipo)   
-        return redirect(url_for(endpoint))
+        # return redirect(url_for(endpoint))
+        return redirect(url_for('main_page_bp.mp_usuario'))
 
     form = LoginForm()
     

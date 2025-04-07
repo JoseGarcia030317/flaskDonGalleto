@@ -320,7 +320,7 @@ function generarCards(galletas) {
                 
                     <div class="w-2/3 pl-4">
                         <h3 class="text-lg font-semibold text-black">${galleta.nombre_galleta}</h3>
-                        <p class="text-sm text-black mt-1">${galleta.existencias}</p>
+                        <p class="text-sm text-black mt-1">Existencias: ${galleta.existencias}</p>
                         <p class="text-base font-semibold text-black mt-2">$${galleta.precio_unitario}</p>
                     </div>
                 </div>

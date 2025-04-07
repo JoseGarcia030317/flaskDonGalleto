@@ -1,4 +1,5 @@
 import logging
+from typing import List
 from core.cruds.crud_compras import CompraCRUD
 
 logger = logging.getLogger(__name__)
@@ -43,6 +44,16 @@ def list_compras() -> list:
     """
     try:
         return crud.list_all() 
+    except Exception as e:
+        logger.error("Error al obtener las compras: %s", e)
+        raise e from e
+    
+def list_compras_by_estatus(estatus: List[int] = None, filtrar_por_fecha_actual: bool = False) -> list:
+    """
+    Obtiene todas las compras en base al estatus.
+    """
+    try:
+        return crud.list_all(estatus, filtrar_por_fecha_actual)
     except Exception as e:
         logger.error("Error al obtener las compras: %s", e)
         raise e from e

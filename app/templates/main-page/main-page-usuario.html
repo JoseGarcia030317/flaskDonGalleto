@@ -6,10 +6,15 @@
 <div>
   <nav class="space-y-2 bg-[#efe6dc] border-0 w-full">
     {% for modulo in modulos %}
-    <a onclick="{{ modulo.funcion }}" 
-       class="block px-6 py-1 text-nav text-[#3C1D0C] bg-transparent hover:bg-[rgba(145,90,23,0.15)] hover:text-black cursor-pointer">
-      {{ modulo.descripcion }}
-    </a>
+      <label class="cursor-pointer mb-6">
+        <input type="radio" name="menu-item-bar" class="peer hidden" onclick="{{ modulo.funcion }}">
+        <a 
+          class="block px-6 py-1 text-nav text-[#3C1D0C] bg-transparent 
+                hover:bg-[rgba(145,90,23,0.15)] hover:text-black
+                peer-checked:bg-[rgba(145,90,23,0.15)] peer-checked:text-black">
+          {{ modulo.descripcion }}
+        </a>
+      </label>
     {% endfor %}
     
     <div class="absolute left-0 w-full text-center">

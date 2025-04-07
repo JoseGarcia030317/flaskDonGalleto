@@ -9,7 +9,7 @@ __modulo_name__ = "GALLETAS"
 
 
 @galletas_bp.route("/galletas/create_galleta", methods=['POST'])
-@modulos_permitidos(__modulo_name__)
+#@modulos_permitidos(__modulo_name__)
 def create_galleta():
     """
     Crea una nueva galleta a partir de datos en JSON o diccionario.
@@ -21,7 +21,7 @@ def create_galleta():
         return jsonify({"status": 500, "message": str(e)}), 500
     
 @galletas_bp.route("/galletas/update_galleta", methods=['POST'])
-@modulos_permitidos(__modulo_name__)
+#@modulos_permitidos(__modulo_name__)
 def update_galleta():
     """
     Actualiza una galleta existente a partir de datos en JSON o diccionario.
@@ -33,7 +33,7 @@ def update_galleta():
         return jsonify({"status": 500, "message": str(e)}), 500
 
 @galletas_bp.route("/galletas/get_all_galletas", methods=['GET'])
-@modulos_permitidos(__modulo_name__)
+#@modulos_permitidos(__modulo_name__)
 def get_all_galletas():
     """
     Obtiene todas las galletas existentes.
@@ -44,7 +44,7 @@ def get_all_galletas():
         return jsonify({"status": 500, "message": str(e)}), 500
 
 @galletas_bp.route("/galletas/get_galleta_by_id", methods=['POST'])
-@modulos_permitidos(__modulo_name__)
+#@modulos_permitidos(__modulo_name__)
 def get_galleta_by_id():
     """
     Obtiene una galleta existente a partir de su ID.
@@ -56,7 +56,7 @@ def get_galleta_by_id():
         return jsonify({"status": 500, "message": str(e)}), 500
 
 @galletas_bp.route("/galletas/delete_galleta", methods=['POST'])    
-@modulos_permitidos(__modulo_name__)
+#@modulos_permitidos(__modulo_name__)
 def delete_galleta():
     """
     Elimina una galleta existente a partir de su ID.

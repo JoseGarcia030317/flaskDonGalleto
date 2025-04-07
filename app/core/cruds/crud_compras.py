@@ -3,6 +3,7 @@ import logging
 from sqlalchemy import case
 from core.classes.Tb_compras import Compra, CompraDetalle
 from core.classes.Tb_insumos import Insumo
+from core.classes.Tb_catalogoUnidad import Unidad
 from core.classes.Tb_proveedores import Proveedor
 from utils.connectiondb import DatabaseConnector
 
@@ -113,13 +114,16 @@ class CompraCRUD:
             detalles = session.query(
                 CompraDetalle,
                 Insumo.nombre,
+                Unidad
             ).join(
                 Insumo, CompraDetalle.insumo_id == Insumo.id_insumo
+            ).join(
+                Unidad, Insumo.unidad_id == Unidad.id_unidad
             ).filter(CompraDetalle.compra_id == id_compra).all()
             
             total_compra = 0  # Acumulador para el total
             for detalle_data in detalles:
-                detalle_obj, insumo_nombre = detalle_data  # Desempaquetar cada tupla
+                detalle_obj, insumo_nombre, unidad = detalle_data  # Desempaquetar cada tupla
                 precio_unitario = float(detalle_obj.precio_unitario)
                 cantidad = detalle_obj.cantidad
                 importe = precio_unitario * cantidad
@@ -129,7 +133,8 @@ class CompraCRUD:
                     "insumo": insumo_nombre,
                     "presentacion": detalle_obj.presentacion,
                     "precio_unitario": precio_unitario,
-                    "cantidad": cantidad
+                    "cantidad": cantidad,
+                    "unidad": unidad.simbolo
                 })
             
             result["total_compra"] = total_compra

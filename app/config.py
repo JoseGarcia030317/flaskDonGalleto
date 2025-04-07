@@ -8,6 +8,8 @@ class Config:
     SECRET_KEY = os.getenv('SECRET_KEY')
     # JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
     CSRF_SECRET_KEY = os.getenv("CSRF_SECRET_KEY")
+    RECAPTCHA_SITE_KEY_V3  = os.getenv("RECAPTCHA_SITE_KEY")
+    RECAPTCHA_SECRET_KEY_V3  = os.getenv("RECAPTCHA_SECRET_KEY")
     
     DEBUG = os.getenv("DEBUG")
     TESTING = os.getenv("TESTING")

@@ -112,14 +112,14 @@ body{
 
 
 /* Grid central */
-.grid {
+.grid-1 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 15px;
     justify-content: center;
 }
 
-.grid h2{
+.grid-1 h2{
     color: #540b0e;
     font-family: "Poppins", sans-serif;
     font-weight: 400;
@@ -230,7 +230,10 @@ body{
 .large-box-history {
     height: 50vh;
     display: flex;
+    justify-content: center;
+    flex-direction: column;
     align-items: center;
+
 }
 .large-box-history h3 {
     font-family: "Poppins", sans-serif;
@@ -251,40 +254,14 @@ body{
 }
 
 .mid-box3 {
-    height: 60px;
+    height: 100px;
     text-align: center;
     align-items: center;
     font-size: 25px;
-    margin: 30px 0px;
+    margin: 30px 0px 100px;
     display: flex;
     justify-content: center;
 }
-
-.btn-history button {
-    width: 240px;
-    height: 40px;
-    padding: 0px 5px;
-    border-radius: 10px;
-    background-color: #FFF;
-    color: #6f473d;
-    font-family: "Poppins", sans-serif;
-    font-weight: 500;
-    font-style: normal;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #6f473d;
-    font-size: 15px;
-}
-
-.btn-history img {
-    width: 20px;
-    height: 20px;
-    margin-left: 15px;
-}
-
-
 
 .large-box-menu {
     height: 100%;
@@ -292,7 +269,7 @@ body{
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    padding: 40px;
+    padding: 40px 0px 0px 70px;
 }
 
 .grid-menu {
@@ -372,25 +349,19 @@ body{
     font-size: 40px;
 }
 
-.large-box-footer {
+.large-box-contact {
     height: 50vh;
-    display: flex;
-    justify-content: center;
     align-items: center;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
 }
-.footer {
-    color: #5b3b33;
+
+.box-contact{
+    height: 30vh;
+    align-items: center;
     text-align: center;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
 }
-
-.footer a {
-    color: #5b3b33;
-    text-decoration: none;
-    margin: 0 10px;
-}
-
-.footer a:hover {
-    text-decoration: underline;
-}
-

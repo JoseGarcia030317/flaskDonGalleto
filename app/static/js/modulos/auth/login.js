@@ -198,10 +198,10 @@ async function registrarEmpresa() {
         nombre: "",
         apellido_pat: "",
         apellido_mat: "",
-        telefono: document.querySelector('input[name="telefono-empresa"]').value,
-        empresa: document.querySelector('input[name="nombre-empresa"]').value,
+        telefono: document.querySelector('input[name="telefono_empresa"]').value,
+        empresa: document.querySelector('input[name="nombre_empresa"]').value,
         tipo: 2, // Valor por defecto Cliente = 1 Empresa = 2
-        correo: document.querySelector('input[name="correo-empresa"]').value,
+        correo: document.querySelector('input[name="correo_empresa"]').value,
         contrasenia: document.querySelector('input[name="contraseniaEmp"]').value,
         estatus: 1
     };

@@ -1,7 +1,7 @@
 import { api } from '../../utils/api.js';
 import { tabs } from '../../utils/tabs.js';
 import { alertas } from '../../utils/alertas.js';
-import { validarLongitud, validarRequerido, validarTelefono, validarEmail, validarSoloTexto, validarCaracteresProhibidos, validarSoloNumeros } from '../../utils/validaciones.js';
+import { validarLongitud, validarRequerido, validarTelefono, validarEmail, validarSoloTexto, validarCaracteresProhibidos, validarSoloNumeros, convertirFecha } from '../../utils/validaciones.js';
 
 let insumosDisponibles = [];
 
@@ -138,14 +138,6 @@ function cerrarModal() {
     document.getElementById('modalFormCompra').classList.add('hidden');
     document.getElementById('modalViewCompra').classList.add('hidden');
     limpiarFormulario();
-}
-
-function convertirFecha(fecha){
-    return new Date(fecha).toLocaleDateString('es-ES', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    });
 }
 
 // FUNCIONES PARA LOS INSUMOS

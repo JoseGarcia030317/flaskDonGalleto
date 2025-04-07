@@ -67,3 +67,12 @@ def terminar_horneado(data: dict) -> dict:
         logger.error("Error al cambiar el estado del horneado a terminado: %s", e)
         raise e from e
 
+def rechazar_horneado(data: dict) -> dict:
+    """
+    Cambia el estado de un horneado a rechazado.
+    """
+    try:
+        return crud.update_horneado(data, state = 5)
+    except Exception as e:
+        logger.error("Error al cambiar el estado del horneado a rechazado: %s", e)
+        raise e from e

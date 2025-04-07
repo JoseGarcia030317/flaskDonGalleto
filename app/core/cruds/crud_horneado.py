@@ -14,6 +14,7 @@ class HorneadoCRUD:
     __STATUS_TERMINADO__ = 2
     __STATUS_CANCELADO__ = 3
     __STATUS_SOLICITADO__ = 4
+    __STATUS_RECHAZADO__ = 5
 
     def get_all_horneados(self, id_horneado:int = None, state:int = None):
         """
@@ -38,7 +39,8 @@ class HorneadoCRUD:
                     self.__STATUS_PROCESO__: "En proceso",
                     self.__STATUS_TERMINADO__: "Terminado",
                     self.__STATUS_CANCELADO__: "Cancelado",
-                    self.__STATUS_SOLICITADO__: "Solicitado"
+                    self.__STATUS_SOLICITADO__: "Solicitado",
+                    self.__STATUS_RECHAZADO__: "Rechazado"
                 }
 
                 for horneado in horneados:

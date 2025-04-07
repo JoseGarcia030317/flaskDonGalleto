@@ -14,8 +14,9 @@ class InventarioGalleta(Base):
     merma_id = Column(Integer, nullable=True)
     tipo_registro = Column(SmallInteger, nullable=False)
     tipo_movimiento = Column(SmallInteger, nullable=False)
+    estatus = Column(Integer, nullable=True)
 
-    def __init__(self, galleta_id = None, tipo_registro = None, cantidad=None, horneado_id=None, venta_id=None, merma_id=None, tipo_movimiento=None):
+    def __init__(self, galleta_id = None, tipo_registro = None, cantidad=None, horneado_id=None, venta_id=None, merma_id=None, tipo_movimiento=None, estatus=None):
         """
         Constructor para crear una instancia de InventarioGalleta.
         
@@ -26,6 +27,7 @@ class InventarioGalleta(Base):
         :param venta_id: ID de la venta asociada.
         :param merma_id: ID de la merma asociada.
         :param tipo_movimiento: Tipo de movimiento.
+        :param estatus: Estatus de la galleta.
         """
         self.galleta_id = galleta_id
         self.tipo_registro = tipo_registro
@@ -34,7 +36,7 @@ class InventarioGalleta(Base):
         self.venta_id = venta_id if venta_id else 0 
         self.merma_id = merma_id if merma_id else 0
         self.tipo_movimiento = tipo_movimiento
-
+        self.estatus = estatus if estatus else 1
 
 
 class Galleta(Base):

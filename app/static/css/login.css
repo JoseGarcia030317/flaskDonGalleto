@@ -183,7 +183,7 @@ input:-webkit-autofill {
 		height: 650px; /* Ajusta la altura si es necesario */
 		display: flex;
             flex-wrap: nowrap;
-            width: 80%;
+            width: 100%;
             max-width: 1200px;
             padding: 10px;
 		    justify-content: center;
@@ -518,4 +518,5 @@ footer p {
 	color: blue;
 	cursor: pointer;
 }
+
 

@@ -70,10 +70,6 @@ class UsuarioCRUD:
                 TipoUsuario.id_tipo_usuario == usuario.Usuario.tipo
             ).all()
             
-            roles = session.query(Modulo, TipoUsuarioModulo).join(
-                TipoUsuarioModulo,
-                Modulo.id_modulo == TipoUsuarioModulo.id_modulo
-            ).all()
             
             user = self._usuario_to_dict(usuario.Usuario)
             user["modules"] = [{"id_modulo": m.id_modulo, 
@@ -134,8 +130,18 @@ class UsuarioCRUD:
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            usuarios = session.query(Usuario).filter_by(estatus=1).all()
-            return [self._usuario_to_dict(u) for u in usuarios]
+            usuarios = session.query(Usuario, TipoUsuario).join(
+                TipoUsuario,
+                Usuario.tipo == TipoUsuario.id_tipo_usuario).filter(Usuario.estatus == 1).all()
+            return [{
+                "id_usuario": s.Usuario.id_usuario,
+                "nombre": s.Usuario.nombre,
+                "apellido_pat": s.Usuario.apellido_pat,
+                "apellido_mat": s.Usuario.apellido_mat,
+                "telefono": s.Usuario.telefono,
+                "usuario": s.Usuario.usuario,
+                "tipo_usuario": s.TipoUsuario.nombre
+            } for s in usuarios]
 
     def authenticate(self, username, plain_password):
         """

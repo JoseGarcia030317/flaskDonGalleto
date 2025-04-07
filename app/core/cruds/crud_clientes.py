@@ -58,8 +58,32 @@ class ClienteCRUD:
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            cliente = session.query(Cliente).filter_by(id_cliente=id_cliente, estatus=1).first()
-            return self._cliente_to_dict(cliente)
+            cliente = session.query(
+                Cliente
+                ).filter_by(
+                    id_cliente=id_cliente, estatus=1
+                ).first()
+            
+            modulos = session.query(Modulo).join(
+                TipoUsuarioModulo,
+                Modulo.id_modulo == TipoUsuarioModulo.id_modulo
+            ).join(
+                TipoUsuario,
+                TipoUsuarioModulo.id_tipo_usuario == TipoUsuario.id_tipo_usuario
+            ).filter(
+                TipoUsuario.id_tipo_usuario == self.TIPO_USUARIO_CLIENTE
+            ).all()
+
+            cliente_dict = self._cliente_to_dict(cliente)
+            cliente_dict["modules"] = [{
+                "id_modulo": m.id_modulo, 
+                "descripcion": m.descripcion, 
+                "ruta": m.ruta, 
+                "funcion": m.funcion
+            } for m in modulos]
+            cliente_dict["tipo_usuario"] = "Cliente"
+
+            return cliente_dict
 
     def update(self, id_cliente, cliente_json):
         """
@@ -74,13 +98,11 @@ class ClienteCRUD:
         
         Session = DatabaseConnector().get_session
         with Session() as session:
-            cliente = session.query(Cliente).filter_by(id_cliente=id_cliente, estatus=1).first()
+            cliente = session.query(Cliente).filter(Cliente.id_cliente==id_cliente).first()
             if cliente:
                 for key, value in data.items():
-                    if key == 'contrasenia':
-                        # Se vuelve a encriptar la contraseña usando el método del modelo.
-                        value = cliente.hash_password(value)
-                    setattr(cliente, key, value)
+                    if key != 'contrasenia':
+                        setattr(cliente, key, value)
                 try:
                     session.commit()
                 except Exception as e:
@@ -95,7 +117,7 @@ class ClienteCRUD:
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            cliente = session.query(Cliente).filter_by(id_cliente=id_cliente, estatus=1).first()
+            cliente = session.query(Cliente).filter(Cliente.id_cliente==id_cliente, Cliente.estatus==self.ESTADO_ACTIVO).first()
             if cliente:
                 try:
                     cliente.estatus = 0  # Baja lógica
@@ -112,7 +134,7 @@ class ClienteCRUD:
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            clientes = session.query(Cliente).filter_by(estatus=1).all()
+            clientes = session.query(Cliente).filter(Cliente.estatus==self.ESTADO_ACTIVO).all()
             return [self._cliente_to_dict(c) for c in clientes]
 
     def authenticate(self, email, plain_password):

@@ -16,7 +16,7 @@ def list_horneados():
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500
     
-@horneado_bp.route("/horneado/get_horneado_by_id", methods=['GET'])
+@horneado_bp.route("/horneado/get_horneado_by_id", methods=['POST'])
 def get_horneado_by_id():
     """
     Obtiene un horneado por su ID.
@@ -68,5 +68,16 @@ def terminar_horneado():
     try:
         data = request.get_json()
         return jsonify(horneado.terminar_horneado(data))
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500
+
+@horneado_bp.route("/horneado/rechazar_horneado", methods=['POST'])
+def rechazar_horneado():
+    """
+    Rechaza un horneado.
+    """
+    try:
+        data = request.get_json()
+        return jsonify(horneado.rechazar_horneado(data))
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500

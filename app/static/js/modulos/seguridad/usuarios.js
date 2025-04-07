@@ -89,10 +89,10 @@ function obtener_usuarios() {
                 tr.innerHTML = `
                     <td class="p-3 text-center">${nombreCompleto}</td>
                     <td class="p-3 text-center">${usuario.telefono}</td>
-                    <td class="p-3 text-center">${usuario.tipo || ''}</td>
+                    <td class="p-3 text-center">${usuario.tipo_usuario || ''}</td>
                     <td class="p-3 text-center">${usuario.usuario || ''}</td>
                     <td class="p-3 flex justify-center">
-                        <button class="align-middle cursor-pointer" onclick="editarUsuario(${usuario.id_usuario})">
+                        <button class="align-middle cursor-pointer" onclick="obtener_usuario_id(${usuario.id_usuario})">
                             <img src="../../../static/images/lapiz.png" class="w-7 h-7">
                         </button>
                         <button class="align-middle cursor-pointer" onclick="eliminarUsuario(${usuario.id_usuario})">
@@ -145,7 +145,7 @@ function guardar_usuario(event){
             return;
         }
 
-    const payload = {
+    const formData = {
         nombre : document.querySelector('input[name="nombre"]').value,
         apellido_pat : document.querySelector('input[name="app"]').value,
         apellido_mat : document.querySelector('input[name="apm"]').value,
@@ -156,7 +156,12 @@ function guardar_usuario(event){
         estatus: 1
     }
         
-    api.postJSON('/usuarios/create_user', payload)
+    // Si es modificar
+    const id_usuario = document.querySelector('input[name="id_usuario"]').value;
+    let endpoint = id_usuario != 0 ? '/usuarios/update_user' : '/usuarios/create_user';
+    let payload = id_usuario != 0 ? {...formData, id_usuario} : formData;
+    
+    api.postJSON(endpoint, payload)
         .then(data => {
             if (data.id_usuario) {
                 cerrarModal();
@@ -174,32 +179,45 @@ function guardar_usuario(event){
     
 };
 
-function editarUsuario(){
-    abrirModal(modalFormE)
+function obtener_usuario_id(id_usuario){
+    api.postJSON('/usuarios/get_user_by_id', { usuario_id : id_usuario })
+        .then(data => {
+            if (data.id_usuario) {
+                abrirModal('editar');
+                llenarFormularioEdicion(data);
+               
+            } else {
+                alert('Usuario no encontrado: ' + (data.error || 'Error desconocido'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error.message);
+            Swal.fire('Error', error.message || 'Error al obtener usuario', 'error');
+        });
 }
+
 
 
 // ====================================================================
 // Funciones para manejar el DOM y mostrar modales y alertas
 // ====================================================================
 function abrirModal(tipo) {
-    const backdrop = document.getElementById('modalBackdropUsuarios');
+    const backdrop = document.getElementById('modalBackdrop');
+    const modalForm = document.getElementById('modalForm');
+
     backdrop.classList.remove('hidden');
-    let modalForm;  
-    if (tipo === 'agregar') {
-        modalForm = document.getElementById('modalFormA');
-    } else {
-        modalForm = document.getElementById('modalFormE');
-    }
+    document.getElementById('modalTitulo').textContent =
+        tipo === 'editar' ? 'Editar Usuario' : 'Añadir Usuario';
+    document.getElementById('tituloLabel').textContent = 
+        tipo === 'editar' ? 'Contraseña Nueva:' : 'Contraseña:';
     modalForm.classList.remove('hidden');
-};
+}
 
 function cerrarModal() {
-    document.getElementById('modalBackdropUsuarios').classList.add('hidden');
-    document.getElementById('modalFormA').classList.add('hidden');
-    document.getElementById('modalFormE').classList.add('hidden');
-    limpiarFormulario()
-};
+    document.getElementById('modalBackdrop').classList.add('hidden');
+    document.getElementById('modalForm').classList.add('hidden');
+    limpiarFormulario();
+}
 
 function filtrarTabla() {
     const textoBusqueda = document.querySelector('input[name="buscar"]').value.toLowerCase();
@@ -216,7 +234,7 @@ function filtrarTabla() {
 };
 
 function cargarSelectRol() {
-    const select = document.getElementById('tipoUsuario')
+    const select = document.getElementById('tipoUsuario');
 
     api.getJSON('/usuarios/get_all_tipo_usuarios')
     .then(data => {
@@ -233,6 +251,40 @@ function cargarSelectRol() {
         Swal.fire('Error', error.message || 'Error al cargar unidades', 'error');
     })
 };
+
+
+function cargarSelectRolEdicion(idSeleccionado) {
+    const select = document.getElementById('tipoUsuario');
+    select.innerHTML = '<option value="">Seleccione Rol Usuario</option>';
+
+    api.getJSON('/usuarios/get_all_tipo_usuarios')
+        .then(data => {
+            data.forEach(tipo => {
+                const selected = tipo.id_tipo_usuario === idSeleccionado ? 'selected' : '';
+                select.innerHTML += `
+                    <option value="${tipo.id_tipo_usuario}" ${selected}>
+                        ${tipo.nombre}
+                    </option>`;
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error.message);
+            Swal.fire('Error', error.message || 'Error al cargar roles de usuario', 'error');
+        });
+}
+
+
+
+function llenarFormularioEdicion(data) {
+    document.querySelector('#usuarioForm input[name="id_usuario"]').value = data.id_usuario || '';
+    document.querySelector('#usuarioForm input[name="nombre"]').value = data.nombre || '';
+    document.querySelector('#usuarioForm input[name="app"]').value = data.apellido_pat || '';
+    document.querySelector('#usuarioForm input[name="apm"]').value = data.apellido_mat || '';
+    document.querySelector('#usuarioForm input[name="telefono"]').value = data.telefono || '';
+    document.querySelector('#usuarioForm input[name="nombreUsuario"]').value = data.usuario || '';
+    document.querySelector('#usuarioForm input[name="contrasenia"]').value = ''
+    cargarSelectRolEdicion(data.tipo); 
+}
 
 function validarFormulario() {
     const validacion = {
@@ -258,6 +310,7 @@ function validarFormulario() {
 };
 
 function limpiarFormulario(){
+    document.querySelector('input[name="id_usuario"]').value = 0;
     document.querySelector('input[name="nombre"]').value = '',
     document.querySelector('input[name="app"]').value = '',
     document.querySelector('input[name="apm"]').value = '',
@@ -273,7 +326,7 @@ window.cargarUsuarios = cargarUsuarios;
 window.obtener_usuarios =  obtener_usuarios;
 window.guardar_usuario = guardar_usuario;
 window.eliminarUsuario = eliminarUsuario;
-window.editarUsuario = editarUsuario;
+window.obtener_usuario_id = obtener_usuario_id;
 
 window.filtrarTabla = filtrarTabla;
 window.abrirModal = abrirModal;

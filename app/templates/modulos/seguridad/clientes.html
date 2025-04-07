@@ -1,1 +1,110 @@
-<h1>Hola</h1>
+<div id="clientes" class="p-2">
+    <div class="items-center justify-center w-full">
+        <div class="flex justify-between mb-2 mx-auto">
+            <!-- Campo de búsqueda -->
+            <div class="relative w-96 mx-auto">
+                <input type="text" name="buscar" placeholder="Buscar..." oninput="filtrarTabla()"
+                    class="w-full pl-4 pr-10 py-1 border border-[#8A5114] rounded-full">
+
+                <!-- Icono de lupa -->
+                <div class="absolute right-3 top-1/3 pt-1 transform -translate-y-1/2">
+                    <img src="./../../../static/images/magnifying glass.png" class="w-6 h-6">
+                </div>
+            </div>
+
+            <!-- Botón para añadir -->
+            <button id="btn-agregar" onclick="abrirModal('agregar')" class="text-white p-2 rounded-full cursor-pointer">
+                <img src="../../../static/images/plus.png" class="w-7 h-7">
+            </button>
+        </div>
+
+        <!-- Tabla de proveedores -->
+        <div class="overflow-x-auto overflow-y-auto">
+            <table class="w-full table-auto border-collapse  rounded-t-lg">
+                <thead>
+                    <tr class="bg-[#efe6dc] align-middle">
+                        <th class="p-2 text-center text-[#915A17]">NOMBRE / RAZON SOCIAL</th>
+                        <th class="p-2 text-center text-[#915A17]">TELEFONO</th>
+                        <th class="p-2 text-center text-[#915A17]">REGIMEN</th>
+                        <th class="p-2 text-center text-[#915A17]">CORREO</th>
+                        <th class="p-2 text-center text-[#915A17]">ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody_clientes">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Modales -->
+        <div id="modalBackdrop" class="hidden fixed inset-0 bg-black/50 z-50">
+            <!-- Modal Añadir-->
+            <div id="modalForm"
+                class="hidden bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[40rem]">
+                <!-- Encabezado del modal -->
+                <div class="bg-[#efe6dc] rounded-t-lg p-4 -m-6 mb-4 flex justify-center items-center relative">
+                    <h2 id="modalTitulo" class="text-[#3C1D0C] font-semibold text-center">Añadir usuario</h2>
+                    <button onclick="cerrarModal()" class="text-black hover:text-gray-700 absolute right-4 cursor-pointer">
+                        <img src="../../../static/images/cerrar.png" class="w-6 h-6">
+                    </button>
+                </div>
+                <form  id="clienteForm" class="space-y-4">
+
+                    <input type="number" name="id_cliente" value="0" hidden>
+                    <div>
+                        <label class="block text-[#895645] mb-1">Regimen Fiscal:</label>
+                        <select type="text" id="regimen" name="regimen" class="w-full p-2 border border-[#895645] rounded-full" required>
+                            <option value="0">Selecciona Regimen Fiscal</option>
+                            <option value="1">Persona Fisica</option>
+                            <option value="2">Persona Moral</option>
+                        </select>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                    <div>
+                        <label class="block text-[#895645] mb-1">Nombre:</label>
+                        <input type="text" name="nombre" class="w-full p-2 border border-[#895645] rounded-full" required>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                    <div>
+                        <label class="block text-[#895645] mb-1">Apelldio Paterno:</label>
+                        <input type="text" name="app" class="w-full p-2 border border-[#895645] rounded-full" required>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                    <div>
+                        <label class="block text-[#895645] mb-1">Apelldio Materno:</label>
+                        <input type="text" name="apm" class="w-full p-2 border border-[#895645] rounded-full" required>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                    <div>
+                        <label id="tituloLabel" class="block text-[#895645] mb-1">Razon Social:</label>
+                        <input type="text" name="razonSocial" class="w-full p-2 border border-[#895645] rounded-full" required>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                    <div>
+                        <label class="block text-[#895645] mb-1">Telefono:</label>
+                        <input type="text" name="telefono" class="w-full p-2 border border-[#895645] rounded-full" required>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                    <div>
+                        <label class="block text-[#895645] mb-1">Correo:</label>
+                        <input type="text" name="correo" class="w-full p-2 border border-[#895645] rounded-full" required>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                    <div>
+                        <label id="tituloLabel" class="block text-[#895645] mb-1">Constraseña:</label>
+                        <input type="password" name="contrasenia" class="w-full p-2 border border-[#895645] rounded-full" required>
+                        <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
+                    </div>
+                    
+                    
+                    <!-- Botón Guardar -->
+                    <button type="submit" onclick="guardar_cliente(event)"
+                        class="w-full py-2 bg-[#efe6dc] text-[#3C1D0C] rounded-full border border-[#8A5114] font-semibold flex items-center justify-center gap-2 hover:bg-gray-50 cursor-pointer">
+                        <img src="../../../static/images/guardar 3C1D0C.png" class="w-5 h-5">
+                        Guardar
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>

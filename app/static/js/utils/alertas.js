@@ -151,15 +151,6 @@ export const alertas = {
     procesoTerminadoSinExito: () => procesoTerminadoSinExito(),
     confirmarProcesoFinalizar: () => confirmarProcesoFinalizar(),
     corteCajaInicio : () => corteCajaInicio(),
-    confirmarYRegistrarVenta : () => confirmarYRegistrarVenta()
-    confirmarEliminar : () => confirmarEliminar(),
-    procesoTerminadoExito : () => procesoTerminadoExito(),
-    alertaWarning : (mensaje) => alertaWarning(mensaje),
-    procesoTerminadoSinExito : () => procesoTerminadoSinExito(),
-    alertaRecetas : (texto) => alertaRecetas(texto),
-    alertaCambioMargen : (costoUnitario, nuevoPrecio) => alertaCambioMargen(costoUnitario, nuevoPrecio),
-    alertaAumentoCostoProduccion : (aumento, nuevoPrecio) => alertaAumentoCostoProduccion(aumento, nuevoPrecio), 
-    procesoTerminadoSinExito : () => procesoTerminadoSinExito(),
-    confirmarProcesoFinalizar: () => confirmarProcesoFinalizar(),
+    confirmarYRegistrarVenta : () => confirmarYRegistrarVenta(),
     alertaFaltaDeInsumos: (mensaje) => alertaFaltaDeInsumos(mensaje)
 }

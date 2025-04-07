@@ -205,4 +205,3 @@ class InsumoCRUD:
                     "simbolo": insumo.Unidad.simbolo
                 })
             return result
-

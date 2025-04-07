@@ -70,3 +70,14 @@ def terminar_horneado():
         return jsonify(horneado.terminar_horneado(data))
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500
+
+@horneado_bp.route("/horneado/rechazar_horneado", methods=['POST'])
+def rechazar_horneado():
+    """
+    Rechaza un horneado.
+    """
+    try:
+        data = request.get_json()
+        return jsonify(horneado.rechazar_horneado(data))
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500

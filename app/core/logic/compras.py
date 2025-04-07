@@ -56,3 +56,4 @@ def get_compra(id_compra: int) -> dict:
     except Exception as e:
         logger.error("Error al obtener la compra: %s", e)
         raise e from e
+

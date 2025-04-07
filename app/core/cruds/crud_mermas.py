@@ -170,8 +170,7 @@ class MermaCRUD:
                 Galleta, InventarioGalleta.galleta_id == Galleta.id_galleta
             ).filter(Merma.id_merma == id_merma, Merma.tipo_merma == self.TIPO_MOVIMIENTO_GALLETA).first()
             return dict(row._mapping) if row is not None else {}
-    
-    
+      
     def _update_merma(self, id_merma: int, data: dict, inventory_class, inventory_allowed: list) -> dict:
         """
         Método auxiliar para actualizar una merma y su registro de inventario.

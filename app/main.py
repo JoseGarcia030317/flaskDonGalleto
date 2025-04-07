@@ -1,3 +1,4 @@
+import copy
 from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_cors import CORS
 from forms.login_form import LoginForm
@@ -33,6 +34,9 @@ from routes.mermas_bp import mermas_bp
 from routes.dashboard_bp import dashboard_bp
 from routes.galletas_bp import galletas_bp
 from routes.compras_bp import compras_bp
+from routes.usuario_bp import usuario_bp
+from routes.almacen_bp import almacen_bp
+from routes.horneado_bp import horneado_bp
 
 # Inicializar extensiones de Flask
 # db = SQLAlchemy()
@@ -93,6 +97,10 @@ app.register_blueprint(mermas_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(galletas_bp)
 app.register_blueprint(compras_bp)
+app.register_blueprint(usuario_bp)
+app.register_blueprint(almacen_bp)
+app.register_blueprint(horneado_bp)
+
 # Ruta raíz de la aplicacion
 @app.route("/")
 def inicio():
@@ -126,9 +134,21 @@ def load_user(user_id):
     if user_id:
         user = None
         if user_id.startswith("usuario:"):
-            user = Usuario(**login.get_user_by_id(user_id.split(":")[1]))
+            usr = login.get_user_by_id(user_id.split(":")[1])
+            usuario = copy.deepcopy(usr)
+            usuario.pop("modules")
+            usuario.pop("tipo_usuario")
+            user = Usuario(**usuario)
+            user.tipo_usuario = usr.get("tipo_usuario")
+            user.modules = usr.get("modules")
         elif user_id.startswith("cliente:"):
-            user = Cliente(**login.get_cliente_by_id(user_id.split(":")[1]))
+            cli = login.get_cliente_by_id(user_id.split(":")[1])
+            cliente = copy.deepcopy(cli)
+            cliente.pop("modules")
+            cliente.pop("tipo_usuario")
+            user = Cliente(**cliente)
+            user.tipo_usuario = cli.get("tipo_usuario")
+            user.modules = cli.get("modules")
             user.tipo = 3
         return user
     return None

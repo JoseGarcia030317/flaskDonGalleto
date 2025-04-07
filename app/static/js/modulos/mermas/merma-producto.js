@@ -7,60 +7,6 @@ import { validarCaracteresProhibidos, validarSelectRequerido, mostrarErrores, va
 // Variables ocupadas para el funcionamiento de merma-productos
 // ====================================================================
 let productosDisponibles = [
-    {
-        "id_galleta": 1,
-        "nombre_galleta": "Galleta de Chocolate Clásica",
-        "proteccion_precio": 3.00,
-        "gramos_galleta": 150.00,
-        "precio_unitario": 18.50,
-        "dias_caducidad": 90,
-        "estatus": 1
-    },
-    {
-        "id_galleta": 2,
-        "nombre_galleta": "Galleta de Mantequilla Tradicional",
-        "proteccion_precio": 3.00,
-        "gramos_galleta": 120.00,
-        "precio_unitario": 15.00,
-        "dias_caducidad": 100,
-        "estatus": 1
-    },
-    {
-        "id_galleta": 3,
-        "nombre_galleta": "Galleta Vainilla con Huevo",
-        "proteccion_precio": 3.00,
-        "gramos_galleta": 130.00,
-        "precio_unitario": 12.80,
-        "dias_caducidad": 85,
-        "estatus": 1
-    },
-    {
-        "id_galleta": 4,
-        "nombre_galleta": "Galleta Crocante con Levadura",
-        "proteccion_precio": 3.00,
-        "gramos_galleta": 100.00,
-        "precio_unitario": 20.00,
-        "dias_caducidad": 120,
-        "estatus": 1
-    },
-    {
-        "id_galleta": 5,
-        "nombre_galleta": "Galleta de Chocolate con Leche",
-        "proteccion_precio": 3.00,
-        "gramos_galleta": 180.00,
-        "precio_unitario": 20.00,
-        "dias_caducidad": 75,
-        "estatus": 1
-    },
-    {
-        "id_galleta": 6,
-        "nombre_galleta": "Galleta Salada Dulce",
-        "proteccion_precio": 3.00,
-        "gramos_galleta": 90.00,
-        "precio_unitario": 19.50,
-        "dias_caducidad": 150,
-        "estatus": 1
-    }
 ];
 
 const opcionesFecha = {
@@ -163,7 +109,7 @@ function cerrarModal() {
 // ====================================================================
 // funcion para cargar los producto en la vista de mermas de producto
 function consultarProductos() {
-    return api.getJSON('/productos/get_all_productos')
+    return api.getJSON('/galletas/get_all_galletas')
         .then(data => {
             if (data) productosDisponibles = data;
             return data;
@@ -181,7 +127,7 @@ function cargarSelectProductos() {
         select.innerHTML += `
         <option value="${producto.id_galleta}">
             ${producto.nombre_galleta}
-        </optoin>
+        </option>
         `;
     });
 }
@@ -189,12 +135,11 @@ function cargarSelectProductos() {
 // Funcion para cargar las mermas de productos al iniciar la aplicacion
 function cargarMermaProducto() {
     const tbody = document.getElementById('tbody_merma_producto');
-    tabs.mostrarEsqueletoTabla(tbody);
-    // consultarProductos().then(() => {
-    //     cargarSelectProductos();
-    // });
-    cargarSelectProductos();
-
+    tabs.mostrarEsqueletoTabla(tbody, 5, 5);
+    consultarProductos().then(() => {
+        cargarSelectProductos();
+    });
+    
     api.getJSON('/mermas/get_all_mermas_galletas')
         .then(data => {
             tbody.innerHTML = '';

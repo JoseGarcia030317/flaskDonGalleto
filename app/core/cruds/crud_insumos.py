@@ -1,11 +1,14 @@
 from core.classes.Tb_catalogoUnidad import Unidad
-from core.classes.Tb_insumos import Insumo
+from core.classes.Tb_insumos import Insumo, InventarioInsumo
 import json
 from utils.connectiondb import DatabaseConnector
 from core.cruds.crud_unidad import UnidadCRUD
-
+from sqlalchemy import func, case
 
 class InsumoCRUD:
+    ACTIVO = 1
+    INACTIVO = 0
+
     def _insumo_unidad_to_dict(self, insumo, unidad):
         """
         Convierte un objeto de Insumo en un diccionario.
@@ -133,8 +136,33 @@ class InsumoCRUD:
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            insumos = session.query(Insumo).filter_by(estatus=1).all()
-            return [self._insumo_to_dict(i) for i in insumos]
+            subquery = session.query(
+                InventarioInsumo.insumo_id,
+                func.sum(
+                    case(
+                        (InventarioInsumo.tipo_registro == 1, InventarioInsumo.cantidad),
+                        else_=-InventarioInsumo.cantidad
+                    )
+                ).label("existencias")
+            ).group_by(InventarioInsumo.insumo_id).subquery()
+
+            insumos = session.query(
+                Insumo,
+                subquery.c.existencias
+            ).outerjoin(
+                subquery, Insumo.id_insumo == subquery.c.insumo_id
+            ).filter(Insumo.estatus == 1).all()
+
+            result = []
+            for insumo, existencias in insumos:
+                result.append({
+                    "id_insumo": insumo.id_insumo,
+                    "nombre": insumo.nombre,
+                    "descripcion": insumo.descripcion,
+                    "existencias": existencias if existencias is not None else 0
+                })
+            return result
+            
 
     def list_all_insumo_unidad(self):
         """
@@ -144,13 +172,36 @@ class InsumoCRUD:
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            insumos = session.query(Insumo).filter_by(estatus=1).all()
-            # Asumiendo que la unidad también tiene campo 'estatus'
-            unidades = session.query(Unidad).filter_by(estatus=1).all()
-            unidades_dict = {unidad.id_unidad: unidad for unidad in unidades}
+            subquery = session.query(
+                InventarioInsumo.insumo_id,
+                func.sum(
+                    case(
+                        (InventarioInsumo.tipo_registro == 1, InventarioInsumo.cantidad),
+                        else_=-InventarioInsumo.cantidad
+                    )
+                ).label("existencias")
+            ).group_by(InventarioInsumo.insumo_id).subquery()
 
-            listado = []
+            insumos = session.query(
+                Insumo,
+                Unidad,
+                subquery.c.existencias
+            ).join(
+                Unidad, Insumo.unidad_id == Unidad.id_unidad
+            ).outerjoin(
+                subquery, Insumo.id_insumo == subquery.c.insumo_id
+            ).filter(Insumo.estatus == self.ACTIVO).all()
+
+            result = []
             for insumo in insumos:
-                unidad = unidades_dict.get(insumo.unidad_id)
-                listado.append(self._insumo_unidad_to_dict(insumo, unidad))
-            return listado
+                result.append({
+                    "id_insumo": insumo.Insumo.id_insumo,
+                    "nombre": insumo.Insumo.nombre,
+                    "descripcion": insumo.Insumo.descripcion,
+                    "existencias": insumo.existencias if insumo.existencias is not None else 0,
+                    "precio_unitario" : insumo.Insumo.precio_unitario,
+                    "unidad_id": insumo.Unidad.id_unidad,
+                    "unidad": insumo.Unidad.nombre,
+                    "simbolo": insumo.Unidad.simbolo
+                })
+            return result

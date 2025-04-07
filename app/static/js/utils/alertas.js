@@ -46,9 +46,66 @@ function procesoTerminadoSinExito() {
       });
 }
 
+function alertaRecetas(texto) {
+    Swal.fire({
+        position: 'center',
+        icon: "warning",
+        title: texto,
+        showConfirmButton : false,
+        timer : 1500
+      });
+}
+
+function alertaAumentoCostoProduccion(aumento, nuevoPrecio) {
+    return Swal.fire({
+        title: '¡Costo de producción aumentó!',
+        html: `El costo de producción por galleta aumentó <strong>$${aumento}</strong>.
+             <br>El nuevo precio sugerido es <strong>$${nuevoPrecio}</strong>.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Actualizar precio',
+        cancelButtonText: 'Dejar como está',
+        confirmButtonColor: '#3C1D0C',
+        cancelButtonColor: '#6c757d'
+    }).then((result) => {
+        return result.isConfirmed;
+    });
+}
+
+function alertaCambioMargen(costoUnitario, nuevoPrecio) {
+    return Swal.fire({
+        title: '!Precio de venta afectado!',
+        html: `El costo de producción de la galleta ahora es $<strong>$${costoUnitario}</strong>.
+             <br>El nuevo precio de venta sugerido sería $ <strong>$${nuevoPrecio}</strong>.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Actualizar precio',
+        cancelButtonText: 'Mantener precio actual',
+        confirmButtonColor: '#3C1D0C',
+        cancelButtonColor: '#6c757d'
+    }).then((result) => {
+        return result.isConfirmed;
+    });
+}
+
+function confirmarProcesoFinalizar() {
+    Swal.fire({
+        position: 'center',
+        icon: "question",
+        title: "¿Está seguro de realizar la acción?",
+        showConfirmButton : true,
+        showCancelButton: true
+      });
+}
+
 export const alertas = {
     confirmarEliminar : () => confirmarEliminar(),
     procesoTerminadoExito : () => procesoTerminadoExito(),
     alertaWarning : (mensaje) => alertaWarning(mensaje),
-    procesoTerminadoSinExito : () => procesoTerminadoSinExito()
+    procesoTerminadoSinExito : () => procesoTerminadoSinExito(),
+    alertaRecetas : (texto) => alertaRecetas(texto),
+    alertaCambioMargen : (costoUnitario, nuevoPrecio) => alertaCambioMargen(costoUnitario, nuevoPrecio),
+    alertaAumentoCostoProduccion : (aumento, nuevoPrecio) => alertaAumentoCostoProduccion(aumento, nuevoPrecio), 
+    procesoTerminadoSinExito : () => procesoTerminadoSinExito(),
+    confirmarProcesoFinalizar: () => confirmarProcesoFinalizar()
 }

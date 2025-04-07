@@ -1,7 +1,7 @@
 import { api } from '../../utils/api.js';
 import { tabs } from '../../utils/tabs.js';
 import { alertas } from '../../utils/alertas.js';
-import { validarLongitud, validarRequerido, validarTelefono, validarEmail, validarSoloTexto, validarCaracteresProhibidos, validarSoloNumeros } from '../../utils/validaciones.js';
+import { validarLongitud, validarRequerido, validarTelefono, validarEmail, validarSoloTexto, validarCaracteresProhibidos, validarSoloNumeros, convertirFecha } from '../../utils/validaciones.js';
 
 let insumosDisponibles = [];
 
@@ -36,7 +36,7 @@ function initCompras(){
 
 function cargarCompras() {  
     const tbody = document.getElementById('tbody_compras');
-    tabs.mostrarEsqueletoTabla(tbody);
+    tabs.mostrarEsqueletoTabla(tbody,5,5);
 
     api.getJSON('/compras/list_compras')
     .then(data => {
@@ -89,13 +89,7 @@ function consultarInsumos() {
         .catch(error => {
             console.error('Error:', error.message);
             Swal.fire('Error', error.message || 'Error al cargar insumos', 'error');
-        });
-}
-
-function inicializarFecha() {
-    const hoy = new Date();
-    const fechaFormateada = hoy.toISOString().split('T')[0]; // Obtiene YYYY-MM-DD
-    document.querySelector('input[name="fecha"]').value = fechaFormateada;
+        }).finally( () => tabs.desbloquearTabs());
 }
 
 function abrirModal(tipo) {
@@ -108,7 +102,6 @@ function abrirModal(tipo) {
         modalForm = document.getElementById('modalViewCompra');
     }
     modalForm.classList.remove('hidden');
-    inicializarFecha();
 }
 
 function abrirVerCompra(id_compra){
@@ -145,14 +138,6 @@ function cerrarModal() {
     document.getElementById('modalFormCompra').classList.add('hidden');
     document.getElementById('modalViewCompra').classList.add('hidden');
     limpiarFormulario();
-}
-
-function convertirFecha(fecha){
-    return new Date(fecha).toLocaleDateString('es-ES', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    });
 }
 
 // FUNCIONES PARA LOS INSUMOS
@@ -198,7 +183,7 @@ function seleccionarInsumo(id_insumo) {
             <input type="hidden" name="insumo_id" value="${id_insumo}">
             <span class="flex-1">${insumo.nombre}</span>
             <div class="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2">
-                <input type="number" name="cantidad" min="0" class="block w-20 grow py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6 w-20" required oninput="actualizarInsumo(${id_insumo}, this.value, 'cantidad')">
+                <input type="number" name="cantidad" min="0" class="block w-20 grow py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6" required oninput="actualizarInsumo(${id_insumo}, this.value, 'cantidad')">
                     <div class="grid shrink-0 grid-cols-1 focus-within:relative">
                         <select id="selectPresentacion" name="presentacion" aria-label="presentacion" class="col-start-1 row-start-1 w-24 appearance-none rounded-md py-1.5 pr-7 pl-3 text-base text-gray-500 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6" required oninput="actualizarInsumo(${id_insumo}, this.value, 'presentacion')">      
                         </select>
@@ -273,6 +258,7 @@ function actualizarInsumo(id_insumo, valor, campo) {
 }
 
 function guardarCompra(event){
+    document.getElementById('btnGuardarCompra').disabled = true;
     event.preventDefault();
     const contenedor = document.getElementById('insumos-seleccionados');
     if (contenedor.querySelector('div')) {
@@ -282,7 +268,6 @@ function guardarCompra(event){
             mostrarErrores(errores);
             return;
         }
-
         const formData =  {
             observacion: document.querySelector('input[name="observacion"]').value,
             proveedor_id: document.querySelector('select[name="proveedor"]').value,
@@ -321,6 +306,7 @@ function cancelarCompra(event){
         })
         .then(data => {
             alertas.procesoTerminadoExito();
+            tabs.ocultarLoader();
             cargarCompras();
         })
         cerrarModal();
@@ -378,10 +364,10 @@ function validarFormulario() {
 }
 
 function limpiarFormulario(){
-    document.querySelector('input[name="fecha"]').value = '';
     document.querySelector('select[name="proveedor"]').value = '';
     document.querySelector('input[name="observacion"]').value = '';
     document.getElementById('insumos-seleccionados').innerHTML = '';
+    document.getElementById('btnGuardarCompra').disabled = false;
 }
 
 window.abrirModal = abrirModal;

@@ -32,7 +32,7 @@ def get_all_galletas() -> dict:
     Obtiene todas las galletas existentes.
     """
     try:
-        return crud.get_all()
+        return crud.get_all_galletas()
     except Exception as e:
         logger.error("Error al obtener todas las galletas: %s", e)
         raise e

@@ -25,6 +25,16 @@ def get_user_all() -> list:
         logger.error("Error al obtener los usuarios: %s", e)
         raise
 
+def get_user_by_id(usuario_id: int) -> dict:
+    """Obtiene el usuario por ID de la base de datos."""
+    try:
+        result = crud.read(usuario_id)
+        logger.info("Se ha obtenido el usuarios.")
+        return result
+    except Exception as e:
+        logger.error("Error al obtener el usuario: %s", e)
+        raise
+
 def delete_user(uduario_id: int) -> dict:
     """Elimina (lógicamente) una merma de la base de datos."""
     try:
@@ -33,6 +43,16 @@ def delete_user(uduario_id: int) -> dict:
         return result
     except Exception as e:
         logger.error("Error al eliminar el usuario con id %d: %s", uduario_id, e)
+        raise
+
+def update_user(usuario_id: int, data) -> dict:
+    """Elimina (lógicamente) una merma de la base de datos."""
+    try:
+        result = crud.update(usuario_id, data)
+        logger.info("Se ha actualizado el usuario con id %d correctamente.", usuario_id)
+        return result
+    except Exception as e:
+        logger.error("Error al actualizado el usuario con id %d: %s", usuario_id, e)
         raise
 
 def get_all_tipo_usuarios() -> list:

@@ -41,9 +41,9 @@ function procesoTerminadoSinExito() {
         position: 'center',
         icon: "error",
         title: "Ha ocurrido un error, intentalo más tarde",
-        showConfirmButton : false,
-        timer : 1500
-      });
+        showConfirmButton: false,
+        timer: 1500
+    });
 }
 
 function alertaRecetas(texto) {
@@ -51,9 +51,9 @@ function alertaRecetas(texto) {
         position: 'center',
         icon: "warning",
         title: texto,
-        showConfirmButton : false,
-        timer : 1500
-      });
+        showConfirmButton: false,
+        timer: 1500
+    });
 }
 
 function alertaAumentoCostoProduccion(aumento, nuevoPrecio) {
@@ -93,19 +93,40 @@ function confirmarProcesoFinalizar() {
         position: 'center',
         icon: "question",
         title: "¿Está seguro de realizar la acción?",
-        showConfirmButton : true,
+        showConfirmButton: true,
         showCancelButton: true
-      });
+    });
+}
+
+function corteCajaInicio() {
+    return Swal.fire({ // ¡Debe retornar directamente la promesa!
+        title: 'Corte de caja inicial requerido',
+        input: 'number',
+        inputLabel: 'No hay un corte de caja registrado. Ingrese el monto inicial de efectivo',
+        inputPlaceholder: 'Ejemplo: 1500.00',
+        inputAttributes: {
+            min: "0",
+            step: "0.01"
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Iniciar turno',
+        cancelButtonText: 'Cancelar',
+        inputValidator: (value) => {
+            if (!value) return 'Debe ingresar un monto inicial';
+            if (parseFloat(value) <= 0) return 'El monto debe ser mayor a cero!';
+        }
+    });
 }
 
 export const alertas = {
-    confirmarEliminar : () => confirmarEliminar(),
-    procesoTerminadoExito : () => procesoTerminadoExito(),
-    alertaWarning : (mensaje) => alertaWarning(mensaje),
-    procesoTerminadoSinExito : () => procesoTerminadoSinExito(),
-    alertaRecetas : (texto) => alertaRecetas(texto),
-    alertaCambioMargen : (costoUnitario, nuevoPrecio) => alertaCambioMargen(costoUnitario, nuevoPrecio),
-    alertaAumentoCostoProduccion : (aumento, nuevoPrecio) => alertaAumentoCostoProduccion(aumento, nuevoPrecio), 
-    procesoTerminadoSinExito : () => procesoTerminadoSinExito(),
-    confirmarProcesoFinalizar: () => confirmarProcesoFinalizar()
+    confirmarEliminar: () => confirmarEliminar(),
+    procesoTerminadoExito: () => procesoTerminadoExito(),
+    alertaWarning: (mensaje) => alertaWarning(mensaje),
+    procesoTerminadoSinExito: () => procesoTerminadoSinExito(),
+    alertaRecetas: (texto) => alertaRecetas(texto),
+    alertaCambioMargen: (costoUnitario, nuevoPrecio) => alertaCambioMargen(costoUnitario, nuevoPrecio),
+    alertaAumentoCostoProduccion: (aumento, nuevoPrecio) => alertaAumentoCostoProduccion(aumento, nuevoPrecio),
+    procesoTerminadoSinExito: () => procesoTerminadoSinExito(),
+    confirmarProcesoFinalizar: () => confirmarProcesoFinalizar(),
+    corteCajaInicio : () => corteCajaInicio()
 }

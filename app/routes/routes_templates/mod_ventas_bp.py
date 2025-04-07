@@ -10,7 +10,7 @@ mod_ventas_bp = Blueprint('mod_ventas_bp', __name__)
 @mod_ventas_bp.route('/ventas')
 @login_required
 @fresh_login_required
-@modulos_permitidos()
+@role_required(2)
 def index_ventas():
     return render_template('modulos/ventas/index-ventas.html')
 
@@ -18,7 +18,7 @@ def index_ventas():
 @mod_ventas_bp.route('/ventas/registro-ventas')
 @login_required
 @fresh_login_required
-@modulos_permitidos()
+@role_required(2)
 def ventas_registro_venta():
     return render_template('modulos/ventas/registro-venta.html')
 
@@ -34,7 +34,7 @@ def ventas_listado_ventas():
 @mod_ventas_bp.route('/ventas/listado-pedidos')
 @login_required
 @fresh_login_required
-@modulos_permitidos()
+@role_required(2)
 def ventas_listado_venta():
     return render_template('modulos/ventas/listado-pedidos.html')
 
@@ -42,7 +42,7 @@ def ventas_listado_venta():
 @mod_ventas_bp.route('/ventas/corte-caja')
 @login_required
 @fresh_login_required
-@modulos_permitidos()
+@role_required(2)
 def ventas_corte_caja():
     return render_template('modulos/ventas/corte-caja.html')
 
@@ -50,6 +50,6 @@ def ventas_corte_caja():
 @mod_ventas_bp.route('/ventas/solicitud-produccion')
 @login_required
 @fresh_login_required
-@modulos_permitidos()
+@role_required(2)
 def ventas_solicitud_produccion():
     return render_template('modulos/ventas/solicitud-produccion.html')

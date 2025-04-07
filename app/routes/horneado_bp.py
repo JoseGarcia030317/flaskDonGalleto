@@ -16,7 +16,7 @@ def list_horneados():
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500
     
-@horneado_bp.route("/horneado/get_horneado_by_id", methods=['GET'])
+@horneado_bp.route("/horneado/get_horneado_by_id", methods=['POST'])
 def get_horneado_by_id():
     """
     Obtiene un horneado por su ID.

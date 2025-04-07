@@ -14,14 +14,15 @@ class Venta(Base):
     observacion = Column(String(65), nullable=False)
     estatus = Column(Integer, nullable=False)
     descuento = Column(Numeric(18, 2), nullable=False)
+    id_pedido = Column(Integer, nullable=False)
 
-    def __init__(self, clave_venta = None, fecha = None, observacion = None, estatus = 1, descuento = None):
+    def __init__(self, clave_venta = None, fecha = None, observacion = None, estatus = 1, descuento = None, id_pedido = None):
         self.clave_venta = clave_venta
         self.fecha = fecha if fecha else datetime.now()
         self.observacion = observacion 
         self.estatus = estatus 
         self.descuento = descuento if descuento else 0
-
+        self.id_pedido = id_pedido
 
 class VentaDetalle(Base):
     __tablename__ = 'TB_DetalleVenta'

@@ -1,10 +1,11 @@
 import { api } from "../../utils/api.js";
 import { tabs } from "../../utils/tabs.js";
+import { revisarCorteCaja } from "./corte-caja.js";
 
 // Funcion para cargar la vista principal de compras en el main
 function cargarModuloVentas() {
     const main_content = document.getElementById("main-content");
-    main_content.innerHTML = '';
+    main_content.innerHTML = tabs.mostrarEsqueletoMainContent()
     api.getHTML("/ventas")
         .then(html => {
             main_content.innerHTML = html;
@@ -14,7 +15,13 @@ function cargarModuloVentas() {
                 const endpoint = tab.dataset.target;
                 cargarContenidoVentas(endpoint);
             });
-            cargarContenidoVentas("listado-ventas");
+            // Revisa si hay corte de caja
+            // No hay un corte de caja del día actual
+            if (revisarCorteCaja() === null) {
+                cargarContenidoVentas("corte-caja");
+            } else {
+                cargarContenidoVentas("registro-ventas");
+            }
         })
         .catch(err => console.error("Error cargando el módulo de ventas: ", err));
 }
@@ -43,7 +50,7 @@ function cargarContenidoVentas(endpoint) {
                 console.log(`Script de ${endpoint} cargado`);
                 // TO DO: aquí tienes que colocar los if's necesarios para poder inicializar cada uno de los submodulos
                 // Ejemplo:
-                if (endpoint === 'registro-ventas') window.cargarRegistroVentas();
+                if (endpoint === 'registro-ventas') window.cargarGalletas();
                 if (endpoint === 'listado-ventas') window.inicializarModuloListadoVentas();
                 if (endpoint === 'listado-pedidos') window.inicializarModuloListadoPedidos();
                 if (endpoint === 'corte-caja') window.inicializarModuloCorteCaja();

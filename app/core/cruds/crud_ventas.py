@@ -36,7 +36,7 @@ class VentaCRUD:
                         id_venta=id_venta
                     )
                     session.add(venta_detalle)
-                    self.descontar_galletas(detalle["galleta_id"], detalle["cantidad_galleta"], id_venta, session)
+                    self.descontar_galletas(detalle["galleta_id"], detalle["cantidad_galletas"], id_venta, session)
                 session.commit()
                 return {"message": "Venta guardada correctamente"}
         except Exception as e:

@@ -4,6 +4,7 @@ import json
 from utils.connectiondb import DatabaseConnector
 from core.cruds.crud_unidad import UnidadCRUD
 from sqlalchemy import func, case
+from core.classes.Tb_insumos import Vw_InsumosUltimaCompra
 
 class InsumoCRUD:
     ACTIVO = 1
@@ -144,11 +145,14 @@ class InsumoCRUD:
                         else_=-InventarioInsumo.cantidad
                     )
                 ).label("existencias")
-            ).group_by(InventarioInsumo.insumo_id).subquery()
+            ).filter(InventarioInsumo.id_estatus == 1).group_by(InventarioInsumo.insumo_id).subquery()
 
             insumos = session.query(
                 Insumo,
-                subquery.c.existencias
+                subquery.c.existencias,
+                Vw_InsumosUltimaCompra
+            ).join(
+                Vw_InsumosUltimaCompra, Insumo.id_insumo == Vw_InsumosUltimaCompra.id_insumo
             ).outerjoin(
                 subquery, Insumo.id_insumo == subquery.c.insumo_id
             ).filter(Insumo.estatus == 1).all()
@@ -159,19 +163,21 @@ class InsumoCRUD:
                     "id_insumo": insumo.id_insumo,
                     "nombre": insumo.nombre,
                     "descripcion": insumo.descripcion,
-                    "existencias": existencias if existencias is not None else 0
+                    "existencias": existencias if existencias is not None else 0,
+                    "precio_unitario": insumo.precio_unitario
                 })
             return result
             
 
+
     def list_all_insumo_unidad(self):
         """
         Obtiene el listado completo de insumos activos y su respectiva unidad,
-        retornándolos como lista de dicts.
-        Si no hay registros, retorna una lista vacía.
+        incluyendo el último precio unitario de compra desde la vista 'view_insumos_costo'.
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
+            # Subconsulta para existencias
             subquery = session.query(
                 InventarioInsumo.insumo_id,
                 func.sum(
@@ -180,28 +186,34 @@ class InsumoCRUD:
                         else_=-InventarioInsumo.cantidad
                     )
                 ).label("existencias")
-            ).group_by(InventarioInsumo.insumo_id).subquery()
+            ).filter(InventarioInsumo.id_estatus == 1).group_by(InventarioInsumo.insumo_id).subquery()
 
+            # Consulta principal
             insumos = session.query(
                 Insumo,
                 Unidad,
-                subquery.c.existencias
+                subquery.c.existencias,
+                Vw_InsumosUltimaCompra
             ).join(
                 Unidad, Insumo.unidad_id == Unidad.id_unidad
+            ).join(
+                Vw_InsumosUltimaCompra, Insumo.id_insumo == Vw_InsumosUltimaCompra.id_insumo
             ).outerjoin(
                 subquery, Insumo.id_insumo == subquery.c.insumo_id
             ).filter(Insumo.estatus == self.ACTIVO).all()
 
             result = []
             for insumo in insumos:
+                id_insumo = insumo.Insumo.id_insumo
                 result.append({
-                    "id_insumo": insumo.Insumo.id_insumo,
+                    "id_insumo": id_insumo,
                     "nombre": insumo.Insumo.nombre,
                     "descripcion": insumo.Insumo.descripcion,
                     "existencias": insumo.existencias if insumo.existencias is not None else 0,
-                    "precio_unitario" : insumo.Insumo.precio_unitario,
+                    "precio_unitario": insumo.Vw_InsumosUltimaCompra.pre_unit_compra,
                     "unidad_id": insumo.Unidad.id_unidad,
                     "unidad": insumo.Unidad.nombre,
                     "simbolo": insumo.Unidad.simbolo
                 })
+
             return result

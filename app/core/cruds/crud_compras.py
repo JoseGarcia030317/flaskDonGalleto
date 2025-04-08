@@ -259,7 +259,7 @@ class CompraCRUD:
                 result_list.append(compra_dict)
             return result_list
 
-    def list_all(self, estatus: List[int] = None, filtrar_por_fecha_actual: bool = False) -> list:
+    def list_all_by_state(self, estatus= None, filtrar_por_fecha_actual: bool = False) -> list:
         """
         Obtiene el listado completo de compras activas, incluyendo sus detalles.
         Retorna una lista vacía si no hay registros.
@@ -274,8 +274,10 @@ class CompraCRUD:
                 Proveedor, Compra.proveedor_id == Proveedor.id_proveedor
             )
 
-            if estatus is not None:
+            if isinstance(estatus, list):
                 query = query.filter(Compra.estatus.in_(estatus))
+            elif estatus is not None:
+                query = query.filter(Compra.estatus == estatus)
             else:
                 query = query.filter(Compra.estatus.in_([0, 1]))
 

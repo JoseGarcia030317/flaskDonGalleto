@@ -14,7 +14,7 @@ def list_compras_almacen() -> list:
     """
     try:
         crudCompras = CompraCRUD()
-        return crudCompras.list_all(estatus=1)
+        return crudCompras.list_all_by_state(estatus=1)
     except Exception as e:
         logger.error("Error al obtener las compras activas: %s", e)
         raise e from e

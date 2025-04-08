@@ -189,7 +189,50 @@ function cancelarVenta() {
 }
 
 function generarPdfTicket() {
-    alert('Generando PDF...');
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text("TICKET DE VENTA", 14, 10);
+
+      doc.setFontSize(10);
+      doc.text("Tienda: Don Galleto", 14, 20);
+      doc.text("Dirección: Leon Gto.", 14, 25);
+      doc.text("Tel: 123-456-7890", 14, 30);
+
+      doc.text("---------------------------------", 14, 35);
+      
+      doc.setFontSize(12);
+      doc.text("Producto", 14, 45);
+      doc.text("Precio", 100, 45);
+      doc.text("Cantidad", 140, 45);
+      doc.text("Total", 180, 45);
+
+      const productos = [
+        { nombre: "Producto 1", precio: "$50.00", cantidad: 2, total: "$100.00" },
+        { nombre: "Producto 2", precio: "$30.00", cantidad: 1, total: "$30.00" },
+        { nombre: "Producto 3", precio: "$20.00", cantidad: 3, total: "$60.00" },
+      ];
+
+      let yPosition = 50;
+      productos.forEach((producto) => {
+        doc.text(producto.nombre, 14, yPosition);
+        doc.text(producto.precio, 100, yPosition);
+        doc.text(producto.cantidad.toString(), 140, yPosition);
+        doc.text(producto.total, 180, yPosition);
+        yPosition += 10;
+      });
+
+      doc.text("---------------------------------", 14, yPosition);
+      yPosition += 5;
+
+      doc.setFontSize(14);
+      doc.text("Total a Pagar: $190.00", 14, yPosition);
+
+      yPosition += 10;
+      doc.text("¡Gracias por su compra!", 14, yPosition);
+
+
+      doc.save("ticket_de_venta.pdf");
 }
 
 window.inicializarModuloListadoVentas = inicializarModuloListadoVentas;

@@ -1,13 +1,12 @@
 import { api } from '../../utils/api.js';
 
 function cargarGraficasDashboard(){
-    GraficaVentasDiarias();
     GraficaProMasVendidos();
     GraficaPreMasVendidos();
     GraficaCostoGalleta();
     GalletaRecomendada();
 }
-
+/* 
 function GraficaVentasDiarias(){
     api.getJSON('/dashboard/get_daily_sales')
     .then(data => {
@@ -69,7 +68,7 @@ function GraficaVentasDiarias(){
         toggleCardDisplay('cardVentasDiarias', 'cardErrorVentasDiarias', true);
     });
 }
-
+*/
 function GraficaProMasVendidos() {
     api.getJSON('/dashboard/best_selling_product')
         .then(data => {
@@ -109,7 +108,7 @@ function GraficaProMasVendidos() {
                         labels: labels,
                         datasets: [{
                             label: 'Productos Más Vendidos',
-                            data: quantities,
+                            data: amounts,
                             backgroundColor: backgroundColors,
                             borderColor: borderColors,
                             borderWidth: 1
@@ -327,43 +326,40 @@ function GraficaCostoGalleta(){
 function GalletaRecomendada() {
     api.getJSON('/dashboard/profit_margin')
     .then(data => {
+        let contenidoHTML = `
+            <li><strong>Galleta recomendada:</strong> Sin datos</li>
+            <li><strong>Margen de utilidad:</strong> Sin datos</li>
+            <li><strong>Existencias actuales:</strong> Sin datos</li>
+        `;
+
         if (data && Array.isArray(data) && data.length > 0) {
             const galleta = data[0];
+            const nombreGalleta = galleta.cookie_name || 'Sin datos';
+            const margenUtilidad = galleta.margin ?? 'Sin datos';
+            const existencias = galleta.stock ?? 'Sin datos';
 
-            const nombreGalleta = galleta.cookie_name;
-            const margenUtilidad = galleta.margin;
-            const existencias = galleta.stock;
-
-            // Actualizamos el contenido del HTML con los datos
-            document.querySelector('ul').innerHTML = `
+            contenidoHTML = `
                 <li><strong>Galleta recomendada:</strong> ${nombreGalleta}</li>
                 <li><strong>Margen de utilidad:</strong> ${margenUtilidad}%</li>
                 <li><strong>Existencias actuales:</strong> ${existencias}</li>
             `;
-        } else {
-            console.error("Error: Datos recibidos no válidos o vacíos.");
         }
+
+        document.querySelector('ul').innerHTML = contenidoHTML;
     })
     .catch(error => {
         console.error("Error al obtener los datos del API:", error);
+        document.querySelector('ul').innerHTML = `
+            <li><strong>Galleta recomendada:</strong> Sin datos</li>
+            <li><strong>Margen de utilidad:</strong> Sin datos</li>
+            <li><strong>Existencias actuales:</strong> Sin datos</li>
+        `;
     });
-};
+}
 
-
-function toggleCardDisplay(cardId, cardErrorId, showError) {
-    const card = document.getElementById(cardId);
-    const cardError = document.getElementById(cardErrorId);
-    if (showError) {
-        card.style.display = 'none';
-        cardError.style.display = 'block';
-    } else {
-        card.style.display = 'block';
-        cardError.style.display = 'none';
-    }
-};
 
 window.cargarGraficasDashboard = cargarGraficasDashboard;
-window.GraficaVentasDiarias = GraficaVentasDiarias;
+//window.GraficaVentasDiarias = GraficaVentasDiarias;
 window.GraficaProMasVendidos = GraficaProMasVendidos;
 window.GraficaPreMasVendidos = GraficaPreMasVendidos;
 window.GraficaCostoGalleta = GraficaCostoGalleta;

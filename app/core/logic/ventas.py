@@ -38,3 +38,12 @@ def get_venta_by_id(data: dict):
     except Exception as e:
         logger.error("Error al obtener la venta: %s", e)
         raise e from e
+
+def cancelar_venta(data: dict):
+    """Cancela una venta"""
+    try:
+        return crud.cancelar_venta(data["id_venta"])
+    except Exception as e:
+        logger.error("Error al cancelar la venta: %s", e)
+        raise e from e
+    

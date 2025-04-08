@@ -98,6 +98,11 @@ function handleCardClick(galleta) {
         fila = document.createElement('tr');
         fila.id = rowId;
 
+        fila.dataset.gramosPieza = gramos;
+
+        fila.dataset.tipoVentaKey = tipoKey;
+        fila.dataset.tipoVentaId = tipoId;
+
         // cantidad_galletas inicial
         const cantG = calcCantidadGalletas(tipoKey, step, gramos);
         fila.dataset.cantidadGalletas = cantG.toFixed(2);
@@ -191,24 +196,25 @@ function recolectarDatosVenta() {
         // ["row","<galletaId>","<tipoId>"]
         const rowId = fila.id.split('-');
         const galleta_id = parseInt(rowId[1]);
-        const tipoKey = getTipoVenta();
-        const tipo_venta_id = TIPOS_VENTA[tipoKey].id;
-        const factor_venta = parseFloat(cantidadTd.querySelector('input').value).toFixed(2);
-        const gramosPorPieza = Number(fila.dataset.gramosPieza).toFixed(2);
+        const tipoKey = fila.dataset.tipoVentaKey;
+        const tipo_venta_id = parseInt(fila.dataset.tipoVentaId);
+        const factor_venta = parseFloat(cantidadTd.querySelector('input').value) || 0;
+        const gramosPorPieza = parseFloat(fila.dataset.gramosPieza) || 0;
         const cantidad_galletas = calcCantidadGalletas(tipoKey, factor_venta, gramosPorPieza);
         const precio_unitario = parseFloat(precioCell.textContent.replace('$', ''));
 
         return {
             galleta_id,
             tipo_venta_id,
-            factor_venta,
+            factor_venta: Number(factor_venta.toFixed(2)),
             cantidad_galletas,
-            precio_unitario
+            precio_unitario: Number(precio_unitario.toFixed(2)),
         };
     });
-
+    const descVal = parseFloat(document.getElementById('descuento').value) || 0;
     return {
-        descuento: parseFloat(document.getElementById('descuento').value).toFixed(2) || 0,
+        observacion: '',
+        descuento: Number(descVal.toFixed(2)),
         detalle_venta
     };
 }
@@ -216,26 +222,29 @@ function recolectarDatosVenta() {
 // Funcion par enviar la venta al backend
 function registrarVenta() {
     alertas.confirmarYRegistrarVenta()
-    .then(resultado => {
-        if (!resultado.isConfirmed) {
-            return Promise.reject('cancelado');
-        }
-        const payload = recolectarDatosVenta();
-        tabs.mostrarLoader();
-        return api.postJSON('/ventas/guardar_venta', payload)
-    })
-    .then(data => {
-        if (data.status === 200 || data.status === 201) {
-            alertas.procesoTerminadoExito();
-        }
-    })
-    .catch(error => {
-        if (error !== 'cancelado') {
-            console.error('Error:', error.message || error);
-            Swal.fire('Error', error.message || 'Error al generar la venta', 'error');
-        }
-    })
-    .finally(() => tabs.ocultarLoader());
+        .then(resultado => {
+            if (!resultado.isConfirmed) {
+                return Promise.reject('cancelado');
+            }
+            const payload = recolectarDatosVenta();
+            tabs.mostrarLoader();
+            return api.postJSON('/ventas/guardar_venta', payload)
+        })
+        .then(data => {
+            if (data.status === 200 || data.status === 201 || data.message === "Venta guardada correctamente") {
+                alertas.procesoTerminadoExito();
+            } else {
+                alertas.procesoTerminadoSinExito();
+            }
+            limpiarVistaVenta();
+        })
+        .catch(error => {
+            if (error !== 'cancelado') {
+                console.error('Error:', error.message || error);
+                Swal.fire('Error', error.message || 'Error al generar la venta', 'error');
+            }
+        })
+        .finally(() => tabs.ocultarLoader());
 }
 
 // Funcion para consultar las galletas a la BD
@@ -294,6 +303,20 @@ function generarCards(galletas) {
         card.addEventListener('click', () => handleCardClick(galleta));
         container.appendChild(card);
     });
+}
+
+// Funcion para limipar la vista de galletas
+function limpiarVistaVenta() {
+    const tbody = document.getElementById('tbody_producto');
+    tbody.innerHTML = '';
+
+    document.getElementById('descuento').value = 0;
+
+    document.getElementById('total-general').textContent = '$0.00';
+
+    document.getElementById('btn-agregar').disabled = true;
+
+    cargarGalletas();
 }
 
 window.cargarGalletas = cargarGalletas;

@@ -103,8 +103,6 @@ function buscarGalletaPorId(id_galleta) {
         .then(data => {
             if (data.id_galleta) {
                 cargarRecetasLocal(data.recetas)
-                console.log(data);
-                console.log(data.recetas);
                 generarRecetasCards();
                 abrirModal();
             }
@@ -152,7 +150,7 @@ function generarRecetasCards() {
                 </div>
 
                 <div class="flex border-t border-black pt-1 mt-1">
-                    <button onclick="solicitarProduccion('${String(receta.id_receta)}')" 
+                    <button onclick="solicitarProduccion('${receta.id_receta}')" 
                             class="flex-1 flex items-center justify-center p-1 cursor-pointer">
                         <img src="../../../static/images/mixing.png" class="w-7 h-7">
                     </button>
@@ -210,18 +208,19 @@ function solicitarProduccion(id_receta) {
     }));
 
     tabs.mostrarLoader();
-    api.postJSON('/produccion/solicitar_produccion', { id_receta, insumos })
+    api.postJSON('/horneado/solicitar_horneado', { receta_id : id_receta })
         .then(data => {
-            if (data.success) {
-                alertas.mostrarAlerta('Éxito', 'Producción solicitada con éxito', 'success');
-                cerrarModal();
+            if (data.status === 200 && data.id_horneado) {
+                alertas.procesoTerminadoExito();
             } else {
-                alertas.mostrarAlerta('Error', data.message || 'Error al solicitar producción', 'error');
+                alertas.procesoTerminadoSinExito();
             }
+            cerrarModal();
         })
         .catch(error => {
             console.error('Error:', error.message);
-            alertas.mostrarAlerta('Error', error.message || 'Error al solicitar producción', 'error');
+            alertas.alertaRecetas(error.message || 'Error al solicitar producción');
+            cerrarModal();
         })
         .finally(() => tabs.ocultarLoader());
 }

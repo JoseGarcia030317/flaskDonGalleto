@@ -63,3 +63,19 @@ class InventarioInsumo(Base):
         self.horneado_id = horneado_id if horneado_id else 0
         self.id_estatus = id_estatus if id_estatus else 1
         self.fecha_caducidad = fecha_caducidad
+
+
+class Vw_InsumosUltimaCompra(Base):
+    __tablename__ = 'Vw_InsumosUltimaCompra'
+
+    id_insumo = Column(Integer, primary_key=True)
+    nombre = Column(String(25), nullable=True)
+    descripcion = Column(String(10), nullable=True)
+    unidad_id = Column(Integer, nullable=False)
+    estatus = Column(Integer, nullable=False)
+    precio_unitario = Column(DOUBLE, nullable=True)
+    fecha_ultima_compra = Column(DateTime, nullable=True)
+    unidades_compradas = Column(Integer, nullable=True)
+    total_compra_insumo = Column(DOUBLE, nullable=True)
+    pre_unit_compra = Column(DOUBLE, nullable=True)
+

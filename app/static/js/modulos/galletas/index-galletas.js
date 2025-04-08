@@ -4,7 +4,7 @@ import { tabs } from "../../utils/tabs.js";
 // Funcion para cargar la vista principal de dashboard en el main
 function cargarModuloGalletas() {
     const main_content = document.getElementById('main-content')
-    main_content.innerHTML = tabs.mostrarEsqueletoModuloContent();
+    main_content.innerHTML = tabs.mostrarEsqueletoMainContent();
     api.getHTML('/galletas')
     .then(html => {
         main_content.innerHTML = html;

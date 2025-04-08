@@ -53,6 +53,23 @@ def list_compras():
         return jsonify(compras.list_compras())
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500
+
+@compras_bp.route("/compras/list_compras_by_estatus", methods=['POST'])
+def list_compras_by_estatus():
+    """
+    Obtiene todas las compras en base al estatus.
+    """
+    try:
+        data = request.get_json()
+        estatus = data.get('estatus')
+        filtrar_por_fecha = data.get('filtrar_por_fecha', False)
+        
+        if estatus is not None and not isinstance(estatus, list):
+            estatus = [estatus]
+            
+        return jsonify(compras.list_compras_by_estatus(estatus, filtrar_por_fecha))
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500
     
 @compras_bp.route("/compras/get_compra", methods=['POST'])
 #@modulos_permitidos(__modulo_name__)

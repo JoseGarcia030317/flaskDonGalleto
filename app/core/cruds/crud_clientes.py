@@ -98,13 +98,11 @@ class ClienteCRUD:
         
         Session = DatabaseConnector().get_session
         with Session() as session:
-            cliente = session.query(Cliente).filter_by(id_cliente=id_cliente, estatus=1).first()
+            cliente = session.query(Cliente).filter(Cliente.id_cliente==id_cliente).first()
             if cliente:
                 for key, value in data.items():
-                    if key == 'contrasenia':
-                        # Se vuelve a encriptar la contraseña usando el método del modelo.
-                        value = cliente.hash_password(value)
-                    setattr(cliente, key, value)
+                    if key != 'contrasenia':
+                        setattr(cliente, key, value)
                 try:
                     session.commit()
                 except Exception as e:
@@ -119,7 +117,7 @@ class ClienteCRUD:
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            cliente = session.query(Cliente).filter_by(id_cliente=id_cliente, estatus=1).first()
+            cliente = session.query(Cliente).filter(Cliente.id_cliente==id_cliente, Cliente.estatus==self.ESTADO_ACTIVO).first()
             if cliente:
                 try:
                     cliente.estatus = 0  # Baja lógica
@@ -136,7 +134,7 @@ class ClienteCRUD:
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            clientes = session.query(Cliente).filter_by(estatus=1).all()
+            clientes = session.query(Cliente).filter(Cliente.estatus==self.ESTADO_ACTIVO).all()
             return [self._cliente_to_dict(c) for c in clientes]
 
     def authenticate(self, email, plain_password):

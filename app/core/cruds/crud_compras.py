@@ -1,6 +1,8 @@
+from datetime import datetime
 import json
 import logging
-from sqlalchemy import case
+from typing import List
+from sqlalchemy import case, func
 from core.classes.Tb_compras import Compra, CompraDetalle
 from core.classes.Tb_insumos import Insumo
 from core.classes.Tb_catalogoUnidad import Unidad
@@ -9,12 +11,15 @@ from utils.connectiondb import DatabaseConnector
 
 logger = logging.getLogger(__name__)
 
+
 class CompraCRUD:
     # Atributos permitidos para la tabla Compra y CompraDetalle
-    ATTRIBUTES_COMPRA = ["fecha_compra", "observacion", "estatus", "proveedor_id"]
-    ATTRIBUTES_COMPRA_DETALLE = ["insumo_id", "presentacion", "precio_unitario", "cantidad"]
+    ATTRIBUTES_COMPRA = ["fecha_compra",
+                         "observacion", "estatus", "proveedor_id"]
+    ATTRIBUTES_COMPRA_DETALLE = ["insumo_id",
+                                 "presentacion", "precio_unitario", "cantidad"]
     # Atributos que no se deben actualizar para detalles (si aplica)
-    ATTRIBUTES_DONT_UPDATE = ["clave_compra","insumo_id"]
+    ATTRIBUTES_DONT_UPDATE = ["clave_compra", "insumo_id"]
 
     # Constantes para manejo de estados (por ejemplo, 1: Activo, 0: Inactivo)
     STATUS_INVENTARIAR = 1
@@ -45,14 +50,15 @@ class CompraCRUD:
         """
         compra_data = self._filter_data(data, self.ATTRIBUTES_COMPRA)
         compra = Compra(**compra_data)
-        
+
         # Extraer detalles si existen; se espera que sea una lista de diccionarios
         detalles_data = data.get("detalles", [])
         detalles = []
         for detalle in detalles_data:
-            filtered_detalle = self._filter_data(detalle, self.ATTRIBUTES_COMPRA_DETALLE)
+            filtered_detalle = self._filter_data(
+                detalle, self.ATTRIBUTES_COMPRA_DETALLE)
             detalles.append(CompraDetalle(**filtered_detalle))
-        
+
         Session = DatabaseConnector().get_session
         with Session() as session:
             try:
@@ -73,7 +79,8 @@ class CompraCRUD:
         """
         Crea una nueva compra (con uno o varios detalles) a partir de datos en JSON o diccionario.
         """
-        data = json.loads(compra_json) if isinstance(compra_json, str) else compra_json
+        data = json.loads(compra_json) if isinstance(
+            compra_json, str) else compra_json
         return self._create_compra(data)
 
     def read_compra(self, id_compra: int) -> dict:
@@ -86,18 +93,18 @@ class CompraCRUD:
         with Session() as session:
             # Obtener la compra junto con el nombre del proveedor
             compra_data = session.query(
-                Compra, 
+                Compra,
                 Proveedor.nombre
             ).join(
                 Proveedor, Compra.proveedor_id == Proveedor.id_proveedor
             ).filter(Compra.id_compra == id_compra).first()
-            
+
             if not compra_data:
                 return {}
-            
+
             # Desempaquetar la tupla
             compra_obj, proveedor_nombre = compra_data
-            
+
             result = {
                 "id_compra": compra_obj.id_compra,
                 "clave_compra": compra_obj.clave_compra,
@@ -109,7 +116,7 @@ class CompraCRUD:
                 "detalles": [],
                 "total_compra": 0  # Se asignará el total acumulado de la compra
             }
-            
+
             # Obtener los detalles de la compra, junto con el nombre del insumo
             detalles = session.query(
                 CompraDetalle,
@@ -120,7 +127,7 @@ class CompraCRUD:
             ).join(
                 Unidad, Insumo.unidad_id == Unidad.id_unidad
             ).filter(CompraDetalle.compra_id == id_compra).all()
-            
+
             total_compra = 0  # Acumulador para el total
             for detalle_data in detalles:
                 detalle_obj, insumo_nombre, unidad = detalle_data  # Desempaquetar cada tupla
@@ -136,10 +143,9 @@ class CompraCRUD:
                     "cantidad": cantidad,
                     "unidad": unidad.simbolo
                 })
-            
+
             result["total_compra"] = total_compra
             return result
-
 
     def _update_compra(self, id_compra: int, data: dict) -> dict:
         """
@@ -148,7 +154,8 @@ class CompraCRUD:
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            compra = session.query(Compra).filter_by(id_compra=id_compra).first()
+            compra = session.query(Compra).filter_by(
+                id_compra=id_compra).first()
             if not compra:
                 return {}
             # Actualizar atributos de la compra principal
@@ -156,10 +163,12 @@ class CompraCRUD:
             # Si se envían detalles, se reemplazan los actuales
             if "detalles" in data:
                 # Eliminar los detalles actuales asociados a la compra
-                session.query(CompraDetalle).filter_by(compra_id=id_compra).delete()
+                session.query(CompraDetalle).filter_by(
+                    compra_id=id_compra).delete()
                 # Agregar los nuevos detalles
                 for detalle_data in data["detalles"]:
-                    filtered_detalle = self._filter_data(detalle_data, self.ATTRIBUTES_COMPRA_DETALLE)
+                    filtered_detalle = self._filter_data(
+                        detalle_data, self.ATTRIBUTES_COMPRA_DETALLE)
                     new_detalle = CompraDetalle(**filtered_detalle)
                     new_detalle.compra_id = id_compra
                     session.add(new_detalle)
@@ -175,7 +184,8 @@ class CompraCRUD:
         """
         Actualiza una compra (y sus detalles si se proporcionan) a partir de datos en JSON o diccionario.
         """
-        data = json.loads(compra_json) if isinstance(compra_json, str) else compra_json
+        data = json.loads(compra_json) if isinstance(
+            compra_json, str) else compra_json
         return self._update_compra(id_compra, data)
 
     def delete(self, id_compra: int) -> dict:
@@ -185,7 +195,8 @@ class CompraCRUD:
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            compra = session.query(Compra).filter_by(id_compra=id_compra).first()
+            compra = session.query(Compra).filter_by(
+                id_compra=id_compra).first()
             if not compra:
                 return {}
             try:
@@ -231,7 +242,8 @@ class CompraCRUD:
                     Insumo, CompraDetalle.insumo_id == Insumo.id_insumo
                 ).filter(CompraDetalle.compra_id == compra.Compra.id_compra).all()
                 for detalle in detalles:
-                    precio_unitario = float(detalle.CompraDetalle.precio_unitario)
+                    precio_unitario = float(
+                        detalle.CompraDetalle.precio_unitario)
                     cantidad = detalle.CompraDetalle.cantidad
                     importe = precio_unitario * cantidad
                     total_compra += importe  # Se acumula el importe
@@ -242,18 +254,19 @@ class CompraCRUD:
                         "precio_unitario": precio_unitario,
                         "cantidad": cantidad
                     })
-                compra_dict["total_compra"] = total_compra  # Se asigna el total calculado a la compra
+                # Se asigna el total calculado a la compra
+                compra_dict["total_compra"] = total_compra
                 result_list.append(compra_dict)
             return result_list
 
-
-    def list_all(self, estatus: int = None) -> list:
+    def list_all_by_state(self, estatus= None, filtrar_por_fecha_actual: bool = False) -> list:
         """
         Obtiene el listado completo de compras activas, incluyendo sus detalles.
         Retorna una lista vacía si no hay registros.
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
+            fecha_actual = datetime.now().date()
             query = session.query(
                 Compra,
                 Proveedor.nombre
@@ -261,13 +274,20 @@ class CompraCRUD:
                 Proveedor, Compra.proveedor_id == Proveedor.id_proveedor
             )
 
-            if estatus is not None:
+            if isinstance(estatus, list):
+                query = query.filter(Compra.estatus.in_(estatus))
+            elif estatus is not None:
                 query = query.filter(Compra.estatus == estatus)
             else:
-                query = query.filter(Compra.estatus != 0)
+                query = query.filter(Compra.estatus.in_([0, 1]))
+
+            if filtrar_por_fecha_actual:
+                query = query.filter(
+                    func.date(Compra.fecha_compra) == fecha_actual
+                )
 
             compras = query.all()
-            
+
             result_list = []
             for compra in compras:
                 total_compra = 0
@@ -289,7 +309,8 @@ class CompraCRUD:
                     Insumo, CompraDetalle.insumo_id == Insumo.id_insumo
                 ).filter(CompraDetalle.compra_id == compra.Compra.id_compra).all()
                 for detalle in detalles:
-                    precio_unitario = float(detalle.CompraDetalle.precio_unitario)
+                    precio_unitario = float(
+                        detalle.CompraDetalle.precio_unitario)
                     cantidad = detalle.CompraDetalle.cantidad
                     importe = precio_unitario * cantidad
                     total_compra += importe

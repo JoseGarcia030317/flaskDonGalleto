@@ -161,7 +161,7 @@ function filtrarInsumos(termino) {
             <div class="p-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between border-b"
                 onclick="seleccionarInsumo(${insumo.id_insumo})">
                 <span>${insumo.nombre}</span>
-                <span class="text-sm text-gray-500">(${insumo.unidad.simbolo})</span>
+                <span class="text-sm text-gray-500">(${insumo.simbolo})</span>
             </div>
         `).join('');
         sugerencias.classList.remove('hidden');

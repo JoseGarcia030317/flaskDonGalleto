@@ -1,6 +1,9 @@
 from sqlalchemy import Column, Integer, String, Numeric, DateTime, UniqueConstraint, PrimaryKeyConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
+from sqlalchemy import event
+from sqlalchemy import text
+
 
 Base = declarative_base()
 
@@ -23,6 +26,34 @@ class Venta(Base):
         self.estatus = estatus 
         self.descuento = descuento if descuento else 0
         self.id_pedido = id_pedido
+
+    def __repr__(self):
+        return f"<Venta(id_venta={self.id_venta}, clave_venta={self.clave_venta}, fecha={self.fecha}, observacion={self.observacion}, estatus={self.estatus}, descuento={self.descuento}, id_pedido={self.id_pedido})>"
+    
+@event.listens_for(Venta, 'before_insert')
+def asignar_clave_venta(mapper, connection, target):
+    # Si clave_compra ya está asignada se respeta su valor.
+    if target.clave_venta is None:
+        # Se utiliza text() para convertir la consulta en un objeto ejecutable
+        result = connection.execute(
+            text("SELECT coalesce(clave_venta,'') FROM TB_Venta ORDER BY id_venta DESC LIMIT 1")
+        ).fetchone()
+        
+        if result is not None:
+            try:
+                # Se asume que el formato es "V" seguido de un número (por ejemplo, "V0005")
+                ultimo_valor = result[0]
+                numero_actual = int(ultimo_valor.replace("V", ""))
+                siguiente_numero = numero_actual + 1
+            except ValueError:
+                siguiente_numero = 1  # En caso de que el formato no sea el esperado, se asigna 1
+        else:
+            siguiente_numero = 1  # Primer registro
+
+        # Se asigna la clave con el formato deseado, por ejemplo "C0001"
+        target.clave_venta = f"V{siguiente_numero:04d}"
+
+
 
 class VentaDetalle(Base):
     __tablename__ = 'TB_DetalleVenta'

@@ -12,6 +12,7 @@ class VentaCRUD:
     SALIDA = 0;
     ENTRADA = 1;
     VENTA = 1;
+    CANCELADO = 0;
 
 
     def guardar_venta(self, data: dict) -> dict:
@@ -203,3 +204,28 @@ class VentaCRUD:
         except Exception as e:
             logger.error("Error al descontar galletas: %s", e)
             raise e from e
+
+    def cancelar_venta(self, id_venta: int) -> None:
+        """
+        Cancela una venta en la base de datos.
+        """
+        try:
+            Session = DatabaseConnector().get_session
+            with Session() as session:
+                venta = session.query(Venta).filter(Venta.id_venta == id_venta).first()
+                if not venta:
+                    return {}   
+                
+                # cancelar venta
+                venta.estatus = self.CANCELADO
+                
+                # cancelar descuento de inventario de galletas
+                inventario_galleta = session.query(InventarioGalleta).filter(InventarioGalleta.venta_id == id_venta).all()
+                for inv in inventario_galleta:
+                    inv.estatus = self.CANCELADO
+                session.commit()
+                return {"message": "Venta cancelada correctamente"}
+        except Exception as e:
+            logger.error("Error al cancelar la venta: %s", e)
+            raise e from e
+    

@@ -32,4 +32,12 @@ def get_venta_by_id():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@ventas_bp.route("/ventas/cancelar_venta", methods=['POST'])
+def cancelar_venta():
+    data = request.get_json()
+    try:
+        return ventas.cancelar_venta(data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 

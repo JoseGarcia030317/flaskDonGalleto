@@ -11,8 +11,6 @@ import { validarCaracteresProhibidos, validarSelectRequerido, mostrarErrores, va
 
 const validacionesClientes = {
     nombre : (input) => {
-        const requerido = validarRequerido(input, 'nombre');
-        if (requerido) return requerido;
         const caracteresProhibidos = validarCaracteresProhibidos(input, 'nombre');
         if (caracteresProhibidos) return caracteresProhibidos;
         const soloTexto = validarSoloTexto(input, 'nombre');
@@ -22,22 +20,18 @@ const validacionesClientes = {
         return null;
     },
     app : (input) => {
-        const requerido = validarRequerido(input, 'app');
-        if (requerido) return requerido;
-        const caracteresProhibidos = validarCaracteresProhibidos(input, 'app');
+        const caracteresProhibidos = validarCaracteresProhibidos(input, 'apellido paterno');
         if (caracteresProhibidos) return caracteresProhibidos;
-        const soloTexto = validarSoloTexto(input, 'app');
+        const soloTexto = validarSoloTexto(input, 'apellido paterno');
         if (soloTexto) return soloTexto;
         const longitud = validarLongitud(input, 3, 60);
         if (longitud) return longitud;
         return null;
     },
     apm : (input) => {
-        const requerido = validarRequerido(input, 'apm');
-        if (requerido) return requerido;
-        const caracteresProhibidos = validarCaracteresProhibidos(input, 'apm');
+        const caracteresProhibidos = validarCaracteresProhibidos(input, 'apelldio materno');
         if (caracteresProhibidos) return caracteresProhibidos;
-        const soloTexto = validarSoloTexto(input, 'apm');
+        const soloTexto = validarSoloTexto(input, 'apellido materno');
         if (soloTexto) return soloTexto;
         const longitud = validarLongitud(input, 3, 60);
         if (longitud) return longitud;
@@ -63,19 +57,15 @@ const validacionesClientes = {
         return null;
     },
     contrasenia : (input) => {
-        const requerido = validarRequerido(input, 'contrasenia');
+        const requerido = validarRequerido(input, 'contraseña');
         if (requerido) return requerido;
-        const Contrasena = validarContrasena(input, 'contrasenia');
+        const Contrasena = validarContrasena(input, 'contraseña');
         if (Contrasena) return Contrasena;
         return null;
     },
     razonSocial : (input) => {
-        const requerido = validarRequerido(input, 'razonSocial');
-        if (requerido) return requerido;
-        const caracteresProhibidos = validarCaracteresProhibidos(input, 'razonSocial');
+        const caracteresProhibidos = validarCaracteresProhibidos(input, 'razon social');
         if (caracteresProhibidos) return caracteresProhibidos;
-        const soloTexto = validarSoloTexto(input, 'razonSocial');
-        if (soloTexto) return soloTexto;
         const longitud = validarLongitud(input, 3, 60);
         if (longitud) return longitud;
         return null;
@@ -153,11 +143,14 @@ function eliminarClientes(id_cliente) {
 
 function guardar_cliente(event){
     event.preventDefault(); 
-    const errores = validarFormulario();
-        if (errores) {
-            mostrarErrores(errores);
-            return;
-        }
+    const id_cliente = parseInt(document.querySelector('input[name="id_cliente"]').value, 10);
+    const esEdicion = id_cliente !== 0;
+
+    const errores = validarFormulario(esEdicion);
+    if (errores) {
+        mostrarErrores(errores);
+        return;
+    }
 
     const formData = {
         nombre : document.querySelector('input[name="nombre"]').value,
@@ -172,7 +165,6 @@ function guardar_cliente(event){
     }
         
     // Si es modificar
-    const id_cliente = parseInt(document.querySelector('input[name="id_cliente"]').value, 10);
     let endpoint = id_cliente != 0 ? '/clientes/update_client' : '/clientes/create_client';
     let payload = id_cliente != 0 ? {...formData, id_cliente} : formData;
     
@@ -195,12 +187,14 @@ function guardar_cliente(event){
 };
 
 function obtenerClientesById(id_cliente){
-    api.postJSON('/clientes/delete_client', { id_cliente : id_cliente })
+    api.postJSON('/clientes/update_client', { id_cliente : id_cliente })
         .then(data => {
             if (data.id_cliente) {
+                document.getElementById('regimen').disabled = true;
+                
                 abrirModal('editar');
                 llenarFormularioEdicion(data);
-               
+                manejarRegimen();
             } else {
                 alert('Cliente no encontrado: ' + (data.error || 'Error desconocido'));
             }
@@ -231,8 +225,13 @@ function filtrarTabla() {
 function abrirModal(tipo) {
     const backdrop = document.getElementById('modalBackdrop');
     const modalForm = document.getElementById('modalForm');
-
+    manejarRegimen();
     backdrop.classList.remove('hidden');
+
+    tipo === 'editar' 
+        ? document.getElementById('contrasenia').closest('div').style.display = 'none' 
+        : document.getElementById('contrasenia').closest('div').style.display = 'block';
+
     document.getElementById('modalTitulo').textContent =
         tipo === 'editar' ? 'Editar Cliente' : 'Registrar Cliente';
     modalForm.classList.remove('hidden');
@@ -242,6 +241,7 @@ function cerrarModal() {
     document.getElementById('modalBackdrop').classList.add('hidden');
     document.getElementById('modalForm').classList.add('hidden');
     limpiarFormulario();
+    document.getElementById('regimen').disabled = false;
 };
 
 function limpiarFormulario(){
@@ -272,7 +272,7 @@ function llenarFormularioEdicion(data) {
 };
 
 
-function validarFormulario() {
+function validarFormulario(esEdicion = false) {
     const validacion = {
         nombre : document.querySelector('input[name="nombre"]').value,
         app : document.querySelector('input[name="app"]').value,
@@ -281,21 +281,102 @@ function validarFormulario() {
         regimen : document.getElementById('regimen').value,
         correo : document.querySelector('input[name="correo"]').value,
         razonSocial: document.querySelector('input[name="razonSocial"]').value,
-        contrasenia : document.querySelector('input[name="contrasenia"]').value
+        contrasenia : esEdicion ? '' : document.querySelector('input[name="contrasenia"]').value // Si es edición, no validamos contrasenia
     }
 
     const errores = {};
-
-    Object.keys(validacionesClientes).forEach(campo => {
-        const error = validacionesClientes[campo](validacion[campo]);
-        if (error) {
-            errores[campo] = error;
-        }
-    });
+    const regimenSeleccionado = parseInt(validacion.regimen, 10);
+    if (regimenSeleccionado === 1) { 
+        // Para persona física: validar todos los campos excepto razonSocial
+        const camposValidar = ["nombre", "app", "apm", "telefono", "correo", "contrasenia"];
+        camposValidar.forEach(campo => {
+            if (campo === "contrasenia" && esEdicion) return; // Si es edición, omitir validación de la contraseña
+            const error = validacionesClientes[campo](validacion[campo]);
+            if (error) {
+                errores[campo] = error;
+            }
+        });
+    } else if (regimenSeleccionado === 2) { 
+        // Para persona moral: validar todos los campos excepto nombre, app, apm
+        const camposValidar = ["razonSocial", "telefono", "correo", "contrasenia"];
+        camposValidar.forEach(campo => {
+            if (campo === "contrasenia" && esEdicion) return; // Si es edición, omitir validación de la contraseña
+            const error = validacionesClientes[campo](validacion[campo]);
+            if (error) {
+                errores[campo] = error;
+            }
+        });
+    }
+    
 
     return Object.keys(errores).length === 0 ? null : errores;
+}
+
+
+
+function manejarRegimen() {
+    const regimenSeleccionado = parseInt(document.getElementById("regimen").value, 10);
+
+    // Campos que solo son relevantes para "Persona Física"
+    const nombre = document.querySelector('input[name="nombre"]');
+    const apellidoPaterno = document.querySelector('input[name="app"]');
+    const apellidoMaterno = document.querySelector('input[name="apm"]');
+    
+    // Campos que solo son relevantes para "Persona Moral"
+    const razonSocial = document.querySelector('input[name="razonSocial"]');
+
+    if (regimenSeleccionado === 1) { // Persona Física
+        // Mostrar campos de persona física y requerirlos
+        nombre.parentElement.style.display = "block";
+        apellidoPaterno.parentElement.style.display = "block";
+        apellidoMaterno.parentElement.style.display = "block";
+
+        razonSocial.parentElement.style.display = "none"; // Ocultar "Razon Social"
+
+        // Añadir "required" a los campos de persona física
+        nombre.setAttribute("required", "true");
+        apellidoPaterno.setAttribute("required", "true");
+        apellidoMaterno.setAttribute("required", "true");
+
+        // Eliminar "required" de los campos de persona moral
+        razonSocial.removeAttribute("required");
+    } else if (regimenSeleccionado === 2) { // Persona Moral
+        // Mostrar campos de persona moral y requerirlos
+        razonSocial.parentElement.style.display = "block"; // Mostrar "Razon Social"
+        
+        // Ocultar campos de persona física
+        nombre.parentElement.style.display = "none";
+        apellidoPaterno.parentElement.style.display = "none";
+        apellidoMaterno.parentElement.style.display = "none";
+
+        // Añadir "required" a los campos de persona moral
+        razonSocial.setAttribute("required", "true");
+
+        // Eliminar "required" de los campos de persona física
+        nombre.removeAttribute("required");
+        apellidoPaterno.removeAttribute("required");
+        apellidoMaterno.removeAttribute("required");
+    } else {
+        // Si no se ha seleccionado un régimen, ocultar todo
+        nombre.parentElement.style.display = "none";
+        apellidoPaterno.parentElement.style.display = "none";
+        apellidoMaterno.parentElement.style.display = "none";
+        razonSocial.parentElement.style.display = "none";
+        
+        // Eliminar "required" de todos los campos
+        nombre.removeAttribute("required");
+        apellidoPaterno.removeAttribute("required");
+        apellidoMaterno.removeAttribute("required");
+        razonSocial.removeAttribute("required");
+    }
+}
+
+window.onload = function() {
+    manejarRegimen(); // Llamar a manejarRegimen cuando la página se carga
 };
 
+// Escuchamos el cambio del select para ajustar los campos
+document.getElementById("regimen").addEventListener("change", manejarRegimen);
 
 
 window.cargarClientes = cargarClientes;

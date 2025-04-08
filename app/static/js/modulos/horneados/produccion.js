@@ -34,13 +34,13 @@ function generarCards() {
             
                 <div class="border-t border-[#8A5114] flex items-center justify-between w-full pb-0">
                     <div class="flex justify-center w-1/2">
-                        <button onclick="finalizarHorneado(${horneado.id_horneado})" class="w-full justify-center p-1 text-[#8A5114] p-0 cursor-pointer flex flex-nowrap border-r border-[#8A5114] hover:bg-[rgba(145,90,23,0.15)]">
+                        <button onclick="cancelarHorneado(${horneado.id_horneado})" class="w-full justify-center p-1 text-[#8A5114] p-0 cursor-pointer flex flex-nowrap border-r border-[#8A5114] hover:bg-[rgba(145,90,23,0.15)]">
                         CANCELAR
                         </button>
                     </div>
             
                     <div class="flex justify-center w-1/2">
-                        <button onclick="cancelarHorneado(${horneado.id_horneado})" class="w-full justify-center p-1 text-[#8A5114] p-0 cursor-pointer flex flex-nowrap hover:bg-[rgba(145,90,23,0.15)]">
+                        <button onclick="finalizarHorneado(${horneado.id_horneado})" class="w-full justify-center p-1 text-[#8A5114] p-0 cursor-pointer flex flex-nowrap hover:bg-[rgba(145,90,23,0.15)]">
                         FINALIZAR
                         </button>
                     </div>

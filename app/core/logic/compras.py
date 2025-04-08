@@ -53,7 +53,7 @@ def list_compras_by_estatus(estatus: List[int] = None, filtrar_por_fecha_actual:
     Obtiene todas las compras en base al estatus.
     """
     try:
-        return crud.list_all(estatus, filtrar_por_fecha_actual)
+        return crud.list_all_by_state(estatus, filtrar_por_fecha_actual)
     except Exception as e:
         logger.error("Error al obtener las compras: %s", e)
         raise e from e

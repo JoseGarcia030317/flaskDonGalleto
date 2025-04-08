@@ -1,7 +1,7 @@
 import logging
 from utils.connectiondb import DatabaseConnector
 from core.classes.Tb_ventas import Venta, VentaDetalle, TipoVenta
-from core.classes.Tb_galletas import Galleta
+from core.classes.Tb_galletas import Galleta, InventarioGalleta
 from sqlalchemy import func
 
 
@@ -9,6 +9,9 @@ logger = logging.getLogger(__name__)
 
 
 class VentaCRUD:
+    SALIDA = 0;
+    ENTRADA = 1;
+    VENTA = 1;
 
     def guardar_venta(self, data: dict) -> dict:
         """
@@ -33,6 +36,7 @@ class VentaCRUD:
                         id_venta=id_venta
                     )
                     session.add(venta_detalle)
+                    self.descontar_galletas(detalle["galleta_id"], detalle["cantidad_galleta"], id_venta, session)
                 session.commit()
                 return {"message": "Venta guardada correctamente"}
         except Exception as e:
@@ -154,4 +158,23 @@ class VentaCRUD:
 
         except Exception as e:
             logger.error("Error al obtener la venta con detalle: %s", e)
+            raise e from e
+
+    def descontar_galletas(self, id_galleta: int, cantidad_galleta: float, id_venta: int, session = None) -> None:
+        """
+        Descontar galletas de la base de datos.
+        """
+        try:
+            Session = session if session else DatabaseConnector().get_session
+            with Session() as session:
+                inventario_galleta = InventarioGalleta(
+                    galleta_id=id_galleta,
+                    cantidad=cantidad_galleta,
+                    venta_id=id_venta,
+                    tipo_registro=self.SALIDA,
+                    tipo_movimiento=self.VENTA
+                )
+                session.add(inventario_galleta)
+        except Exception as e:
+            logger.error("Error al descontar galletas: %s", e)
             raise e from e

@@ -56,7 +56,7 @@ function generarCards() {
                 container.appendChild(card);
             });
         } else {
-            tbody.innerHTML = `
+            document.getElementById('main-container').innerHTML = `
                     <div class="flex justify-center items-center h-full">
                         <p class="text-gray-500 font-medium text-xl">No hay solicitudes pendientes</p>
                     </div>

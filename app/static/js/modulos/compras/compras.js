@@ -5,7 +5,7 @@ import { validarLongitud, validarRequerido, validarTelefono, validarEmail, valid
 
 let insumosDisponibles = [];
 
-const presentaciones_producto = ["Unidad", "Paquete", "Caja", "Bolsa", "Galón", "Saco", "Tubo", "Sobre", "Rollo"]
+const presentaciones_producto = ["Unidad", "Paquete", "Caja", "Bolsa", "Galón", "Saco", "Tubo", "Sobre", "Rollo", "Otro"]
 
 let insumosSeleccionados = new Map();
 
@@ -258,7 +258,6 @@ function actualizarInsumo(id_insumo, valor, campo) {
 }
 
 function guardarCompra(event){
-    document.getElementById('btnGuardarCompra').disabled = true;
     event.preventDefault();
     const contenedor = document.getElementById('insumos-seleccionados');
     if (contenedor.querySelector('div')) {
@@ -268,6 +267,7 @@ function guardarCompra(event){
             mostrarErrores(errores);
             return;
         }
+        document.getElementById('btnGuardarCompra').disabled = true;
         const formData =  {
             observacion: document.querySelector('input[name="observacion"]').value,
             proveedor_id: document.querySelector('select[name="proveedor"]').value,
@@ -342,9 +342,6 @@ function validarFormulario() {
     var errores = {};
     Object.keys(validacionesCompra).forEach(campo => {
         const error = validacionesCompra[campo](compra[campo]);
-        console.log("Despues de consr error");
-        console.log(error);
-
         if (error) {
             errores[campo] = error;
         }
@@ -352,7 +349,7 @@ function validarFormulario() {
 
     const insumos = document.querySelectorAll("#insumos-seleccionados input[required], #insumos-seleccionados select[required]");
     for (let input of insumos) { 
-        if (!input.value.trim()) { 
+        if (!input.value.trim() || Number(input.value) < 0) {
             input.classList.add("border-red-500"); // Agregar borde rojo si hay error
             alertas.alertaWarning("Verifica que la información de insumos se encuentre completa.");
             return false; // DETIENE la función inmediatamente
@@ -364,6 +361,7 @@ function validarFormulario() {
 }
 
 function limpiarFormulario(){
+    document.querySelector('input[name="fecha"]').value = '';
     document.querySelector('select[name="proveedor"]').value = '';
     document.querySelector('input[name="observacion"]').value = '';
     document.getElementById('insumos-seleccionados').innerHTML = '';

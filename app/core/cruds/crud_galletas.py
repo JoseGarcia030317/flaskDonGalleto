@@ -18,7 +18,8 @@ class GalletaCRUD:
     ]
     ATTRIBUTES_RECETA = ["nombre_receta", "tiempo_horneado", "galletas_producidas"]
     ATTRIBUTES_DETALLE_RECETA = ["insumo_id", "cantidad"]
-
+    STATUS_ACTIVO = 1
+    
     @staticmethod
     def _filter_data(data: dict, allowed: list) -> dict:
         """Filtra y retorna solo las claves permitidas."""
@@ -328,7 +329,7 @@ class GalletaCRUD:
                     )
                 ).label("existencias")
             ).filter(
-                InventarioGalleta.estatus == 1
+                InventarioGalleta.estatus == self.STATUS_ACTIVO,
             ).group_by(InventarioGalleta.galleta_id).subquery()
 
             # Consulta principal: se hace outer join para incluir todas las galletas activas

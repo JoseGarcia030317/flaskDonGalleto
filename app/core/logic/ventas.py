@@ -1,5 +1,6 @@
 import logging
 from sqlalchemy import text
+from typing import List
 from core.cruds.crud_ventas import VentaCRUD
 
 logger = logging.getLogger(__name__)
@@ -45,5 +46,15 @@ def cancelar_venta(data: dict):
         return crud.cancelar_venta(data["id_venta"])
     except Exception as e:
         logger.error("Error al cancelar la venta: %s", e)
+        raise e from e
+    
+def get_venta_by_status():
+    """
+    Obtiene todas las ventas en base al estatus.
+    """
+    try:
+        return crud.list_ventas_all_by_state()
+    except Exception as e:
+        logger.error("Error al obtener las compras: %s", e)
         raise e from e
     

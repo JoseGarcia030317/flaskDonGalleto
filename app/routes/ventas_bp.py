@@ -40,4 +40,10 @@ def cancelar_venta():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@ventas_bp.route("/ventas/get_venta_by_status", methods=['GET'])
+def get_venta_by_status():
+    try:
+        return ventas.get_venta_by_status()
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 

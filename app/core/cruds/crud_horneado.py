@@ -219,6 +219,30 @@ class HorneadoCRUD:
             logger.error("Error al crear el horneado: %s", e)
             raise e
 
+    def cancelar_horneado(self, id_horneado: int) -> dict:
+        """
+        Cancela un horneado. Solo revierte el consumo de insumos y cambia el estatus a cancelado.
+        """
+        try:
+            Session = DatabaseConnector().get_session
+            with Session() as session:
+                # Se obtiene el horneado por su ID
+                horneado = session.query(Horneado).filter(Horneado.id_horneado == id_horneado).first()
+                if horneado:
+                    # Se cancela el descuento de las existencias de los insumos requeridos
+                    explosion_insumos = ExplosionInsumos(horneado.receta_id)
+                    explosion_insumos.cancelar_descuento_existencias_insumos(id_horneado, session)
+
+                    # Se cambia el estado a cancelado
+                    horneado.estatus = self.__STATUS_CANCELADO__
+                    session.commit()
+                    return {"id_horneado": horneado.id_horneado, "estatus": "Cancelado"}
+                else:
+                    return False
+        except Exception as e:
+            logger.error("Error al cancelar el horneado: %s", e)
+            raise e
+
 class ExplosionInsumos:
     TIPO_MOVIMIENTO = 3 #Horneado
     TIPO_SALIDA = 0  #Salida

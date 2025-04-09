@@ -5,12 +5,10 @@ function confirmarEliminar() {
         imageWidth: 128,
         imageHeight: 128,
         showCancelButton: true,
-        confirmButtonText: '<span class="text-lg font-medium">Aceptar</span>',
-        cancelButtonText: '<span class="text-lg font-medium">Cancelar</span>',
-        customClass: {
-            confirmButton: "flex items-center gap-3 px-6 py-3 border-2 border-[#8A5114] bg-white text-[#8A5114] rounded-full hover:bg-[#f5f5f5] transition-colors",
-            cancelButton: "flex items-center gap-3 px-6 py-3 border-2 border-[#DAA520] bg-white text-[#DAA520] rounded-full hover:bg-[#f5f5f5] transition-colors"
-        }
+        confirmButtonText: 'Aceptar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#3C1D0C',
+        cancelButtonColor: '#6c757d'
     });
 
 }
@@ -22,7 +20,9 @@ function confirmarYRegistrarVenta() {
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Registrar venta',
-      cancelButtonText: 'Cancelar'
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#3C1D0C',
+      cancelButtonColor: '#6c757d'
     });
   }
 

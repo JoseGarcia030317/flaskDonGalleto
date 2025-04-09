@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from flasgger.utils import swag_from
+from core.logic import corte_caja
 
 
 corte_caja_bp = Blueprint('corte_caja_bp', __name__)
@@ -14,16 +15,7 @@ def iniciar_caja():
     # Aquí iría la lógica para iniciar la caja
     try:
         # Lógica para iniciar la caja
-        return {
-                "estatus": 200,
-                "message": "Corte iniciado",
-                "saldo_inicial": 1000,
-                "id_usuario_inicio": 1,
-                "nombre_usuario": "edgar123",
-                "fecha": "2023-10-01",
-                "hora": "10:00",
-                "id_corte": 1
-            }
+        return corte_caja.iniciar_corte_caja(data)
  
     except Exception as e:
         return {"status": 500, "message": str(e)}, 500

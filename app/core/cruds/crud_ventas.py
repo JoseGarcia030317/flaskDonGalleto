@@ -1,7 +1,7 @@
 import logging
 from utils.connectiondb import DatabaseConnector
 from core.classes.Tb_ventas import Venta, VentaDetalle, TipoVenta
-from core.classes.Tb_galletas import Galleta
+from core.classes.Tb_galletas import Galleta, InventarioGalleta
 from sqlalchemy import func
 
 
@@ -9,14 +9,19 @@ logger = logging.getLogger(__name__)
 
 
 class VentaCRUD:
+    SALIDA = 0;
+    ENTRADA = 1;
+    VENTA = 1;
+    CANCELADO = 0;
+
 
     def guardar_venta(self, data: dict) -> dict:
         """
         Guarda una venta en la base de datos.
         """
-        try:
-            Session = DatabaseConnector().get_session
-            with Session() as session:
+        Session = DatabaseConnector().get_session
+        with Session() as session:
+            try:
                 venta = Venta(
                     observacion=data["observacion"],
                     descuento=data["descuento"],
@@ -24,6 +29,7 @@ class VentaCRUD:
                 session.add(venta)
                 session.flush()
                 id_venta = venta.id_venta
+
                 for detalle in data["detalle_venta"]:
                     venta_detalle = VentaDetalle(
                         galleta_id=detalle["galleta_id"],
@@ -33,12 +39,22 @@ class VentaCRUD:
                         id_venta=id_venta
                     )
                     session.add(venta_detalle)
+
+                    self.descontar_galletas(
+                        detalle["galleta_id"],
+                        detalle["cantidad_galletas"],
+                        id_venta,
+                        session
+                    )
+
                 session.commit()
                 return {"message": "Venta guardada correctamente"}
-        except Exception as e:
-            logger.error("Error al guardar la venta: %s", e)
-            raise e from e
-        
+
+            except Exception as e:
+                session.rollback()
+                logger.error("Error al guardar la venta: %s", e)
+                raise e from e
+
     def get_all_tipo_venta(self) -> list:
         """
         Obtiene todos los tipos de venta de la base de datos.
@@ -155,3 +171,61 @@ class VentaCRUD:
         except Exception as e:
             logger.error("Error al obtener la venta con detalle: %s", e)
             raise e from e
+
+    def descontar_galletas(self, id_galleta: int, cantidad_galleta: float, id_venta: int, session=None) -> None:
+        """
+        Descontar galletas de la base de datos.
+
+        Si no se proporciona una sesión, se crea una nueva sesión temporal.
+        """
+        try:
+            if session is None:
+                Session = DatabaseConnector().get_session
+                with Session() as new_session:
+                    inventario_galleta = InventarioGalleta(
+                        galleta_id=id_galleta,
+                        cantidad=cantidad_galleta,
+                        venta_id=id_venta,
+                        tipo_registro=self.SALIDA,
+                        tipo_movimiento=self.VENTA
+                    )
+                    new_session.add(inventario_galleta)
+                    new_session.commit()
+            else:
+                inventario_galleta = InventarioGalleta(
+                    galleta_id=id_galleta,
+                    cantidad=cantidad_galleta,
+                    venta_id=id_venta,
+                    tipo_registro=self.SALIDA,
+                    tipo_movimiento=self.VENTA
+                )
+                session.add(inventario_galleta)
+
+        except Exception as e:
+            logger.error("Error al descontar galletas: %s", e)
+            raise e from e
+
+    def cancelar_venta(self, id_venta: int) -> None:
+        """
+        Cancela una venta en la base de datos.
+        """
+        try:
+            Session = DatabaseConnector().get_session
+            with Session() as session:
+                venta = session.query(Venta).filter(Venta.id_venta == id_venta).first()
+                if not venta:
+                    return {}   
+                
+                # cancelar venta
+                venta.estatus = self.CANCELADO
+                
+                # cancelar descuento de inventario de galletas
+                inventario_galleta = session.query(InventarioGalleta).filter(InventarioGalleta.venta_id == id_venta).all()
+                for inv in inventario_galleta:
+                    inv.estatus = self.CANCELADO
+                session.commit()
+                return {"message": "Venta cancelada correctamente"}
+        except Exception as e:
+            logger.error("Error al cancelar la venta: %s", e)
+            raise e from e
+    

@@ -81,3 +81,14 @@ def rechazar_horneado():
         return jsonify(horneado.rechazar_horneado(data))
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500
+
+@horneado_bp.route("/horneado/preparar_horneado", methods=['POST'])
+def preparar_horneado():
+    """
+    Cambia el estado de un horneado a preparado.
+    """
+    try:
+        data = request.get_json()
+        return jsonify(horneado.preparar_horneado(data))
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500

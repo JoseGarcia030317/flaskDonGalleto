@@ -177,7 +177,7 @@ function cargarRecetasLocal(recetas) {
 function calcularCostoRecetaDesdeDetalle(detalle) {
     return detalle.reduce((total, insumo) => {
         const insumoDB = insumosDisponibles.find(i => i.id_insumo === insumo.insumo_id);
-        
+
         if (!insumoDB) {
             console.error(`Insumo con ID ${insumo.insumo_id} no encontrado.`);
             return total;
@@ -185,7 +185,7 @@ function calcularCostoRecetaDesdeDetalle(detalle) {
 
         const precio = parseFloat(insumoDB.precio_unitario);
         const cantidad = parseFloat(insumo.cantidad);
-        
+
         if (isNaN(precio) || isNaN(cantidad)) {
             console.error(`Valores inválidos en insumo ${insumo.insumo_id}: Precio=${insumoDB.precio_unitario}, Cantidad=${insumo.cantidad}`);
             return total;
@@ -208,18 +208,22 @@ function solicitarProduccion(id_receta) {
     }));
 
     tabs.mostrarLoader();
-    api.postJSON('/horneado/solicitar_horneado', { receta_id : id_receta })
+    api.postJSON('/horneado/solicitar_horneado', { receta_id: id_receta })
         .then(data => {
-            if (data.status === 200 && data.id_horneado) {
+            if (data.id_horneado) {
                 alertas.procesoTerminadoExito();
-            } else {
-                alertas.procesoTerminadoSinExito();
+            }
+            if (data.estatus === 400) {
+                let mensaje = '';
+                data.insumos_faltantes.forEach(insumo => {
+                    mensaje += insumo.nombre + '<br>'
+                });
+                alertas.alertaFaltaDeInsumos(mensaje);
             }
             cerrarModal();
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            alertas.alertaRecetas(error.message || 'Error al solicitar producción');
+            alertas.alertaRecetas('Error al solicitar producción');
             cerrarModal();
         })
         .finally(() => tabs.ocultarLoader());

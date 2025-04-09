@@ -27,21 +27,37 @@ function cambiarTab(tabId) {
     );
 }
 
+// Función para bloquear los radios del menú
+function bloquearRadios() {
+    document.querySelectorAll('input[name="menu-item-bar"]').forEach(radio => {
+        radio.disabled = true;
+        radio.parentElement.querySelector('a').classList.add('cursor-not-allowed');
+    });
+}
+
+// Función para bloquear los radios del menú
+function desbloquearRadios() {
+    document.querySelectorAll('input[name="menu-item-bar"]').forEach(radio => {
+        radio.disabled = false;
+        radio.parentElement.querySelector('a').classList.remove('cursor-not-allowed');
+    });
+}
+
 // Función helper para mostrar esqueletos
 function mostrarEsqueletoTabla(tbody, rows = 5, columns = 4) {
     // Aseguramos que siempre haya al menos 1 columna de datos + botones
     const dataColumns = Math.max(columns - 1, 1);
-    
+
     tbody.innerHTML = Array.from({ length: rows }, () => `
         <tr class="animate-pulse">
             ${Array.from({ length: dataColumns }, (_, i) => {
-                const widthCycle = ['w-3/4', 'w-1/2', 'w-1/3'];
-                return `
+        const widthCycle = ['w-3/4', 'w-1/2', 'w-1/3'];
+        return `
                     <td class="p-3">
                         <div class="h-4 bg-gray-200 rounded-full ${widthCycle[i % 3]} mx-auto"></div>
                     </td>
                 `;
-            }).join('')}
+    }).join('')}
             <td class="p-3 flex justify-center space-x-2">
                 <div class="w-6 h-6 bg-gray-200 rounded-full"></div>
                 <div class="w-6 h-6 bg-gray-200 rounded-full"></div>
@@ -85,8 +101,8 @@ function mostrarEsqueletoModuloContent() {
 
 function mostrarEsqueletoCardGalleta(container, cantidad = 10) {
     let esqueleto = '';
-    
-    for(let i = 0; i < cantidad; i++) {
+
+    for (let i = 0; i < cantidad; i++) {
         esqueleto += `
             <div class="rounded-xl shadow-md overflow-hidden border border-gray-200 animate-pulse">
                 <div class="flex p-4">
@@ -108,7 +124,7 @@ function mostrarEsqueletoCardGalleta(container, cantidad = 10) {
             </div>
         `;
     }
-    
+
     container.innerHTML = esqueleto;
 }
 
@@ -133,11 +149,13 @@ function ocultarLoader() {
 }
 
 export const tabs = {
+    bloquearRadios: () => bloquearRadios(),
+    desbloquearRadios: () => desbloquearRadios(),
     cambiarTab: (endpoint) => cambiarTab(endpoint),
     mostrarEsqueletoTabla: (tbody, rows = 5, columns = 4) => mostrarEsqueletoTabla(tbody, rows, columns),
     mostrarEsqueletoMainContent: () => mostrarEsqueletoMainContent(),
     mostrarEsqueletoModuloContent: () => mostrarEsqueletoModuloContent(),
-    mostrarEsqueletoCardGalleta : (container, cantidad = 10) => mostrarEsqueletoCardGalleta(container),
+    mostrarEsqueletoCardGalleta: (container, cantidad = 10) => mostrarEsqueletoCardGalleta(container),
     bloquearTabs: () => bloquearTabs(),
     desbloquearTabs: () => desbloquearTabs(),
     mostrarLoader: () => mostrarLoader(),

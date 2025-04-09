@@ -64,13 +64,18 @@
     <span id="total" class="text-2xl font-bold text-green-600">$0.00</span>
   </div>
 
-  <div class="mt-6 flex flex-col sm:flex-row justify-between gap-4">
-    <button onclick="vaciarCarrito()" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition">
-      🗑️ Vaciar Carrito
-    </button>
-    <button onclick="confirmarCompra()" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition">
-      ✅ Confirmar Compra
-    </button>
-  </div>
+<div class="mt-6 flex justify-end gap-4">
+  
+<button onclick="confirmarCompra()"
+class="mt-4 w-[130px] h-[40px] p-2 rounded-[10px] bg-[#6f473d] hover:bg-[#301E1A] text-white border-none font-['Poppins'] font-light cursor-pointer transition-colors duration-300 ease-in-out flex items-center justify-center">
+Hacer pedido
+</button>
+
+<button onclick="vaciarCarrito()"
+class="mt-4 w-[130px] h-[40px] p-2 rounded-[10px] bg-[#6f473d] hover:bg-[#301E1A] text-white border-none font-['Poppins'] font-light cursor-pointer transition-colors duration-300 ease-in-out flex items-center justify-center">
+Vaciar Carrito</button>
+
+
+</div>
 </div>
 

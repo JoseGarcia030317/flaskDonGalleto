@@ -60,7 +60,6 @@ function consultarGalletas() {
              class="aspect-square w-full rounded-lg bg-gray-200 object-cover group-hover:opacity-75" 
              onerror="this.onerror=null; this.src='static/images/galletas/default.jpg';" 
              loading="lazy">
-             
         <h3 class="mt-4 text-sm text-gray-700">${galleta.nombre_galleta}</h3>
         <p class="mt-1 text-lg font-medium text-gray-900">$ ${galleta.precio_unitario}</p>
         <div class="flex flex-col gap-2">
@@ -68,14 +67,14 @@ function consultarGalletas() {
                 <input type="number" name="cantidad" class="block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 border-r border-gray-300 placeholder:text-gray-400 focus:outline-none sm:text-sm/6" placeholder="Cantidad" min="1" value="1">
                 <select name="tipo_venta" class="w-[120px] border-l border-gray-200 rounded-md py-1.5 pr-2 pl-3 text-base text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-[#8B4513] sm:text-sm/6 border-[#8B4513]">
                     <option value="pieza">Pieza(s)</option>
-                    <option value="paquete">Paquete(s)</option>
+                    <option value="gramaje">Gramaje</option>
                     <option value="medio_kilo">1/2 Kilo</option>
                     <option value="kilo">Kilo</option>
                 </select>
             </div>
 
             <button class="w-full h-[40px] p-2 rounded-[10px] bg-[#540b0e] hover:bg-[#3a080a] text-white border-none font-['Poppins'] font-light cursor-pointer transition-colors duration-300 ease-in-out flex items-center justify-center" 
-                onclick="event.stopPropagation(); agregarAlCarritoDesdeGalleta('${galleta.id_producto}', '${galleta.nombre_galleta}', ${galleta.precio_unitario}, this)">
+                onclick="event.stopPropagation(); agregarAlCarritoDesdeGalleta('${galleta.id_galleta}', '${galleta.nombre_galleta}', ${galleta.precio_unitario}, this)">
                 Agregar <img src="static/images/shop.png" alt="Agregar" class="ml-2 w-4 h-4">
             </button>
         </div>
@@ -156,7 +155,7 @@ function configurarModalGalleta() {
 // Tipos de venta
 const TIPOS_VENTA = {
     pieza: { id: 2, label: 'Pieza(s)', descuento: 0 },
-    paquete: { id: 5, label: 'Paquete(s)', descuento: 0 },
+    gramaje: { id: 1, label: 'gramaje', descuento: 0 },
     medio_kilo: { id: 3, label: '1/2 Kilo', descuento: 0.05 },
     kilo: { id: 4, label: 'Kilo', descuento: 0.10 }
 };
@@ -167,8 +166,8 @@ function calcCantidadGalletas(cantidad, tipo_venta, gramosPorPieza = 20) {
         case 'pieza':
             cantidadGalletas = cantidad;
             break;
-        case 'paquete':
-            cantidadGalletas = cantidad * 6; // Asumiendo que un paquete tiene 6 galletas
+        case 'gramaje':
+            cantidadGalletas = cantidad / gramosPorPieza; 
             break;
         case 'medio_kilo':
             cantidadGalletas = Math.floor((cantidad * 500) / gramosPorPieza);
@@ -209,9 +208,9 @@ function agregarAlCarritoDesdeGalleta(id_producto, nombre, precio_unitario, boto
             precioUnitarioAjustado = precio_unitario;
             subtotal = cantidad * precioUnitarioAjustado;
             break;
-        case 'paquete':
+        case 'gramaje':
             // Para paquetes, asumimos que tienen 6 galletas
-            precioUnitarioAjustado = precio_unitario * 6;
+            precioUnitarioAjustado = precio_unitario / gramosPorPieza;
             subtotal = cantidad * precioUnitarioAjustado;
             break;
         case 'medio_kilo':
@@ -231,7 +230,8 @@ function agregarAlCarritoDesdeGalleta(id_producto, nombre, precio_unitario, boto
     
     let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
-    const index = carrito.findIndex(p => p.id_producto === id_producto && p.tipo_venta === tipo_venta);
+    const tipo_venta_id = TIPOS_VENTA[tipo_venta]?.id;
+    const index = carrito.findIndex(p => p.id_producto === id_producto && p.tipo_venta === tipo_venta_id);
 
     if (index !== -1) {
         carrito[index].cantidad += cantidad;
@@ -244,15 +244,15 @@ function agregarAlCarritoDesdeGalleta(id_producto, nombre, precio_unitario, boto
             precio_unitario: precioUnitarioAjustado,
             cantidad,
             cantidad_total: cantidadTotal,
-            tipo_venta,
+            tipo_venta: tipo_venta_id,
             subtotal: subtotal
         });
     }
 
     localStorage.setItem('carrito', JSON.stringify(carrito));
 
-    let mensaje = `Agregaste ${cantidad} ${tipo_venta === 'pieza' ? 'pieza' : 
-                  tipo_venta === 'paquete' ? 'paquete' : 
+    let mensaje = `Agregaste ${cantidad} ${tipo_venta === 'pieza' ? 'pieza(s)' : 
+                  tipo_venta === 'gramaje' ? 'gramo(s)' : 
                   tipo_venta === 'medio_kilo' ? '1/2 kilo' : 'kilo'} de galletas`;
     mostrarNotificacion(mensaje);
 }

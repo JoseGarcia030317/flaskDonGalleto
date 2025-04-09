@@ -22,10 +22,6 @@ class DatabaseConnector:
             if not getattr(Config, field, None):
                 raise ValueError(f"La configuración '{field}' no está establecida.")
 
-        # Usar el puerto definido o el puerto por defecto de MySQL (3306)
-        port = getattr(Config, 'PORT', 3306)
-        logger.info(f"server: {Config.SERVER}")
-        logger.info(f"puerto: {port}")
 
         connection_string = (
             f"mysql+pymysql://{Config.USER}:{Config.PASSWORD}"
@@ -38,7 +34,6 @@ class DatabaseConnector:
                 echo=False,            # Desactivar el log de SQL (puedes activarlo para depuración)
                 pool_recycle=3600      # Reciclar conexiones para evitar problemas de timeout
             )
-            logger.info("Conexión a la base de datos MySQL establecida exitosamente.")
             return engine
         except Exception as e:
             logger.error(f"Error al conectar a la base de datos MySQL: {e}")

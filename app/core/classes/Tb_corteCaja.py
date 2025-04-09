@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, DateTime, Numeric
+from sqlalchemy import Column, Integer, DateTime, Numeric, DECIMAL
 from sqlalchemy.ext.declarative import declarative_base
 from flask_login import current_user
 from datetime import datetime
@@ -33,3 +33,27 @@ class CorteCaja(Base):
         self.id_usuario_inicio = id_usuario_inicio
         self.id_usuario_cierre = id_usuario_cierre
         self.estatus = estatus
+        
+class DetalleCorte(Base):
+    __tablename__ = 'TB_CorteCajaDetalle'
+    __table_args__ = {'schema': 'DB_DONGALLETO'}
+    
+    id_corte = Column(Integer, primary_key=True)
+    tipo_registro = Column(Integer)
+    id_venta = Column(Integer)
+    monto_venta = Column(DECIMAL(18, 2))
+    id_compra = Column(Integer)
+    monto_compra = Column(DECIMAL(18, 2))
+
+    def __init__(self, id_corte=None, tipo_registro=None, id_venta=None, monto_venta=None, id_compra=None, monto_compra=None):
+        self.id_corte = id_corte
+        self.tipo_registro = tipo_registro
+        self.id_venta = id_venta
+        self.monto_venta = monto_venta
+        self.id_compra = id_compra
+        self.monto_compra = monto_compra
+
+    def __repr__(self):
+        return f"<CorteCajaDetalle(id_corte={self.id_corte}, tipo_registro={self.tipo_registro}, " \
+               f"id_venta={self.id_venta}, monto_venta={self.monto_venta}, " \
+               f"id_compra={self.id_compra}, monto_compra={self.monto_compra})>"

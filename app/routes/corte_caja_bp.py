@@ -28,45 +28,6 @@ def cerrar_caja():
     """
     data = request.get_json()
     try:
-        return {
-                "estatus": 200,
-                "message": "Corte Finalizado",
-                "saldo_inicial": 1000,
-                "saldo_final": 1500,
-                "total_ventas": 500,
-                "total_compras": 100,
-                "saldo_final": 1400,
-                "saldo_real": 1300,
-                "saldo_diferencia": 100,
-                "id_usuario_cierre": 1,
-                "nombre_usuario": "edgar123",
-                "fecha": "2023-10-01",
-                "hora": "10:00",
-                "id_corte": 1,
-                "detalle_ventas": [
-                    {
-                        "clave_venta": "V001",
-                        "monto_venta": 200,
-                        "fecha_venta": "2023-10-01"
-                    },
-                    {
-                        "clave_venta": "V002",
-                        "monto_venta": 300,
-                        "fecha_venta": "2023-10-01"
-                    }
-                ],
-                "detalle_compras": [
-                    {
-                        "clave_compra": "C001",
-                        "monto_compra": 200,
-                        "fecha_compra": "2023-10-01"
-                    },
-                    {
-                        "clave_compra": "C002",
-                        "monto_compra": 300,
-                        "fecha_compra": "2023-10-01"
-                    }
-                ]
-            }
+        return corte_caja.cerrar_corte_caja(data)
     except Exception as e:
         return {"status": 500, "message": str(e)}, 500

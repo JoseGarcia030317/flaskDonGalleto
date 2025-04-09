@@ -17,4 +17,13 @@ def iniciar_corte_caja(data: dict) -> dict:
         logger.error("Error al iniciar el corte de caja: %s", e)
         raise e from e
     
+def cerrar_corte_caja(data: dict) -> dict:
+    """
+    Cierra un corte de caja.
+    """
+    try:
+        return crud.cerrar_corte_caja(data)
+    except Exception as e:
+        logger.error("Error al cerrar el corte de caja: %s", e)
+        raise e from e
 

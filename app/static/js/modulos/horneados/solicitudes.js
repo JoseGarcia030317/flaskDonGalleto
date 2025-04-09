@@ -19,7 +19,7 @@ function generarCards() {
                 const card = document.createElement('div');
                 card.className = 'bg-[#efe6dc] rounded-xl shadow-md overflow-hidden border border-gray-200';
                 card.innerHTML = `
-                <div class="flex flex-col relative min-h-[180px]">
+                <div class="flex flex-col relative h-auto">
                 <span class="absolute top-2 right-2 w-5 h-5 bg-yellow-500 rounded-full"></span>
                 <div class="flex items-center h-32">
                 <div class="w-1/3 flex items-center justify-center">
@@ -45,7 +45,7 @@ function generarCards() {
                 </div>
                 
                 <div class="flex justify-center w-1/2">
-                <button onclick="aceptarHorneado(${horneado.receta.id})" class="w-full justify-center p-1 text-[#8A5114] p-0 cursor-pointer flex flex-nowrap hover:bg-[rgba(145,90,23,0.15)]">
+                <button onclick="aceptarHorneado(${horneado.id_horneado})" class="w-full justify-center p-1 text-[#8A5114] p-0 cursor-pointer flex flex-nowrap hover:bg-[rgba(145,90,23,0.15)]">
                 ACEPTAR
                 </button>
                 </div>
@@ -67,7 +67,7 @@ function generarCards() {
 
 function aceptarHorneado(id_horneado){
     tabs.mostrarLoader();
-    api.postJSON('horneado/terminar_horneado', {id_horneado: id_horneado})
+    api.postJSON('horneado/preparar_horneado', {id_horneado: id_horneado})
     .then(respuesta => {
         if(respuesta.status === 404){
             alertas.alertaWarning(respuesta.message);

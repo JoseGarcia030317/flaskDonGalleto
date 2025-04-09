@@ -18,7 +18,7 @@ function generarCards() {
                 const card = document.createElement('div');
                 card.className = 'bg-[#efe6dc] rounded-xl shadow-md overflow-hidden border border-gray-200 p-0';
                 card.innerHTML = `
-                <div class="flex flex-col relative min-h-[180px]">
+                <div class="flex flex-col relative h-auto">
                 <span class="absolute top-2 right-2 w-5 h-5 bg-green-500 rounded-full"></span>
                 <div class="flex items-center h-32">
                 <div class="w-1/3 flex items-center justify-center">

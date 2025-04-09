@@ -177,7 +177,6 @@ function agregarHorneado(id_receta){
                 if (data.status === 400) {
                     let mensaje = '';
                     data.insumos_faltantes.forEach(insumo => {
-                        console.log(insumo);
                         mensaje += insumo.nombre + '<br>'
                     });
                     alertas.alertaFaltaDeInsumos(mensaje);

@@ -2,8 +2,6 @@ import { api } from '../../utils/api.js';
 import { tabs } from '../../utils/tabs.js';
 import { alertas } from '../../utils/alertas.js';
 
-let ventasDisponibles = [];
-let ventaSeleccionada = [];
 const opcionesFecha = {
     timeZone: 'UTC',
     day: 'numeric',
@@ -103,20 +101,20 @@ function cargarVentaEnModal(venta) {
     document.querySelector("input[name='venta_id']").value = venta.id_venta;
     document.querySelector("label[name='clave']").innerHTML = venta.clave_venta;
     document.querySelector("label[name='fecha']").innerHTML = venta.fecha;
-    document.querySelector("label[name='descuento']").innerHTML = venta.descuento || 0;
+    document.querySelector("label[name='descuento']").innerHTML = venta.descuento.toFixed(2) || 0;
     document.querySelector("label[name='observaciones']").innerHTML = venta.observacion;
-    document.querySelector("label[name='total']").innerHTML = "$" + venta.detalle_venta.reduce((total, detalle) => total + (detalle.cantidad * detalle.precio_unitario), 0).toFixed(2);
+    document.querySelector("label[name='total']").innerHTML = "$" + (venta.total_venta).toFixed(2);
 
     const tbodyDetalles = document.querySelector("#tbody_venta_detalle");
     tbodyDetalles.innerHTML = '';
     venta.detalle_venta.forEach(detalle => {
         const fila = document.createElement('tr');
         fila.innerHTML = `
-            <td class="p-3 text-center">${detalle.producto_id}</td>
+            <td class="p-3 text-center">${detalle.galleta_nombre}</td>
             <td class="p-3 text-center">${detalle.tipo_venta || 'Sin tipo de venta'}</td>
             <td class="p-3 text-center">${detalle.precio_unitario}</td>
-            <td class="p-3 text-center">${detalle.cantidad}</td>
-            <td class="p-3 text-center">$${(detalle.precio_unitario * detalle.cantidad).toFixed(2)}</td>
+            <td class="p-3 text-center">${detalle.factor_venta}</td>
+            <td class="p-3 text-center">$${(detalle.subtotal).toFixed(2)}</td>
         `;
         tbodyDetalles.appendChild(fila);
     });

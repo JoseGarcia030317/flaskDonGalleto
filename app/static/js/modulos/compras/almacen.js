@@ -12,7 +12,16 @@ function cargarAlmacen() {
 
     api.getJSON('almacen/list_compras')
         .then(data => {
-            tbody.innerHTML = '';
+            if (!data) {
+                tbody.innerHTML = '';
+                tbody.innerHTML = `
+                    <div class="flex justify-center items-center min-h-screen">
+                        <p class="text-gray-500 font-medium text-xl">No hay galletas registradas</p>
+                    </div>
+                `;
+                return ;
+            }
+            // tbody.innerHTML = '';
             data.forEach(compra => {
                 tbody.innerHTML +=  `
                 <div class="w-full flex py-4 px-3 mb-3 border border-[#8A5114] justify-between rounded-xl bg-white shadow-md">

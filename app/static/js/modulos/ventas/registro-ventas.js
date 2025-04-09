@@ -58,17 +58,13 @@ function calcCantidadGalletas(tipoKey, factor, gramosPorPieza) {
 function handleCardClick(galleta) {
     const tipoKey = getTipoVenta();
     const { id: tipoId, label: tipoLabel, descuento } = TIPOS_VENTA[tipoKey];
-    const tbody = document.getElementById('tbody_producto');
-    const rowId = `row-${galleta.id_galleta}-${tipoId}`;
 
-    // Datos básicos
     const exist = Number(galleta.existencias);
     const gramos = Number(galleta.gramos_galleta);
     const precioPieza = Number(galleta.precio_unitario);
 
-    // Definir precio unitario según tipo
-    let precioUnit;
-    let step, max;
+    // 1) Determinar precioUnit, step y max según tipoKey
+    let precioUnit, step, max;
     switch (tipoKey) {
         case 'piezas':
             precioUnit = precioPieza;
@@ -92,20 +88,43 @@ function handleCardClick(galleta) {
             break;
     }
 
-    // Crear o actualizar fila
+    const rowId = `row-${galleta.id_galleta}-${tipoId}`;
     let fila = document.getElementById(rowId);
+
+    // 2) Cuántas piezas añade este click (equivalente)
+    const newPieces = calcCantidadGalletas(tipoKey, step, gramos);
+
+    // 3) Cuántas piezas ya están vendidas en otras filas
+    const sumExcl = getPiezasGalletaSeleccionada(galleta.id_galleta, fila);
+
+    // 4) Cuántas piezas hay en esta fila actualmente
+    const oldPieces = fila
+        ? calcCantidadGalletas(
+            fila.dataset.tipoVentaKey,
+            Number(fila.querySelector('.input-cant').value),
+            Number(fila.dataset.gramosPieza)
+        )
+        : 0;
+
+    // 5) Validación de stock global
+    if (sumExcl + oldPieces + newPieces > exist) {
+        alertas.alertaWarning('Stock insuficiente para esta galleta');
+        return;
+    }
+
+    // 6) Crear o actualizar la fila
+    const tbody = document.getElementById('tbody_producto');
     if (!fila) {
+        // Crear nueva fila
         fila = document.createElement('tr');
         fila.id = rowId;
-
         fila.dataset.gramosPieza = gramos;
-
         fila.dataset.tipoVentaKey = tipoKey;
         fila.dataset.tipoVentaId = tipoId;
 
-        // cantidad_galletas inicial
+        // Cantidad inicial de galletas
         const cantG = calcCantidadGalletas(tipoKey, step, gramos);
-        fila.dataset.cantidadGalletas = cantG.toFixed(2);
+        fila.dataset.cantidadGalletas = cantG;
 
         fila.innerHTML = `
             <td class="p-2 text-center">${galleta.nombre_galleta}</td>
@@ -123,50 +142,55 @@ function handleCardClick(galleta) {
             <td class="p-2 text-center">${tipoLabel}</td>
             <td class="p-2 text-center cell-subtotal">${(precioUnit * step).toFixed(2)}</td>
             <td class="p-2 text-center">
-                <button class="btn-remove align-middle cursor-pointer">
-                    <img src="../../../static/images/bote basura.png" class="w-7 h-7">
-                </button>
+            <button class="btn-remove cursor-pointer">
+                <img src="../../../static/images/bote basura.png" class="w-7 h-7">
+            </button>
             </td>
         `;
 
-        // Borrar fila
+        // Botón borrar
         fila.querySelector('.btn-remove')
             .addEventListener('click', () => {
                 fila.remove();
                 recalcTotal();
             });
 
-        // Al cambiar cantidad: validar y recalcular subtotal + total general
-        const inputCant = fila.querySelector('.input-cant');
-        inputCant.addEventListener('change', () => {
-            let val = Number(inputCant.value);
-            if (val < step) val = step;
-            if (val > max) val = max;
-            inputCant.value = val;
+        // Listener cambio de cantidad
+        fila.querySelector('.input-cant')
+            .addEventListener('change', () => {
+                let val = Number(fila.querySelector('.input-cant').value);
+                if (val < step) val = step;
+                if (val > max) val = max;
+                fila.querySelector('.input-cant').value = val;
 
-            // actualizar subtotal
-            fila.querySelector('.cell-subtotal').textContent = (val * precioUnit).toFixed(2);
+                // Recalcular subtotal
+                fila.querySelector('.cell-subtotal').textContent = (val * precioUnit).toFixed(2);
 
-            // actualizar cantidad_galletas
-            const nuevaG = calcCantidadGalletas(tipoKey, val, gramos);
-            fila.dataset.cantidadGalletas = nuevaG.toFixed(2);
+                // Recalcular cantidad_galletas
+                const nuevaG = calcCantidadGalletas(tipoKey, val, gramos);
+                fila.dataset.cantidadGalletas = nuevaG;
 
-            recalcTotal();
-        });
+                recalcTotal();
+            });
 
         tbody.appendChild(fila);
+
     } else {
-        // Ya existe solo sumar step
+        // Actualizar fila existente: sumar un step más
         const inputCant = fila.querySelector('.input-cant');
         let nueva = Number(inputCant.value) + step;
         if (nueva > max) nueva = max;
         inputCant.value = nueva;
+
+        // Recalcular subtotal
         fila.querySelector('.cell-subtotal').textContent = (nueva * precioUnit).toFixed(2);
-        // actualizar cantidad_galletas
+
+        // Recalcular cantidad_galletas
         const nuevaG = calcCantidadGalletas(tipoKey, nueva, gramos);
-        fila.dataset.cantidadGalletas = nuevaG.toFixed(2);
+        fila.dataset.cantidadGalletas = nuevaG;
     }
 
+    // 7) Recalcular total de la venta
     recalcTotal();
 }
 
@@ -219,8 +243,30 @@ function recolectarDatosVenta() {
     };
 }
 
+// Funcion para validar que no se exceda el inventario en distintos tipos de vntas
+function getPiezasGalletaSeleccionada(galletaId, excludeRow = null) {
+    let sum = 0;
+    document.querySelectorAll('#tbody_producto tr').forEach(row => {
+        if (row === excludeRow) return;
+        const [, idStr] = row.id.split('-'); // ["row","<galletaId>","<tipoId>"]
+        if (parseInt(idStr, 10) !== galletaId) return;
+
+        const key = row.dataset.tipoVentaKey;
+        const factor = Number(row.querySelector('.input-cant').value) || 0;
+        const grams = Number(row.dataset.gramosPieza) || 0;
+
+        sum += calcCantidadGalletas(key, factor, grams);
+    });
+    return sum;
+}
+
 // Funcion par enviar la venta al backend
 function registrarVenta() {
+    const numFilas = document.querySelectorAll('#tbody_producto tr').length;
+    if (numFilas === 0) {
+        alertas.alertaWarning('Debes agregar al menos una galleta a la venta');
+        return;
+    }
     alertas.confirmarYRegistrarVenta()
         .then(resultado => {
             if (!resultado.isConfirmed) {

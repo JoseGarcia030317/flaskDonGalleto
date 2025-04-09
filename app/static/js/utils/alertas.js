@@ -110,16 +110,6 @@ function alertaFaltaDeInsumos(texto) {
     })
 }
 
-function confirmarProcesoFinalizar() {
-    Swal.fire({
-        position: 'center',
-        icon: "question",
-        title: "¿Está seguro de realizar la acción?",
-        showConfirmButton: true,
-        showCancelButton: true
-    });
-}
-
 function corteCajaInicio() {
     return Swal.fire({ // ¡Debe retornar directamente la promesa!
         title: 'Corte de caja inicial requerido',
@@ -149,7 +139,6 @@ export const alertas = {
     alertaCambioMargen: (costoUnitario, nuevoPrecio) => alertaCambioMargen(costoUnitario, nuevoPrecio),
     alertaAumentoCostoProduccion: (aumento, nuevoPrecio) => alertaAumentoCostoProduccion(aumento, nuevoPrecio),
     procesoTerminadoSinExito: () => procesoTerminadoSinExito(),
-    confirmarProcesoFinalizar: () => confirmarProcesoFinalizar(),
     corteCajaInicio : () => corteCajaInicio(),
     confirmarYRegistrarVenta : () => confirmarYRegistrarVenta(),
     alertaFaltaDeInsumos: (mensaje) => alertaFaltaDeInsumos(mensaje)

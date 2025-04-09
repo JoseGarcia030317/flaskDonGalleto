@@ -1,5 +1,5 @@
 <div class="container mx-auto">
-    <div class="flex h-auto m-1 gap-4">
+    <div class="flex h-auto m-1 gap-4 mb-4">
         <!-- Columna Izquierda -->
         <div class="w-1/2 border-2 border-[#efe6dc] p-4 rounded-xl h-[600px]">
             <div class="h-full overflow-y-auto overflow-x-auto">
@@ -91,8 +91,8 @@
     </div>
 
     <!-- Seccion de boton de crear compra y de descuento -->
-    <div class="w-full shadow-lg">
-        <div class="grid grid-cols-3 justify-between gap-4">
+    <div class="w-full">
+        <div class="grid grid-cols-3 justify-between gap-4 my-3">
             <div>
                 <!-- Totalde venta -->
                 <label id="total-general">$0.00</label>
@@ -110,7 +110,7 @@
             <div>
                 <!-- Botón guardar -->
                 <button type="submit" id="btn-agregar" onclick="registrarVenta()" disabled
-                    class="py-2 bg-[#895645] text-white rounded-full border border-[#301e1a] font-medium flex items-center justify-center gap-2 hover:bg-[#a46a52] cursor-pointer">
+                    class="py-1 px-3 bg-[#895645] text-white rounded-full border border-[#301e1a] font-medium flex items-center justify-center gap-2 hover:bg-[#a46a52] cursor-pointer">
                     <img src="../../../static/images/shoping car.png" class="w-5 h-5">
                     Guardar Venta
                 </button>

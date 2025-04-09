@@ -12,11 +12,12 @@ from core.cruds.crud_galletas import InventarioGalleta
 logger = logging.getLogger(__name__)
 
 class HorneadoCRUD:
-    __STATUS_PROCESO__ = 1
-    __STATUS_TERMINADO__ = 2
-    __STATUS_CANCELADO__ = 3
-    __STATUS_SOLICITADO__ = 4
-    __STATUS_RECHAZADO__ = 5
+    __STATUS_PROCESO__ = 1 #cuando se dio iniciar acepto la solicitud (se descuentan unicamente insumos)
+    __STATUS_TERMINADO__ = 2 # cuando ya el horneado termino (se agrega galletas)
+    __STATUS_CANCELADO__ = 3 # se revierte todo lo consumido y generado (insumos consumidos)
+    __STATUS_SOLICITADO__ = 4 #se encuentra en espera de ser aceptado (iniciar) o rechazado
+    __STATUS_RECHAZADO__ = 5  #no genera ningun impacto en insumos
+    
 
     def get_all_horneados(self, id_horneado:int = None, state:int = None):
         """
@@ -88,92 +89,135 @@ class HorneadoCRUD:
             logger.error("Error al obtener los horneados: %s", e)
             raise e
 
-    def crear_horneado(self, json_horneado: dict, state: int):
+    def solicitar_horneado(self, json_horneado: dict) -> dict:
         """
-        Crea un nuevo horneado.
+        Crea un nuevo horneado en estado solicitado.
         """
-
-        horneado = Horneado(**json_horneado)
-        horneado.estatus = state
-
-        explosion_insumos = ExplosionInsumos(json_horneado.get("receta_id"))
-        if state != 4:
-            insumo_existencias = explosion_insumos.validar_existencias()
-            if insumo_existencias:
-                return {
-                    "status": 400,
-                    "message": "No hay suficientes existencias de los insumos requeridos",
-                    "insumos_faltantes": insumo_existencias
-                }
         try:
             Session = DatabaseConnector().get_session
             with Session() as session:
-                session.add(horneado)
-                session.flush()
-                explosion_insumos.descontar_existencias_insumos(horneado.id_horneado, session)
-                explosion_insumos.aumentar_existencias_galletas(horneado.id_horneado, session)
+                # Se crea el nuevo horneado
+                nuevo_horneado = Horneado(**json_horneado)
+                nuevo_horneado.estatus= self.__STATUS_SOLICITADO__
+                session.add(nuevo_horneado)
                 session.commit()
-                return {
-                    "status": 200,
-                    "message": "Horneado creado correctamente",
-                    "id_horneado": horneado.id_horneado
-                }
+                return {"id_horneado": nuevo_horneado.id_horneado, "estatus": "Solicitado"}
         except Exception as e:
             logger.error("Error al crear el horneado: %s", e)
             raise e
 
-    def cancelar_horneado(self, id_horneado: int):
+    def rechazar_horneado(self, id_horneado: int) -> dict:
         """
-        Cancela un horneado.
+        Cambia el estado de un horneado a rechazado.
         """
         try:
             Session = DatabaseConnector().get_session
             with Session() as session:
+                # Se obtiene el horneado por su ID
                 horneado = session.query(Horneado).filter(Horneado.id_horneado == id_horneado).first()
                 if horneado:
-                    horneado.estatus = self.__STATUS_CANCELADO__
-                    explosion_insumos = ExplosionInsumos(horneado.receta_id)
-                    explosion_insumos.cancelar_descuento_existencias_insumos(id_horneado, session)
-                    explosion_insumos.cancelar_aumento_existencias_galletas(id_horneado, session)
-                    horneado.fecha_cancelacion = datetime.now()
+                    # Se cambia el estado a rechazado
+                    horneado.estatus = self.__STATUS_RECHAZADO__
                     session.commit()
-                    return {
-                        "status": 200,
-                        "message": "Horneado cancelado correctamente"
-                    }
+                    return {"id_horneado": horneado.id_horneado, "estatus": "Rechazado"}
                 else:
-                    return {
-                        "status": 404,
-                        "message": "Horneado no encontrado"
-                    }
+                    return False
         except Exception as e:
-            logger.error("Error al cancelar el horneado: %s", e)
+            logger.error("Error al rechazar el horneado: %s", e)
             raise e
-        
-    def update_horneado(self, data: dict, state: int):
+
+    def preparar_horneado(self, id_horneado: int) -> dict:
         """
-        Actualiza un horneado.
+        Cambia el estado de un horneado a en proceso. Y explota insumos requeridos.
         """
         try:
             Session = DatabaseConnector().get_session
             with Session() as session:
-                horneado = session.query(Horneado).filter(Horneado.id_horneado == data.get("id_horneado")).first()
+                # Se obtiene el horneado por su ID
+                horneado = session.query(Horneado).filter(Horneado.id_horneado == id_horneado).first()
+                
+                # Se valida si la receta esta completa para ejecutarse
+                explosion_insumos = ExplosionInsumos(horneado.receta_id)
+                insumos_requeridos_no_validos = explosion_insumos.validar_existencias()
+                if insumos_requeridos_no_validos:
+                    return {
+                        "status": 400,
+                        "message": "No hay suficientes insumos para el horneado",
+                        "insumos_requeridos_no_validos": insumos_requeridos_no_validos
+                    }
+
                 if horneado:
-                    horneado.estatus = state
+                    # Se descuentan las existencias de los insumos requeridos
+                    explosion_insumos.descontar_existencias_insumos(horneado.id_horneado, session)
+
+                    # Se cambia el estado a en proceso
+                    horneado.estatus = self.__STATUS_PROCESO__
                     session.commit()
-                    return {
-                        "status": 200,
-                        "message": "Horneado actualizado correctamente"
-                    }
+                    return {"id_horneado": horneado.id_horneado, "estatus": "En proceso"}
                 else:
-                    return {
-                        "status": 404,
-                        "message": "Horneado no encontrado"
-                    }
+                    return False
         except Exception as e:
-            logger.error("Error al actualizar el horneado: %s", e)
+            logger.error("Error al preparar el horneado: %s", e)
             raise e
 
+    def terminar_horneado(self, id_horneado: int) -> dict:
+        """
+        Cambia el estado de un horneado a terminado. Y aumenta las existencias de las galletas producidas.
+        """
+        try:
+            Session = DatabaseConnector().get_session
+            with Session() as session:
+                # Se obtiene el horneado por su ID
+                horneado = session.query(Horneado).filter(Horneado.id_horneado == id_horneado).first()
+                if horneado:
+                    # Se aumenta las existencias de las galletas producidas
+                    explosion_insumos = ExplosionInsumos(horneado.receta_id)
+                    explosion_insumos.aumentar_existencias_galletas(horneado.id_horneado, session)
+
+                    # Se cambia el estado a terminado
+                    horneado.estatus = self.__STATUS_TERMINADO__
+                    session.commit()
+                    return {"id_horneado": horneado.id_horneado, "estatus": "Terminado"}
+                else:
+                    return False
+        except Exception as e:
+            logger.error("Error al terminar el horneado: %s", e)
+            raise e
+
+    def crear_horneado(self, json_horneado: dict) -> dict:
+        """
+        Crea un nuevo horneado en estado solicitado.
+        """
+        try:
+            Session = DatabaseConnector().get_session
+            with Session() as session:
+                nuevo_horneado = Horneado(**json_horneado)
+                nuevo_horneado.estatus= self.__STATUS_PROCESO__
+                
+                session.add(nuevo_horneado)
+                session.flush()
+                # Se obtiene el ID del nuevo horneado
+                nuevo_horneado_id = nuevo_horneado.id_horneado
+                
+                # valida existencias de insumos
+                explosion_insumos = ExplosionInsumos(nuevo_horneado.receta_id)
+                insumos_requeridos_no_validos = explosion_insumos.validar_existencias()
+                if insumos_requeridos_no_validos:
+                    session.rollback()
+                    return {
+                        "status": 400,
+                        "message": "No hay suficientes insumos para el horneado",
+                        "insumos_requeridos_no_validos": insumos_requeridos_no_validos
+                    }
+                
+                # Se descuentan las existencias de los insumos requeridos
+                explosion_insumos.descontar_existencias_insumos(nuevo_horneado_id, session)
+
+                session.commit()
+                return {"id_horneado": nuevo_horneado.id_horneado, "estatus": "Proceso"}
+        except Exception as e:
+            logger.error("Error al crear el horneado: %s", e)
+            raise e
 
 class ExplosionInsumos:
     TIPO_MOVIMIENTO = 3 #Horneado

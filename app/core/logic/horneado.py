@@ -27,19 +27,9 @@ def get_horneado_by_id(data: dict) -> dict:
         logger.error("Error al obtener el horneado por ID: %s", e)
         raise e from e
     
-def crear_horneado(json_horneado: dict) -> dict:
-    """
-    Crea un nuevo horneado.
-    """
-    try:
-        return crud.crear_horneado(json_horneado, state = 1)
-    except Exception as e:
-        logger.error("Error al crear el horneado: %s", e)
-        raise e from e
-
 def cancelar_horneado(id_horneado: int) -> dict:
     """
-    Cancela un horneado.
+    Cancela un horneado. Solo revierte el consumo de insumos y cambia el estatus a cancelado
     """
     try:
         return crud.cancelar_horneado(id_horneado)
@@ -49,30 +39,51 @@ def cancelar_horneado(id_horneado: int) -> dict:
 
 def solicitar_horneado(data: dict) -> dict:
     """
-    Cambia el estado de un horneado a solicitado.
+        Se crea el horneado sin embargo se queda en estatus de solicitado
+        hasta que sea aceptado o rechazado
     """
     try:
-        return crud.crear_horneado(data, state = 4)
+        return crud.solicitar_horneado(data) #se crea en estatus de espera
     except Exception as e:
         logger.error("Error al cambiar el estado del horneado a solicitado: %s", e)
         raise e from e
 
 def terminar_horneado(data: dict) -> dict:
     """
-    Cambia el estado de un horneado a terminado.
+    Cambia el estado de un horneado a terminado se suman galletas al inventario
     """
     try:
-        return crud.update_horneado(data, state = 2)
+        return crud.terminar_horneado(data.get("id_horneado"))
     except Exception as e:
         logger.error("Error al cambiar el estado del horneado a terminado: %s", e)
         raise e from e
 
 def rechazar_horneado(data: dict) -> dict:
     """
-    Cambia el estado de un horneado a rechazado.
+    Cambia el estado de un horneado a rechazado
     """
     try:
-        return crud.update_horneado(data, state = 5)
+        return crud.rechazar_horneado(data.get("id_horneado"))
     except Exception as e:
         logger.error("Error al cambiar el estado del horneado a rechazado: %s", e)
+        raise e from e
+
+def preparar_horneado(data):
+    """
+        Aceptar horneado. Genera cambio de estatus y ejecuta la explotacion del insumo
+    """
+    try:
+        return crud.preparar_horneado(data.get("id_horneado"))
+    except Exception as e:
+        logger.error("Error al procesar el horneado: %s", e)
+        raise e from e
+
+def crear_horneado(data: dict) -> dict:
+    """
+    Crea un nuevo horneado.
+    """
+    try:
+        return crud.crear_horneado(data)
+    except Exception as e:
+        logger.error("Error al crear el horneado: %s", e)
         raise e from e

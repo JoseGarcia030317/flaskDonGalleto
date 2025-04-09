@@ -122,10 +122,13 @@ export function limpiarErrores() {
     });
 }
 
-export function convertirFecha(fecha){
-    return new Date(fecha).toLocaleDateString('es-ES', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
+export function convertirFecha(fecha) {
+    const fechaUTC = new Date(fecha);
+  
+    return fechaUTC.toLocaleDateString('es-ES', {
+      timeZone: 'UTC',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
     });
-}
+  }

@@ -15,16 +15,44 @@ function confirmarEliminar() {
 
 }
 
+function rechazarPedido() {
+    return Swal.fire({
+        title: "¿Estás seguro que deseas rechazar el pedido?",
+        imageUrl: "../../../static/images/warning.png",
+        imageWidth: 128,
+        imageHeight: 128,
+        showCancelButton: true,
+        confirmButtonText: '<span class="text-lg font-medium">Aceptar</span>',
+        cancelButtonText: '<span class="text-lg font-medium">Cancelar</span>',
+        customClass: {
+            confirmButton: "flex items-center gap-3 px-6 py-3 border-2 border-[#8A5114] bg-white text-[#8A5114] rounded-full hover:bg-[#f5f5f5] transition-colors",
+            cancelButton: "flex items-center gap-3 px-6 py-3 border-2 border-[#DAA520] bg-white text-[#DAA520] rounded-full hover:bg-[#f5f5f5] transition-colors"
+        }
+    });
+
+}
+
+function confirmarPedido() {
+    return Swal.fire({
+        title: '¿Confirmas el pedido?',
+        text: 'Estas por generar una nueva venta',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Registrar venta',
+        cancelButtonText: 'Cancelar'
+    });
+}
+
 function confirmarYRegistrarVenta() {
     return Swal.fire({
-      title: '¿Confirmas la venta?',
-      text: 'Estas por generar una nueva venta',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Registrar venta',
-      cancelButtonText: 'Cancelar'
+        title: '¿Confirmas la venta?',
+        text: 'Estas por generar una nueva venta',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Registrar venta',
+        cancelButtonText: 'Cancelar'
     });
-  }
+}
 
 function procesoTerminadoExito() {
     Swal.fire({
@@ -142,6 +170,8 @@ function corteCajaInicio() {
 
 export const alertas = {
     confirmarEliminar: () => confirmarEliminar(),
+    rechazarPedido: () => rechazarPedido(),
+    confirmarPedido : () => confirmarPedido(),
     procesoTerminadoExito: () => procesoTerminadoExito(),
     alertaWarning: (mensaje) => alertaWarning(mensaje),
     procesoTerminadoSinExito: () => procesoTerminadoSinExito(),
@@ -150,7 +180,7 @@ export const alertas = {
     alertaAumentoCostoProduccion: (aumento, nuevoPrecio) => alertaAumentoCostoProduccion(aumento, nuevoPrecio),
     procesoTerminadoSinExito: () => procesoTerminadoSinExito(),
     confirmarProcesoFinalizar: () => confirmarProcesoFinalizar(),
-    corteCajaInicio : () => corteCajaInicio(),
-    confirmarYRegistrarVenta : () => confirmarYRegistrarVenta(),
+    corteCajaInicio: () => corteCajaInicio(),
+    confirmarYRegistrarVenta: () => confirmarYRegistrarVenta(),
     alertaFaltaDeInsumos: (mensaje) => alertaFaltaDeInsumos(mensaje)
 }

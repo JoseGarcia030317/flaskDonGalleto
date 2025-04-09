@@ -307,8 +307,7 @@ function eliminarMermaProducto(id_merma) {
             console.error('Error:', error.message || error);
             Swal.fire('Error', error.message || 'Error al eliminar', 'error');
         }
-    })
-    .finally(() => tabs.ocultarLoader());
+    });
 }
 
 // Exponer la función globalmente para poder ser usada en html

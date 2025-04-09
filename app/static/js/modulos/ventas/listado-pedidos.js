@@ -2,91 +2,15 @@ import { api } from '../../utils/api.js';
 import { tabs } from '../../utils/tabs.js';
 import { alertas } from '../../utils/alertas.js';
 
-const ventas = [
-    {
-        id: 1,
-        codigo: "VENTA-2023-001",
-        fecha: "2023-10-01 09:30:00",
-        descripcion: "Venta al por mayor a cliente frecuente",
-        estado: 1,
-        descuento: 0.00,
-        detalles: [
-            {
-                detalle_id: 1,
-                producto_id: 1,
-                cantidad: 1221.00,
-                precio_unitario: 12123.00,
-            }
-        ]
-    },
-    {
-        id: 2,
-        codigo: "VENTA-2023-002",
-        fecha: "2023-10-05 14:15:00",
-        descripcion: "Venta minorista en tienda",
-        estado: 1,
-        descuento: 0.00,
-        detalles: [
-            {
-                detalle_id: 2,
-                producto_id: 2,
-                cantidad: 1221.00,
-                precio_unitario: 12123.00
-            }
-        ]
-    },
-    {
-        id: 3,
-        codigo: "VENTA-2023-003",
-        fecha: "2023-10-10 11:00:00",
-        descripcion: "Venta online con envío gratis",
-        estado: 1,
-        descuento: 0.00,
-        detalles: [
-            {
-                detalle_id: 3,
-                producto_id: 3,
-                cantidad: 1221.00,
-                precio_unitario: 12123.00
-            }
-        ]
-    },
-    {
-        id: 4,
-        codigo: "VENTA-2023-004",
-        fecha: "2025-04-01 00:00:00",
-        descripcion: "Venta corporativa con descuento especial",
-        estado: 1,
-        descuento: 0.00,
-        detalles: [
-            {
-                detalle_id: 4,
-                producto_id: 4,
-                cantidad: 1221.00,
-                precio_unitario: 12123.00
-            },
-            {
-                detalle_id: 5,
-                producto_id: 4,
-                cantidad: 1221.00,
-                precio_unitario: 12123.00,
-                subtotal: 1221.00 * 12123.00
-            }
-        ]
-    },
-    {
-        id: 5,
-        codigo: "VENTA-2023-005",
-        fecha: "2025-04-01 00:00:00",
-        descripcion: "Promoción de temporada",
-        estado: 1,
-        descuento: 0.00,
-        detalles: []
-    }
-];
-
-let pedidoSeleccionado = {};
-let pedidosDisponibles = [];
+const opcionesFecha = {
+    timeZone: 'UTC',
+    day: 'numeric',
+    month: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric'
+};
 
 // ====================================================================
 // Funciones para manejar el DOM y mostrar modales
@@ -126,52 +50,65 @@ function filtrarTabla() {
 // Funcion para carar el apartado de listado de pedidos
 function inicializarModuloListadoPedidos() {
     cargarTablaPedidos();
-    tabs.desbloquearTabs();
 }
 
 function cargarTablaPedidos() {
-    const tabla = document.getElementById("tbody_listado_pedidos");
-    tabla.innerHTML = '';
-    pedidosDisponibles = ventas;
-
-    pedidosDisponibles.forEach(pedido => {
-        const fila = document.createElement('tr');
-        fila.innerHTML = `
-            <tr data-id="${pedido.id}" class="hover:bg-gray-100">
-                <td class="p-3 text-center">${pedido.fecha}</td>    
-                <td class="p-3 text-center">${pedido.codigo}</td>
-                <td class="p-3 text-center">${pedido.descripcion}</td>
-                <td class="p-3 text-center">${pedido.descuento || 0}</td>
-                <td class="p-3 flex justify-center">
-                    <button onclick="buscarPedidoPorId(${pedido.id})" class="align-middle cursor-pointer">
-                        <img src="../../../static/images/info.png" class="w-7 h-7">
-                    </button>
-                </td>
-            </tr>
-        `;
-        tabla.appendChild(fila);
-    });
+    const tbody = document.getElementById("tbody_listado_pedidos");
+    tabs.mostrarEsqueletoTabla(tbody, 5, 6);
+    api.getJSON('/pedidos/get_all_pedidos')
+        .then(data => {
+            tbody.innerHTML = '';
+            data.forEach(venta => {
+                const fecha = new Date(venta.fecha);
+                tbody.innerHTML += `
+                    <tr data-id="${venta.id_venta}" class="hover:bg-gray-100">
+                        <td class="p-3 text-center">${fecha.toLocaleString('es-ES', opcionesFecha)}</td>    
+                        <td class="p-3 text-center">${venta.clave_venta}</td>
+                        <td class="p-3 text-center">${venta.observacion}</td>
+                        <td class="p-3 text-center">${venta.descuento || 0}</td>
+                        <td class="p-3 text-center">${venta.cliente} || Chuchito</td>
+                        <td class="p-3 flex justify-center">
+                            <button onclick="buscarPedioPorId(${venta.id_venta})" class="align-middle cursor-pointer">
+                                <img src="../../../static/images/info.png" class="w-7 h-7">
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error.message);
+            Swal.fire('Error', error.message || 'Error al cargar el listado de pedidos', 'error');
+        })
+        .finally(() => tabs.desbloquearTabs());
 }
 
 // Buscar un pedido por su id
 function buscarPedidoPorId(id) {
-    const pedidoSeleccionado = pedidosDisponibles.find(v => v.id === id);
-    if (pedidoSeleccionado) {
-        console.log("Detalles de la venta:", pedidoSeleccionado);
-        cargarPedidoEnModal(pedidoSeleccionado);
-        abrirModal();
-    } else {
-        alertas.mostrarError("Venta no encontrada");
-    }
+    tabs.mostrarLoader();
+    api.postJSON('/pedidos/get_pedido_by_id', { id_venta: id })
+        .then(data => {
+            if (data.id_venta) {
+                cargarPedidoEnModal(data);
+                abrirModal();
+            } else {
+                alertas.mostrarError('venta no encontrada');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error.message);
+            Swal.fire('Error', error.message || 'Error al cargar la venta', 'error');
+        })
 }
 
 function cargarPedidoEnModal(pedido) {
-    document.querySelector("input[name='pedido_id']").value = pedido.id;
-    document.querySelector("label[name='clave']").innerHTML = pedido.codigo;
+    document.querySelector("input[name='pedido_id']").value = pedido.id_venta;
+    document.querySelector("label[name='clave']").innerHTML = pedido.clave_venta;
     document.querySelector("label[name='fecha']").innerHTML = pedido.fecha;
     document.querySelector("label[name='descuento']").innerHTML = pedido.descuento || 0;
-    document.querySelector("label[name='observaciones']").innerHTML = pedido.descripcion;
-    document.querySelector("label[name='total']").innerHTML = "$" + pedido.detalles.reduce((total, detalle) => total + (detalle.cantidad * detalle.precio_unitario), 0).toFixed(2);
+    document.querySelector("label[name='observaciones']").innerHTML = pedido.observacion;
+    document.querySelector("label[name='cliente']").innerHTML = pedido.cliente || 'Chuchito'
+    document.querySelector("label[name='total']").innerHTML = "$" + (venta.total_venta).toFixed(2);
 
     const tbodyDetalles = document.querySelector("#tbody_pedido_detalle");
     tbodyDetalles.innerHTML = '';
@@ -189,26 +126,59 @@ function cargarPedidoEnModal(pedido) {
 }
 
 function aceptarPedido() {
-    const pedidoId = document.querySelector("input[name='pedido_id']").value;
-    const pedido = pedidosDisponibles.find(v => String(v.id) === pedidoId);
-    if (pedido) {
-        alertas.procesoTerminadoExito();
-        cerrarModal();
-    } else {
-        alertas.procesoTerminadoSinExito();
-    }
+    alertas.confirmarPedido()
+        .then(resultado => {
+            if (!resultado.isConfirmed) {
+                return Promise.reject('cancelado')
+            }
+            tabs.mostrarLoader();
+            const id_pedido = parseInt(document.querySelector("input[name='pedido_id']").value);
+            return api.postJSON('/pedidos/aceptar_pedido', { id_venta: id_pedido });
+        })
+        .then(data => {
+            if (data.id_venta && data.status === 200) {
+                tabs.ocultarLoader();
+                alertas.procesoTerminadoExito();
+                cargarTablaPedidos();
+            } else {
+                Swal.fire('Error', data.error || 'Error al aceptar el pedido', 'error');
+            }
+        })
+        .catch(error => {
+            if (error !== 'cancelado') {
+                console.error('Error:', error.message || error);
+                Swal.fire('Error', error.message || 'Error al aceptar el pedido', 'error');
+            }
+        });
 }
 
 function rechazarPedido() {
-    const pedidoId = document.querySelector("input[name='pedido_id']").value;
-    const pedido = pedidosDisponibles.find(v => String(v.id) === pedidoId);
-    if (pedido) {
-        alertas.procesoTerminadoExito();
-        cerrarModal();
-    } else {
-        alertas.procesoTerminadoSinExito();
-    }
+    alertas.rechazarPedido()
+        .then(resultado => {
+            if (!resultado.isConfirmed) {
+                return Promise.reject('cancelado');
+            }
+            tabs.mostrarLoader();
+            let id_pedido = parseInt(document.querySelector("input[name='pedido_id']").value);
+            return api.postJSON('/pedidos/rechazar_pedido', { id_pedido: id_pedido });
+        })
+        .then(data => {
+            if (data.id_venta && data.status === 200) {
+                tabs.ocultarLoader();
+                alertas.procesoTerminadoExito();
+                cargarTablaPedidos();
+            } else {
+                Swal.fire('Error', data.error || 'Error al rechazar el pedido', 'error');
+            }
+        })
+        .catch(error => {
+            if (error !== 'cancelado') {
+                console.error('Error:', error.message || error);
+                Swal.fire('Error', error.message || 'Error al rechazar el pedido', 'error');
+            }
+        });
 }
+
 
 window.inicializarModuloListadoPedidos = inicializarModuloListadoPedidos;
 window.buscarPedidoPorId = buscarPedidoPorId;

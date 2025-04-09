@@ -367,6 +367,8 @@ function buscarGalletaPorId(id_galleta) {
 
 // Función para cargar datos de galleta en formulario
 function cargarGalletaEnFormulario(galleta) {
+    console.log(JSON.stringify(galleta));
+    galleta = normalizarReceta(galleta);
     // Campos principales
     document.querySelector('input[name="galleta_id"]').value = galleta.id_galleta;
     document.querySelector('input[name="nombre_galleta"]').value = galleta.nombre_galleta;
@@ -389,19 +391,19 @@ function cargarGalletaEnFormulario(galleta) {
 
     generarRecetasCards();
 
-    const recetaBase = recetasDisponibles.find(r => r.es_base);
+    let recetaBase = recetasDisponibles.find(r => r.es_base);
     if (!recetaBase) return;
 
     // 1. Calcular nuevo costo unitario
     const nuevoCostoPorGalleta = recetaBase.costo_receta / recetaBase.galletas_producidas;
 
     // 2. Obtener valores originales almacenados
-    const precioOriginal = parseFloat(galleta.precio_unitario).toFixed(2);
-    const proteccionOriginal = parseFloat(galleta.proteccion_precio).toFixed(2);
+    const precioOriginal = galleta.precio_unitario;
+    const proteccionOriginal = galleta.proteccion_precio;
     const costoProduccionOriginal = precioOriginal - proteccionOriginal;
 
     // 3. Comparar costos
-    if (nuevoCostoPorGalleta > costoProduccionOriginal) {
+    if (nuevoCostoPorGalleta > parseFloat(costoProduccionOriginal.toFixed())) {
         const aumento = nuevoCostoPorGalleta - costoProduccionOriginal;
         const nuevoPrecioSugerido = nuevoCostoPorGalleta + proteccionOriginal;
 
@@ -488,7 +490,7 @@ function agregarGalleta() {
 // Función para editar galleta
 function editarGalleta() {
     const formData = obtenerDatosFormularioGalleta();
-    
+
     const payload = {
         id_galleta: formData.id_galleta,
         nombre_galleta: formData.nombre_galleta,
@@ -518,7 +520,7 @@ function editarGalleta() {
 
     tabs.mostrarLoader();
     console.log(payload);
-    
+
     api.postJSON('/galletas/update_galleta', payload)
         .then(response => {
             if ((response?.status === 200 || response?.status === 201) && response?.id_galleta) {
@@ -539,28 +541,28 @@ function editarGalleta() {
 // Funcion para eliminar una galleta de la bd
 function eliminarGalleta(id_galleta) {
     alertas.confirmarEliminar()
-    .then(resultado => {
-        if (!resultado.isConfirmed) return Promise.reject('cancelado');
-        
-        tabs.mostrarLoader();
-        return api.postJSON('/galletas/delete_galleta', { id_galleta: id_galleta });
-    })
-    .then(data => {
-        if ((data?.status === 200 || data?.status === 201) && data?.id_galleta) {
-            alertas.procesoTerminadoExito();
-            cerrarModalPrincipal();
-            cargarGalletas();
-        } else {
-            throw new Error(data?.error || 'Error al eliminar la galleta');
-        }
-    })
-    .catch(error => {
-        if (error !== 'cancelado') {
-            console.error('Error eliminando galleta:', error);
-            Swal.fire('Error', error.message || 'No se pudo eliminar la galleta', 'error');
-        }
-    })
-    .finally(() => tabs.ocultarLoader());
+        .then(resultado => {
+            if (!resultado.isConfirmed) return Promise.reject('cancelado');
+
+            tabs.mostrarLoader();
+            return api.postJSON('/galletas/delete_galleta', { id_galleta: id_galleta });
+        })
+        .then(data => {
+            if ((data?.status === 200 || data?.status === 201) && data?.id_galleta) {
+                alertas.procesoTerminadoExito();
+                cerrarModalPrincipal();
+                cargarGalletas();
+            } else {
+                throw new Error(data?.error || 'Error al eliminar la galleta');
+            }
+        })
+        .catch(error => {
+            if (error !== 'cancelado') {
+                console.error('Error eliminando galleta:', error);
+                Swal.fire('Error', error.message || 'No se pudo eliminar la galleta', 'error');
+            }
+        })
+        .finally(() => tabs.ocultarLoader());
 }
 
 // Obtener datos de la galleta del formulario del modal principal
@@ -811,17 +813,17 @@ function eliminarReceta(id_receta) {
 
     alertas.confirmarEliminar()
         .then(resultado => {
-            if (!resultado.isConfirmed) return ;
+            if (!resultado.isConfirmed) return;
 
             // Eliminación local para IDs temporales
             if (idBuscado.startsWith('temp_')) {
                 recetasDisponibles.splice(index, 1);
                 generarRecetasCards();
                 alertas.procesoTerminadoExito();
-                return ;
+                return;
             } else {
                 alertas.alertaRecetas('Para eliminar la receta, debe eliminar la galleta que la contiene')
-                return ;
+                return;
             }
         })
 }
@@ -1023,7 +1025,7 @@ function calcularCostoReceta() {
 function actualizarProporciones() {
     const recetaActualId = document.getElementById('receta_id').value;
     const recetaActual = recetasDisponibles.find(r => String(r.id_receta) === String(recetaActualId));
-    
+
     // Solo para recetas derivadas
     if (!recetaActual || recetaActual.es_base) return;
 
@@ -1045,7 +1047,7 @@ function actualizarProporciones() {
         if (insumoBase && inputCantidad) {
             const nuevoValor = (insumoBase.cantidad * proporcion).toFixed(2);
             inputCantidad.value = nuevoValor;
-            
+
             // Actualizar en el estado global aunque sea readonly
             if (insumosSeleccionados.has(parseInt(inputId))) {
                 insumosSeleccionados.get(parseInt(inputId)).cantidad = parseFloat(nuevoValor);
@@ -1057,11 +1059,41 @@ function actualizarProporciones() {
     calcularCostoReceta();
 }
 
+//Funcion para parsear y redondear el objeto de galleta
+function normalizarReceta(obj) {
+    const redondear = x => Math.round(Number(x) * 100) / 100;
+  
+    obj.gramos_galleta     = redondear(obj.gramos_galleta);
+    obj.precio_unitario    = redondear(obj.precio_unitario);
+    obj.proteccion_precio  = redondear(obj.proteccion_precio);
+  
+    for (let i = 0; i < obj.recetas.length; i++) {
+      const receta = obj.recetas[i];
+  
+      receta.galletas_producidas = redondear(receta.galletas_producidas);
+      receta.tiempo_horneado     = redondear(receta.tiempo_horneado);
+
+      for (let j = 0; j < receta.detalle_receta.length; j++) {
+        const det = receta.detalle_receta[j];
+        det.cantidad   = redondear(det.cantidad);
+        det.insumo_id  = redondear(det.insumo_id);
+      }
+    }
+  
+    return obj;
+  }
+
+// Funcion para redondear digitos de la receta
+function redondearDosDecimales(num) {
+    return Math.round(Number(num) * 100) / 100;
+}
+
 function calcularCostoRecetaDesdeDetalle(detalle) {
-    return detalle.reduce((total, insumo) => {
+    let costo_receta = detalle.reduce((total, insumo) => {
         const insumoDB = insumosDisponibles.find(i => i.id_insumo === insumo.insumo_id);
         return insumoDB ? total + (insumoDB.precio_unitario * insumo.cantidad) : total;
     }, 0);
+    return redondearDosDecimales(costo_receta);
 }
 
 // FUNCIONES PARA LIMPIAR CAMPOS O ERRORES

@@ -25,6 +25,7 @@
                     <th class="p-2 text-center text-[#915A17]">CLAVE</th>
                     <th class="p-2 text-center text-[#915A17]">OBSERVACIONES</th>
                     <th class="p-2 text-center text-[#915A17]">DESCUENTO</th>
+                    <th class="p-2 text-center text-[#915A17]">CLIENTE</th>
                     <th class="p-2 text-center text-[#915A17]">ACCIONES</th>
                 </tr>
             </thead>
@@ -66,13 +67,19 @@
 
                     <!-- Campo Descuento -->
                     <div>
-                        <label class="block text-[#895645] mb-1">Descuento ($)</label>
+                        <label class="block text-[#895645] mb-1">Descuento (%)</label>
                         <label name="descuento" class="block text-black mb-1"></label>
                     </div>
                 </div>
 
                 <!-- Segunda fila: clave y fecha -->
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-3 gap-4">
+                    <!-- Campo cliente -->
+                    <div>
+                        <label class="block text-[#895645] mb-1">Cliente</label>
+                        <label name="cliente" class="block text-black mb-1"></label>
+                    </div>
+
                     <!-- Campo total -->
                     <div>
                         <label class="block text-[#895645] mb-1">Total del pedido</label>

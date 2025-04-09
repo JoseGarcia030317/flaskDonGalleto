@@ -1,52 +1,41 @@
-<div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
 
-    <!-- Card Superior (Información en lugar de gráfica) -->
-    <div style="background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 80%;">
+    <!-- Card Superior (Recomendación) -->
+    <div style="background-color: #efe6dc; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 80%;">
         <div style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">Recomendación de Galleta</div>
         <p>Se recomienda la siguiente galleta debido a que las existencias son las menores en comparación con otras, además de contar con un mayor margen de utilidad:</p>
-        <!-- Lista donde se actualizarán los datos -->
         <ul style="padding-left: 20px;">
             <!-- Los datos serán insertados aquí por JavaScript -->
         </ul>
     </div>
 
-<!-- Gráficas Inferiores (Fila 1) -->
-<div style="display: flex; gap: 20px; width: 85%; justify-content: center;">
-    <!-- Productos Más Vendidos -->
-    <div id="cardProMasVendidos" style="background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <canvas id="ProMasVendidos" width="500" height="450"></canvas>
-    </div>
-    <div id="cardErrorProMasVendidos" style="display: none; background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center;">
-        Por el momento no se tiene datos.
+    <!-- Línea divisora -->
+    <hr style="width: 80%; border: none; border-top: 4px solid #a46a52; margin: 10px 0;">
+
+    <!-- Fila 1: Dos Cards -->
+    <div style="display: flex; gap: 20px; width: 80%; justify-content: center;">
+        <!-- Costo por Galleta -->
+        <div id="cardCostoGalleta" style="flex: 1; background-color: #efe6dc; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <canvas id="CostoGalleta" width="500" height="450"></canvas>
+        </div>
+
+        <!-- Productos Más Vendidos -->
+        <div id="cardProMasVendidos" style="flex: 1; background-color: #efe6dc; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <canvas id="ProMasVendidos" width="500" height="450"></canvas>
+        </div>
     </div>
 
-    <!-- Presentaciones Más Vendidas -->
-    <div id="cardPreMasVendidos" style="background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <canvas id="PreMasVendidos" width="500" height="450"></canvas>
-    </div>
-    <div id="cardErrorPreMasVendidos" style="display: none; background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center;">
-        Por el momento no se tiene datos.
-    </div>
-</div>
+    <!-- Fila 2: Dos Cards -->
+    <div style="display: flex; gap: 20px; width: 80%; justify-content: center;">
+        <!-- Presentaciones Más Vendidas -->
+        <div id="cardPreMasVendidos" style="flex: 1; background-color: #efe6dc; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <canvas id="PreMasVendidos" width="500" height="450"></canvas>
+        </div>
 
-<!-- Gráficas Inferiores (Fila 2) -->
-<div style="display: flex; gap: 20px; width: 85%; justify-content: center;">
-    <!-- Costo por Galleta -->
-    <div id="cardCostoGalleta" style="background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <canvas id="CostoGalleta" width="500" height="450"></canvas>
+        <!-- Puedes agregar otra gráfica aquí -->
+        <div id="cardOtraGrafica" style="flex: 1; background-color: #efe6dc; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <canvas id="VentasSemana" width="500" height="450"></canvas>
+        </div>
     </div>
-    <div id="cardErrorCostoGalleta" style="display: none; background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center;">
-        Por el momento no se tiene datos.
-    </div>
-
-    <!-- Ventas Diarias -->
-    <div id="cardVentasDiarias" style="background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <canvas id="ventasDiarias" width="500" height="450"></canvas>
-    </div>
-    <div id="cardErrorVentasDiarias" style="width: 550px; display: none; background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; font-size: 20px; font-weight: bold; line-height: 1.5;">
-        Por el momento no se tiene datos de la grafica "Ventas Diarias".
-    </div>
-    
-</div>
 
 </div>

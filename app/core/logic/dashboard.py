@@ -3,6 +3,7 @@ from sqlalchemy import text
 from datetime import datetime
 import json
 from utils.connectiondb import DatabaseConnector
+from datetime import date, datetime
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -101,6 +102,7 @@ def cost_per_cookie():
                 {
                     "cookie_name": row.nombre_galleta,
                     "amount": row.costo_por_galleta,
+                    "unit_price": row.precio_unitario
                 }
                 for row in rows
             ]
@@ -126,7 +128,6 @@ def profit_margin():
                     "cookie_name": row.nombre_galleta,
                     "amount": row.precio_unitario,
                     "margin":row.margen_utilidad,
-                    "date": row.fecha_caducidad,
                     "stock":row.existencias_aproximadas
                 }
                 for row in rows
@@ -136,5 +137,29 @@ def profit_margin():
             return data
     except Exception as e:
         logger.error("Error al obtener los costo por galletas: %s", e)
+        raise
+
+def weekly_sales():
+    """Obtiene el ventas de la semana por cada galleta sistema desde BD."""
+    Session = DatabaseConnector().get_session 
+    try:
+        with Session() as session:
+
+            result = session.execute(text("CALL SP_WeeklySales"))
+            rows = result.fetchall()
+            
+            data = [
+                {
+                    "date": row.fecha.strftime("%Y-%m-%d") if isinstance(row.fecha, (date, datetime)) else row.fecha,
+                    "sales": float(row.ventas),
+                    "total": row.total
+                }
+                for row in rows
+            ]
+            
+            logger.info("Se han obtenido los datos de las ventas semanales .")
+            return data
+    except Exception as e:
+        logger.error("Error al obtener las ventas semanales: %s", e)
         raise
 

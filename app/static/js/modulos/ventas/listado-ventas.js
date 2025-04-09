@@ -127,51 +127,98 @@ function cancelarVenta() {
 }
 
 function generarPdfTicket() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-      doc.setFontSize(16);
-      doc.text("TICKET DE VENTA", 14, 10);
 
-      doc.setFontSize(10);
-      doc.text("Tienda: Don Galleto", 14, 20);
-      doc.text("Dirección: Leon Gto.", 14, 25);
-      doc.text("Tel: 123-456-7890", 14, 30);
+    const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
 
-      doc.text("---------------------------------", 14, 35);
-      
-      doc.setFontSize(12);
-      doc.text("Producto", 14, 45);
-      doc.text("Precio", 100, 45);
-      doc.text("Cantidad", 140, 45);
-      doc.text("Total", 180, 45);
+      const id_venta = document.querySelector('input[name="venta_id"]').value;
 
-      const productos = [
-        { nombre: "Producto 1", precio: "$50.00", cantidad: 2, total: "$100.00" },
-        { nombre: "Producto 2", precio: "$30.00", cantidad: 1, total: "$30.00" },
-        { nombre: "Producto 3", precio: "$20.00", cantidad: 3, total: "$60.00" },
-      ];
+      api.postJSON('/ventas/get_venta_by_id', {id_venta : id_venta})
+      .then(data => {
+          if (data.id_venta) {
+              const formatoMoneda = new Intl.NumberFormat('es-MX', {
+                  style: 'currency',
+                  currency: 'MXN'
+              });
 
-      let yPosition = 50;
-      productos.forEach((producto) => {
-        doc.text(producto.nombre, 14, yPosition);
-        doc.text(producto.precio, 100, yPosition);
-        doc.text(producto.cantidad.toString(), 140, yPosition);
-        doc.text(producto.total, 180, yPosition);
-        yPosition += 10;
-      });
+              doc.setFontSize(16);
+              doc.text("TICKET DE VENTA", 14, 25);
 
-      doc.text("---------------------------------", 14, yPosition);
-      yPosition += 5;
+              doc.setFontSize(10);
+              doc.text("Clave de Venta: " + data.clave_venta, 14, 35);
+              doc.text("Fecha: " + data.fecha, 14, 40);
+              doc.text("Observaciones: " + (data.observacion || "Ninguna"), 14, 45);
 
-      doc.setFontSize(14);
-      doc.text("Total a Pagar: $190.00", 14, yPosition);
+              doc.text("---------------------------------", 14, 50);
 
-      yPosition += 10;
-      doc.text("¡Gracias por su compra!", 14, yPosition);
+              doc.setFontSize(12);
+              doc.text("Producto", 14, 55);
+              doc.text("Precio Unitario", 100, 55);
+              doc.text("Cantidad", 140, 55);
+              doc.text("Subtotal", 180, 55);
 
+              let yPosition = 60;
 
-      doc.save("ticket_de_venta.pdf");
+              // Iterar sobre los productos en detalle_venta y agregarlos al ticket
+              data.detalle_venta.forEach((producto) => {
+                  doc.text(producto.galleta_nombre, 14, yPosition);
+                  doc.text(formatoMoneda.format(producto.precio_unitario), 100, yPosition);
+                  doc.text(producto.factor_venta.toString(), 140, yPosition);
+                  doc.text(formatoMoneda.format(producto.subtotal), 180, yPosition);
+                  yPosition += 10;
+              });
+
+              doc.text("---------------------------------", 14, yPosition);
+              yPosition += 5;
+
+              const totalBase = data.detalle_venta.reduce((total, producto) => total + producto.subtotal, 0);
+              const valorDescuento = (totalBase * data.descuento) / 100;
+              const totalConDescuento = totalBase - valorDescuento;
+              const iva = totalConDescuento * 0.16;
+              const totalPagar = totalConDescuento;
+
+              const logoURL = '/static/images/LogoGalleto.png';
+              doc.addImage(logoURL, 'PNG', 160, 5, 30, 30);
+
+              doc.setFontSize(12);
+              doc.text("Total Base", 14, yPosition);
+              doc.text(formatoMoneda.format(totalBase), 180, yPosition);
+              yPosition += 10;
+
+              doc.text("Descuento (" + data.descuento + "%)", 14, yPosition);
+              doc.text(formatoMoneda.format(valorDescuento), 180, yPosition);
+              yPosition += 10;
+
+              doc.text("---------------------------------", 14, yPosition);
+              yPosition += 5;
+
+              doc.text("IVA (16%)", 14, yPosition);
+              doc.text(formatoMoneda.format(iva), 180, yPosition);
+              yPosition += 10;
+
+              doc.text("---------------------------------", 14, yPosition);
+              yPosition += 5;
+
+              doc.setFontSize(14);
+              doc.text("Total a Pagar", 14, yPosition);
+              doc.text(formatoMoneda.format(totalPagar), 180, yPosition);
+
+              yPosition += 10;
+              doc.text("¡Gracias por su compra!", 14, yPosition);
+
+              doc.save("ticket_venta_" + data.clave_venta + ".pdf");
+          } else {
+              alertas.mostrarError('Venta no encontrada');
+          }
+      })
+      .catch(error => {
+          console.error('Error:', error.message);
+          Swal.fire('Error', error.message || 'Error al imprimir ticket', 'error');
+      })
+      .finally(() => tabs.ocultarLoader());
 }
+
+
 
 window.inicializarModuloListadoVentas = inicializarModuloListadoVentas;
 window.filtrarTabla = filtrarTabla;

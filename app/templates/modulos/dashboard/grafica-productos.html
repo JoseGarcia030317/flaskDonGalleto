@@ -1,7 +1,7 @@
-<div style="display: flex; flex-direction: column; align-items: center; gap: 20px; background-color: #fff9f3;">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
 
     <!-- Card Superior (Recomendación) -->
-    <div style="background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 80%;">
+    <div style="background-color: #efe6dc; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 80%;">
         <div style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">Recomendación de Galleta</div>
         <p>Se recomienda la siguiente galleta debido a que las existencias son las menores en comparación con otras, además de contar con un mayor margen de utilidad:</p>
         <ul style="padding-left: 20px;">
@@ -10,25 +10,31 @@
     </div>
 
     <!-- Línea divisora -->
-    <hr style="width: 85%; border: none; border-top: 2px solid #ddd; margin: 20px 0;">
+    <hr style="width: 80%; border: none; border-top: 4px solid #a46a52; margin: 10px 0;">
 
-    <!-- Fila 1: Costo por Galleta -->
-    <div style="display: flex; justify-content: center; width: 85%;">
-        <div id="cardCostoGalleta" style="background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <!-- Fila 1: Dos Cards -->
+    <div style="display: flex; gap: 20px; width: 80%; justify-content: center;">
+        <!-- Costo por Galleta -->
+        <div id="cardCostoGalleta" style="flex: 1; background-color: #efe6dc; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             <canvas id="CostoGalleta" width="500" height="450"></canvas>
+        </div>
+
+        <!-- Productos Más Vendidos -->
+        <div id="cardProMasVendidos" style="flex: 1; background-color: #efe6dc; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <canvas id="ProMasVendidos" width="500" height="450"></canvas>
         </div>
     </div>
 
-    <!-- Fila 2: Más Vendidos y Presentaciones -->
-    <div style="display: flex; gap: 20px; width: 85%; justify-content: center;">
-        <!-- Productos Más Vendidos -->
-        <div id="cardProMasVendidos" style="background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <canvas id="ProMasVendidos" width="500" height="450"></canvas>
+    <!-- Fila 2: Dos Cards -->
+    <div style="display: flex; gap: 20px; width: 80%; justify-content: center;">
+        <!-- Presentaciones Más Vendidas -->
+        <div id="cardPreMasVendidos" style="flex: 1; background-color: #efe6dc; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <canvas id="PreMasVendidos" width="500" height="450"></canvas>
         </div>
 
-        <!-- Presentaciones Más Vendidas -->
-        <div id="cardPreMasVendidos" style="background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <canvas id="PreMasVendidos" width="500" height="450"></canvas>
+        <!-- Puedes agregar otra gráfica aquí -->
+        <div id="cardOtraGrafica" style="flex: 1; background-color: #efe6dc; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <canvas id="VentasSemana" width="500" height="450"></canvas>
         </div>
     </div>
 

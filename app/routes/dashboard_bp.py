@@ -52,3 +52,12 @@ def profit_margin():
         return jsonify(result)
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500
+    
+@dashboard_bp.route("/dashboard/weekly_sales", methods=['GET'])
+#@modulos_permitidos(__modulo_name__)
+def weekly_sales():
+    try:
+        result = dashboard.weekly_sales()
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500

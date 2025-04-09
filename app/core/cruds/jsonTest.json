@@ -1,54 +1,62 @@
-// crear venta
+// entrada para abrir caja
 {
-    "observacion": "Venta de prueba",
-    "descuento": 10,
-    "detalle_venta": [
+    "saldo_inicial": 1000
+}
+// respuesta
+{
+    "estatus": 200
+    "message": "Corte iniciado",
+    "saldo_inicial": 1000,
+    "id_usuario_inicio": 1,
+    "nombre_usuario": "edgar123",
+    "fecha": "2023-10-01",
+    "hora": "10:00",
+    "id_corte": 1
+}
+
+
+// respuesta de salida
+{
+    "id_corte": 1,
+}
+
+{
+    "estatus": 200,
+    "message": "Corte Finalizado",
+    "saldo_inicial": 1000,
+    "saldo_final": 1500,
+    "total_ventas": 500,
+    "total_compras": 100,
+    "saldo_final": 1400,
+    "saldo_real": 1300,
+    "saldo_diferencia": 100,
+    "id_usuario_cierre": 1,
+    "nombre_usuario": "edgar123",
+    "fecha": "2023-10-01",
+    "hora": "10:00",
+    "id_corte": 1,
+    "detalle_ventas": [
         {
-            "galleta_id": 1,
-            "tipo_venta_id": 1,
-            "factor_venta": 1.00,
-            "precio_unitario": 10.00
+            "clave_venta": "V001",
+            "monto_venta": 200,
+            "fecha_venta": "2023-10-01"
+        },
+        {
+            "clave_venta": "V002",
+            "monto_venta": 300,
+            "fecha_venta": "2023-10-01"
+        }
+    ],
+    "detalle_compras": [
+        {
+            "clave_compra": "C001",
+            "monto_compra": 200,
+            "fecha_compra": "2023-10-01"
+        },
+        {
+            "clave_compra": "C002",
+            "monto_compra": 300,
+            "fecha_compra": "2023-10-01"
         }
     ]
 }
-
-// CANCELAR VENTA
-{
-    "id_venta": 1
-}
-
-// DETALLE GET BY ID
-{
-    "id_venta": 1,
-    "clave_venta": "VENT-000001",
-    "observacion": "Venta de prueba",
-    "descuento": 10,
-    "fecha": "2024-10-30 13:00:00",
-    "estatus": 1,
-    "total_venta": 100.00,
-    "detalle_venta": [
-        {
-            "galleta_id": 1,
-            "galleta_nombre": "Galleta de prueba",
-            "tipo_venta_id": 1,
-            "tipo_venta": "Paquete kilogramo",
-            "factor_venta": 10.00,
-            "precio_unitario": 10.00,
-            "subtotal": 100.00
-        }
-    ]
-}
-
-// DETALLE GET all
-// CON FILTRADO POR FECHA
-{
-    "id_venta": 1,
-    "clave_venta": "VENT-000001",
-    "observacion": "Venta de prueba",
-    "descuento": 10,
-    "fecha": "2024-10-30 13:00:00",
-    "estatus": 1,
-    "total_venta": 100.00,
-    "id_pedido": 1
-}
-

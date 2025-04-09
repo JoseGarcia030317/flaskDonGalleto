@@ -5,12 +5,25 @@ function confirmarEliminar() {
         imageWidth: 128,
         imageHeight: 128,
         showCancelButton: true,
-        confirmButtonText: '<span class="text-lg font-medium">Aceptar</span>',
-        cancelButtonText: '<span class="text-lg font-medium">Cancelar</span>',
-        customClass: {
-            confirmButton: "flex items-center gap-3 px-6 py-3 border-2 border-[#8A5114] bg-white text-[#8A5114] rounded-full hover:bg-[#f5f5f5] transition-colors",
-            cancelButton: "flex items-center gap-3 px-6 py-3 border-2 border-[#DAA520] bg-white text-[#DAA520] rounded-full hover:bg-[#f5f5f5] transition-colors"
-        }
+        confirmButtonText: 'Aceptar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#3C1D0C',
+        cancelButtonColor: '#6c757d'
+    });
+
+}
+
+function rechazarPedido() {
+    return Swal.fire({
+        title: "¿Estás seguro que deseas rechazar el pedido?",
+        imageUrl: "../../../static/images/warning.png",
+        imageWidth: 128,
+        imageHeight: 128,
+        showCancelButton: true,
+        confirmButtonText: 'Aceptar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#3C1D0C',
+        cancelButtonColor: '#6c757d'
     });
 
 }
@@ -51,6 +64,14 @@ function confirmarYRegistrarVenta() {
         showCancelButton: true,
         confirmButtonText: 'Registrar venta',
         cancelButtonText: 'Cancelar'
+      title: '¿Confirmas la venta?',
+      text: 'Estas por generar una nueva venta',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Registrar venta',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#3C1D0C',
+      cancelButtonColor: '#6c757d'
     });
 }
 
@@ -138,16 +159,6 @@ function alertaFaltaDeInsumos(texto) {
     })
 }
 
-function confirmarProcesoFinalizar() {
-    Swal.fire({
-        position: 'center',
-        icon: "question",
-        title: "¿Está seguro de realizar la acción?",
-        showConfirmButton: true,
-        showCancelButton: true
-    });
-}
-
 function corteCajaInicio() {
     return Swal.fire({ // ¡Debe retornar directamente la promesa!
         title: 'Corte de caja inicial requerido',
@@ -161,6 +172,8 @@ function corteCajaInicio() {
         showCancelButton: true,
         confirmButtonText: 'Iniciar turno',
         cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#3C1D0C',
+        cancelButtonColor: '#6c757d',
         inputValidator: (value) => {
             if (!value) return 'Debe ingresar un monto inicial';
             if (parseFloat(value) <= 0) return 'El monto debe ser mayor a cero!';
@@ -182,5 +195,7 @@ export const alertas = {
     confirmarProcesoFinalizar: () => confirmarProcesoFinalizar(),
     corteCajaInicio: () => corteCajaInicio(),
     confirmarYRegistrarVenta: () => confirmarYRegistrarVenta(),
+    corteCajaInicio : () => corteCajaInicio(),
+    confirmarYRegistrarVenta : () => confirmarYRegistrarVenta(),
     alertaFaltaDeInsumos: (mensaje) => alertaFaltaDeInsumos(mensaje)
 }

@@ -210,10 +210,10 @@ function solicitarProduccion(id_receta) {
     tabs.mostrarLoader();
     api.postJSON('/horneado/solicitar_horneado', { receta_id: id_receta })
         .then(data => {
-            if (data.status === 200 && data.id_horneado) {
+            if (data.id_horneado) {
                 alertas.procesoTerminadoExito();
             }
-            if (data.status === 400 && data.insumos_faltantes) {
+            if (data.estatus === 400) {
                 let mensaje = '';
                 data.insumos_faltantes.forEach(insumo => {
                     mensaje += insumo.nombre + '<br>'
@@ -223,8 +223,7 @@ function solicitarProduccion(id_receta) {
             cerrarModal();
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            alertas.alertaRecetas(error.message || 'Error al solicitar producción');
+            alertas.alertaRecetas('Error al solicitar producción');
             cerrarModal();
         })
         .finally(() => tabs.ocultarLoader());

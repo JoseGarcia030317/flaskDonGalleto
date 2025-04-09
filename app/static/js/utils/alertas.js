@@ -123,6 +123,8 @@ function corteCajaInicio() {
         showCancelButton: true,
         confirmButtonText: 'Iniciar turno',
         cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#3C1D0C',
+        cancelButtonColor: '#6c757d',
         inputValidator: (value) => {
             if (!value) return 'Debe ingresar un monto inicial';
             if (parseFloat(value) <= 0) return 'El monto debe ser mayor a cero!';

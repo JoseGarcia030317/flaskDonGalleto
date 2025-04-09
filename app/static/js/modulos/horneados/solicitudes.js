@@ -69,16 +69,17 @@ function aceptarHorneado(id_horneado){
     tabs.mostrarLoader();
     api.postJSON('horneado/preparar_horneado', {id_horneado: id_horneado})
     .then(respuesta => {
-        if(respuesta.status === 404){
-            alertas.alertaWarning(respuesta.message);
-        } else if(respuesta.status === 200){
+        if(respuesta.id_horneado){
             alertas.procesoTerminadoExito();
             cargarModuloSolicitudes();
+        } else if(respuesta.estatus === 404 || respuesta.estatus === 400){
+            alertas.alertaWarning(respuesta.message);
+        } else {
+            alertas.procesoTerminadoSinExito();
         }
     })
     .catch(error => {
-        console.error('Error:', error.message);
-        Swal.fire('Error', error.message || 'Error al finalizar horneado', 'error');
+        Swal.fire('Error', 'Error al finalizar horneado', 'error');
     })
     .finally(() => tabs.ocultarLoader());
 }
@@ -87,14 +88,17 @@ function rechazarHorneado(id_horneado){
     tabs.mostrarLoader();
     api.postJSON('horneado/rechazar_horneado', {id_horneado: id_horneado})
     .then(respuesta => {
-        if(respuesta.status === 200){
+        if(respuesta.id_horneado){
             alertas.procesoTerminadoExito();
             cargarModuloSolicitudes();
+        } else if (respuesta.estatus === 404){
+            alertas.alertaWarning(respuesta.message);
+        } else {
+            alertas.procesoTerminadoSinExito();
         }
     })
     .catch(error => {
-        console.error('Error:', error.message);
-        Swal.fire('Error', error.message || 'Error al finalizar horneado', 'error');
+        Swal.fire('Error', 'Error al finalizar horneado', 'error');
     })
     .finally(() => tabs.ocultarLoader());
 }

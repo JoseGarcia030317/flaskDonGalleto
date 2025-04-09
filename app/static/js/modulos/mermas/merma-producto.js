@@ -125,11 +125,41 @@ function cargarSelectProductos() {
     select.innerHTML = '<option value="">Seleccione un producto</option>';
     productosDisponibles.forEach(producto => {
         select.innerHTML += `
-        <option value="${producto.id_galleta}">
+        <option value="${producto.id_galleta}" data-existencias="${producto.existencias}">
             ${producto.nombre_galleta}
         </option>
         `;
     });
+}
+
+// Funcion para actualizar el max del campo de la cantidad de merma de producto
+// Funcion para actualizar el max del campo de la cantidad de merma de producto
+function cambiarMaxSelectProducto() {
+    const select = document.getElementById('cmb_producto');
+    const inputCantidad = document.querySelector('input[name="cantidad"]');
+    const opcionSeleccionada = select.options[select.selectedIndex];
+    
+    if (opcionSeleccionada.value) {
+        inputCantidad.max = Number(opcionSeleccionada.dataset.existencias);
+    }
+}
+
+// Funcion para validar la cantidad tecleada en el campo de cantidad
+function validarCantidadInput(event) {
+    const input = event.target;
+    const maxPermitido = Number(input.max);
+    let valorActual = Number(input.value);
+
+    // Validar si es número válido
+    if (isNaN(valorActual)) {
+        input.value = '';
+        return;
+    }
+
+    // Corregir si excede el máximo
+    if (valorActual > maxPermitido) {
+        input.value = maxPermitido;
+    }
 }
 
 // Funcion para cargar las mermas de productos al iniciar la aplicacion
@@ -244,7 +274,10 @@ function limpiarFormulario() {
     const cmb_motivo_merma = document.getElementById('cmb_motivo_merma');
     cmb_motivo_merma.value = '';
 
-    document.querySelector('input[name="cantidad"]').value = '';
+    const cantidad = document.querySelector('input[name="cantidad"]');
+    cantidad.value = '';
+    cantidad.max = Number(0);
+
     document.querySelector('textarea[name="observaciones"]').value = '';
 
     limpiarErrores();
@@ -286,3 +319,5 @@ window.eliminarMermaProducto = eliminarMermaProducto;
 window.abrirModal = abrirModal;
 window.cerrarModal = cerrarModal;
 window.filtrarTabla = filtrarTabla;
+window.cambiarMaxSelectProducto = cambiarMaxSelectProducto;
+window.validarCantidadInput = validarCantidadInput;

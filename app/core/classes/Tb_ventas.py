@@ -25,7 +25,7 @@ class Venta(Base):
         self.observacion = observacion 
         self.estatus = estatus 
         self.descuento = descuento if descuento else 0
-        self.id_pedido = id_pedido
+        self.id_pedido = id_pedido if id_pedido else 0
 
     def __repr__(self):
         return f"<Venta(id_venta={self.id_venta}, clave_venta={self.clave_venta}, fecha={self.fecha}, observacion={self.observacion}, estatus={self.estatus}, descuento={self.descuento}, id_pedido={self.id_pedido})>"

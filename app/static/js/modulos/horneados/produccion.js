@@ -53,7 +53,11 @@ function generarCards() {
                 container.appendChild(card);
             });
         } else {
-            container.innerHTML = '<p>No hay horneados pendientes.</p>'
+            container.innerHTML = `
+                    <div class="flex justify-center items-center h-full">
+                        <p class="text-gray-500 font-medium text-xl">No hay horneados pendientes</p>
+                    </div>
+                `;
         }
     });
 }

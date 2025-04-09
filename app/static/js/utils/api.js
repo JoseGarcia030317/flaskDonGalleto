@@ -1,3 +1,5 @@
+import { tabs } from "./tabs.js";
+
 // Función para manejar errores y respuestas
 const handleResponse = async (response) => {
     // Manejar error 403 (Forbidden)
@@ -30,22 +32,26 @@ const getJSONHeaders = () => ({
 
 // Función genérica para peticiones JSON
 const fetchJSON = (url, method = 'GET', data = null) => {
+    tabs.bloquearRadios();
     return fetch(url, {
         method: method.toUpperCase(),
         headers: getJSONHeaders(),
         body: data ? JSON.stringify(data) : null,
     })
     .then(handleResponse)
-    .then(response => response.json());
+    .then(response => response.json())
+    .finally(() => tabs.desbloquearRadios());
 };
 
 // Función genérica para peticiones HTML
 const fetchHTML = (url) => {
+    tabs.bloquearRadios();
     return fetch(url, {
         headers: { 'Accept': 'text/html' }
     })
     .then(handleResponse)
-    .then(response => response.text());
+    .then(response => response.text())
+    .finally(() => tabs.desbloquearRadios());
 };
 
 // Exportar variable api

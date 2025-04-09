@@ -294,6 +294,13 @@ function cargarGalletas() {
                 limpiarFormularioReceta();
                 document.getElementById('btn-agregar').disabled = false;
             }
+            if (!data) {
+                container.innerHTML = `
+                    <div class="flex justify-center items-center min-h-screen">
+                        <p class="text-gray-500 font-medium text-xl">No hay galletas registradas</p>
+                    </div>
+                `;
+            }
         })
         .catch(error => {
             console.error('Error:', error.message);
@@ -845,8 +852,6 @@ async function cargarRecetaEnFormulario(receta) {
                 document.querySelector('input[name="galletas_producidas"]').setAttribute('oninput', 'actualizarProporciones()');
             }
 
-
-            // Cargar INSUMOS con referencia DIRECTA
             receta.detalle_receta.forEach(insumo => {
                 const insumoCompleto = insumosDisponibles.find(i => i.id_insumo === insumo.insumo_id);
 
@@ -864,7 +869,7 @@ async function cargarRecetaEnFormulario(receta) {
                             class="w-24 p-1 border border-[#895645] rounded-full text-center"
                             ${!receta.es_base ? 'readonly' : ''}
                             oninput="actualizarCantidadInsumo(${insumo.insumo_id}, this.value); limpiarErroresInsumo(this)">
-                        <span class="w-12 text-sm">${insumoCompleto.unidad.simbolo}</span>
+                        <span class="w-12 text-sm">${insumoCompleto.simbolo}</span>
                         ${receta.es_base ? `
                         <button onclick="eliminarInsumo(${insumo.insumo_id})" 
                                 class="text-red-500 hover:text-red-700 cursor-pointer">
@@ -908,7 +913,8 @@ function filtrarInsumos(termino) {
             <div class="p-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between border-b"
                 onclick="seleccionarInsumo(${insumo.id_insumo})">
                 <span>${insumo.nombre}</span>
-                <span class="text-sm text-gray-500">(${insumo.unidad.simbolo})</span>
+                <span>$${insumo.precio_unitario.toFixed(2)}</span>
+                <span class="text-sm text-gray-500">(${insumo.simbolo})</span>
             </div>
         `).join('');
         sugerencias.classList.remove('hidden');
@@ -943,7 +949,7 @@ function seleccionarInsumo(id_insumo, esProgramatico = false) {
                 class="w-24 p-1 border border-[#895645] rounded-full text-center"
                 required
                 oninput="actualizarCantidadInsumo(${id_insumo}, this.value); limpiarErroresInsumo(this)">
-            <span class="w-12 text-sm">${insumo.unidad.simbolo}</span>
+            <span class="w-12 text-sm">${insumo.simbolo}</span>
             <span class="error-insumo text-red-500 text-sm hidden ml-2"></span>
             <button onclick="eliminarInsumo(${id_insumo})" 
                     class="text-red-500 hover:text-red-700 cursor-pointer">

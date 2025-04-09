@@ -34,7 +34,7 @@
                 <!-- Formulario -->
                 <form id="galletaForm" class="space-y-4">
                     <!-- Campo para id de la galleta -->
-                    <input type="number" name="galleta_id" value="0">
+                    <input type="number" name="galleta_id" value="0" hidden>
 
                     <!-- Primer fila: nombre de la galleta y dias de vida en anaquel -->
                     <div class="grid grid-cols-3 gap-4">
@@ -76,7 +76,7 @@
                         <!-- Precio sugerido -->
                         <div>
                             <label class="block text-[#895645] bm-1">Precio de venta sugerido</label>
-                            <input type="text" name="precio_sugerido"
+                            <input type="text" name="precio_sugerido" value="0.00"
                                 class="w-full p-2 border border-[#895645] rounded-full" disabled>
                             <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
                         </div>
@@ -139,7 +139,7 @@
                 <!-- Formulario de receta -->
                 <form id="recetaForm" class="space-y-4">
                     <!-- campo para id de la receta -->
-                    <input type="text" id="receta_id" value="0">
+                    <input type="text" id="receta_id" value="0" hidden>
 
                     <!-- Primera fila: nombre de la receta -->
                     <div class="grid grid-cols-1 gap-4 pl-2 pr-2">

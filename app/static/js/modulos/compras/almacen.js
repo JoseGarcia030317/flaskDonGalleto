@@ -31,7 +31,11 @@ function cargarAlmacen() {
                     `;
                 });
             } else {
-                tbody.innerHTML = '<p>No hay compras pendientes.</p>'
+                tbody.innerHTML = `
+                    <div class="flex justify-center items-center h-full">
+                        <p class="text-gray-500 font-medium text-xl">No hay compras pendientes</p>
+                    </div>
+                `;
             }
             })
             .catch(error => {

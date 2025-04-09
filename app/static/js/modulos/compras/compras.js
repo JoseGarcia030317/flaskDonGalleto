@@ -124,7 +124,7 @@ function abrirVerCompra(id_compra){
                         <td class="p-3 text-[#301e1a] text-center">${detalle.insumo}</td>
                         <td class="p-3 text-[#301e1a] text-center">${detalle.presentacion}</td>
                         <td class="p-3 text-[#301e1a] text-center">${detalle.cantidad}</td>
-                        <td class="p-3 text-[#301e1a] text-center">${detalle.precio_unitario}</td>
+                        <td class="p-3 text-[#301e1a] text-center">$ ${detalle.precio_unitario}</td>
                     </tr>
                     `;
                 });

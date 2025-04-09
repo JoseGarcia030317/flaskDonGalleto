@@ -71,8 +71,7 @@ function buscarGalletaPorId(id_galleta) {
             }
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar la galleta', 'error');
+            Swal.fire('Error', 'Error al cargar la galleta', 'error');
         })
         .finally(() => tabs.ocultarLoader());
 }
@@ -165,8 +164,7 @@ async function consultarInsumos() {
             if (data) insumosDisponibles = data;
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar insumos', 'error');
+            Swal.fire('Error', 'Error al cargar insumos', 'error');
         });
 }
 
@@ -174,10 +172,9 @@ function agregarHorneado(id_receta){
     tabs.mostrarLoader();
     api.postJSON('/horneado/crear_horneado', {receta_id : id_receta})
             .then(data => {
-                if (data.status === 400) {
+                if (data.estatus === 400) {
                     let mensaje = '';
                     data.insumos_faltantes.forEach(insumo => {
-                        console.log(insumo);
                         mensaje += insumo.nombre + '<br>'
                     });
                     alertas.alertaFaltaDeInsumos(mensaje);

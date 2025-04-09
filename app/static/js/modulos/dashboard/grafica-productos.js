@@ -1,13 +1,13 @@
 import { api } from '../../utils/api.js';
 
 function cargarGraficasDashboard(){
-    GraficaVentasDiarias();
     GraficaProMasVendidos();
     GraficaPreMasVendidos();
     GraficaCostoGalleta();
     GalletaRecomendada();
+    GraficaVentasSemana();
 }
-
+/* 
 function GraficaVentasDiarias(){
     api.getJSON('/dashboard/get_daily_sales')
     .then(data => {
@@ -69,7 +69,7 @@ function GraficaVentasDiarias(){
         toggleCardDisplay('cardVentasDiarias', 'cardErrorVentasDiarias', true);
     });
 }
-
+*/
 function GraficaProMasVendidos() {
     api.getJSON('/dashboard/best_selling_product')
         .then(data => {
@@ -80,20 +80,19 @@ function GraficaProMasVendidos() {
                 const amounts = data.map(item => item.amount);
 
                 const backgroundColors = [
-                    '#e4d4c4', 
-                    '#d2b79f', 
-                    '#bf9578', 
+                    '#bf9578',
                     '#b27c5d', 
-                    '#a46a52',
-
-                  ];
+                     '#a46a52', 
+                     '#895645', 
+                     '#6f473d', 
+                 ];
                   
                   const borderColors = [
-                    '#e4d4c4', 
-                    '#d2b79f', 
-                    '#bf9578', 
+                    '#bf9578',
                     '#b27c5d', 
-                    '#a46a52',
+                     '#a46a52', 
+                     '#895645', 
+                     '#6f473d', 
                   ];
 
                 const ctx = document.getElementById('PreMasVendidos');
@@ -109,7 +108,7 @@ function GraficaProMasVendidos() {
                         labels: labels,
                         datasets: [{
                             label: 'Productos Más Vendidos',
-                            data: quantities,
+                            data: amounts,
                             backgroundColor: backgroundColors,
                             borderColor: borderColors,
                             borderWidth: 1
@@ -119,30 +118,48 @@ function GraficaProMasVendidos() {
                         responsive: true,
                         scales: {
                             y: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Monto en MXN'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toLocaleString('en-US', {
+                                            style: 'currency',
+                                            currency: 'USD'
+                                        });
+                                    }
+                                }
                             }
                         },
                         plugins: {
                             tooltip: {
-                              callbacks: {
-                                // Título del tooltip (normalmente el nombre del producto)
-                                title: function(context) {
-                                  // El "label" por defecto es context[0].label
-                                  return context[0].label;
-                                },
-                                // Contenido de cada ítem del tooltip
-                                label: function(context) {
-                                  // index de la barra actual
-                                  const index = context.dataIndex;
-                                  // amounts[index] = monto que deseas mostrar
-                                  const value = amounts[index].toLocaleString('en-US', {
-                                    style: 'currency',
-                                    currency: 'USD'
-                                  });
-                                  return `Monto Vendido: $ ${value}`;
+                                callbacks: {
+                                    // Título: nombre del producto
+                                    title: function(context) {
+                                        return context[0].label;
+                                    },
+                                    // Cuerpo del tooltip con varios datos
+                                    label: function(context) {
+                                        const index = context.dataIndex;
+                        
+                                        const value = context.parsed.y.toLocaleString('en-US', {
+                                            style: 'currency',
+                                            currency: 'USD'
+                                        });
+                        
+                                        const qty = quantities[index];
+                        
+                                        return [
+                                            `${context.dataset.label}: ${value}`,
+                                            `Cantidad: ${qty}`,
+                                        ];
+                                    }
                                 }
-                              }
-                        }}
+                            }
+                        }
+                        
                     }
                 });
             } else {
@@ -166,20 +183,20 @@ function GraficaPreMasVendidos(){
             const amounts = data.map(item => item.amount);
 
             const backgroundColors = [
-                '#e4d4c4', 
-                '#d2b79f', 
-                '#bf9578', 
+                '#bf9578',
                 '#b27c5d', 
-                '#a46a52',
+                '#a46a52', 
+                '#895645', 
+                '#6f473d', 
 
               ];
               
               const borderColors = [
-                '#e4d4c4', 
-                '#d2b79f', 
-                '#bf9578', 
+                '#bf9578',
                 '#b27c5d', 
-                '#a46a52',
+                '#a46a52', 
+                '#895645', 
+                '#6f473d', 
               ];
 
             const ctx = document.getElementById('ProMasVendidos');
@@ -195,91 +212,6 @@ function GraficaPreMasVendidos(){
                     labels: labels,
                     datasets: [{
                         label: 'Presentaciones Más Vendidas',
-                        data: quantities,
-                        backgroundColor: backgroundColors,
-                        borderColor: borderColors,
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    },
-                    plugins: {
-                        tooltip: {
-                          callbacks: {
-                            title: function(context) {
-                              return context[0].label;
-                            },
-                            label: function(context) {
-                              const index = context.dataIndex;
-                              const value = amounts[index].toLocaleString('en-US', {
-                                style: 'currency',
-                                currency: 'USD'
-                              });
-
-                              const value_quantities = quantities_cookies[index];
-                              
-                              return [
-                                `Monto Vendido: ${value}`,
-                                `Cantidad Galletas por presentación: ${value_quantities}`
-                              ];
-                            }
-                          }
-                        }}
-                }
-            });
-        } else {
-            console.error("Error: Datos recibidos no válidos.");
-        }
-    })
-    .catch(error => {
-        console.error("Error al obtener los datos del API:", error);
-    });
-};
-
-
-function GraficaCostoGalleta(){
-    api.getJSON('/dashboard/cost_per_cookie')
-    .then(data => {
-        if (data && Array.isArray(data)) {
-
-            const labels = data.map(item => item.cookie_name);
-            const amounts = data.map(item => item.amount);
-
-            const backgroundColors = [
-                '#e4d4c4', 
-                '#d2b79f', 
-                '#bf9578', 
-                '#b27c5d', 
-                '#a46a52',
-
-              ];
-              
-              const borderColors = [
-                '#e4d4c4', 
-                '#d2b79f', 
-                '#bf9578', 
-                '#b27c5d', 
-                '#a46a52',
-              ];
-
-            const ctx = document.getElementById('CostoGalleta');
-
-            if (!ctx) {
-                console.error("Error: No se encontró el elemento con id 'CostoGalleta'");
-                return;
-            }
-
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Costo Galletas',
                         data: amounts,
                         backgroundColor: backgroundColors,
                         borderColor: borderColors,
@@ -290,28 +222,47 @@ function GraficaCostoGalleta(){
                     responsive: true,
                     scales: {
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Monto en MXN'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString('en-US', {
+                                        style: 'currency',
+                                        currency: 'USD'
+                                    });
+                                }
+                            }
                         }
                     },
                     plugins: {
                         tooltip: {
-                          callbacks: {
-                            title: function(context) {
-                              return context[0].label;
-                            },
-                            label: function(context) {
-                              const index = context.dataIndex;
-                              const value = amounts[index].toLocaleString('en-US', {
-                                style: 'currency',
-                                currency: 'USD'
-                              });
-                              
-                              return [
-                                `Monto Galleta: ${value}`
-                              ];
+                            callbacks: {
+                                title: function (context) {
+                                    return context[0].label;
+                                },
+                                label: function (context) {
+                                    const index = context.dataIndex;
+                                    const value = context.parsed.y.toLocaleString('en-US', {
+                                        style: 'currency',
+                                        currency: 'USD'
+                                    });
+                    
+                                    const qty = quantities[index];
+                                    const qtyCookies = quantities_cookies[index];
+                    
+                                    return [
+                                        `${context.dataset.label}: ${value}`,
+                                        `Cantidad: ${qty}`,
+                                        `Cantidad Galletas: ${qtyCookies}`
+                                    ];
+                                }
                             }
-                          }
-                        }}
+                        }
+                    }
+                    
                 }
             });
         } else {
@@ -323,48 +274,241 @@ function GraficaCostoGalleta(){
     });
 };
 
+function GraficaCostoGalleta() {
+    api.getJSON('/dashboard/cost_per_cookie')
+        .then(data => {
+            if (data && Array.isArray(data)) {
+
+                const labels = data.map(item => item.cookie_name);
+                const amounts = data.map(item => item.amount);
+                const unit_price = data.map(item => item.unit_price )
+
+
+                const backgroundColors = [
+                   '#bf9578',
+                    '#b27c5d', 
+                    '#a46a52', 
+                    '#895645', 
+                    '#6f473d', 
+                ];
+
+                const ctx = document.getElementById('CostoGalleta');
+
+                if (!ctx) {
+                    console.error("Error: No se encontró el elemento con id 'CostoGalleta'");
+                    return;
+                }
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                type: 'bar',
+                                label: 'Costo por Galleta',
+                                data: amounts,
+                                backgroundColor: backgroundColors,
+                                borderColor: backgroundColors,
+                                borderWidth: 1
+                            },
+                            {
+                                type: 'line',
+                                label: 'Precio Unitario Galleta',
+                                data: unit_price,
+                                borderColor: '#4b2e2e',
+                                backgroundColor: 'rgba(0,0,0,0)',
+                                tension: 0.3,
+                                fill: false,
+                                pointBorderColor:'#5b3b33' ,
+                                pointBackgroundColor: '#5b3b33',
+                                pointRadius: 5
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Monto en MXN'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toLocaleString('en-US', {
+                                            style: 'currency',
+                                            currency: 'USD'
+                                        });
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    title: function (context) {
+                                        return context[0].label;
+                                    },
+                                    label: function (context) {
+                                        const value = context.parsed.y.toLocaleString('en-US', {
+                                            style: 'currency',
+                                            currency: 'USD'
+                                        });
+                                        return `${context.dataset.label}: ${value}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                console.error("Error: Datos recibidos no válidos.");
+            }
+        })
+        .catch(error => {
+            console.error("Error al obtener los datos del API:", error);
+        });
+};
+
+function GraficaVentasSemana() {
+
+    api.getJSON('/dashboard/weekly_sales')
+        .then(data => {
+            if (data && Array.isArray(data)) { 
+            const labels = data.map(item => item.date); 
+            const salesData = data.map(item => item.sales); 
+            const total = Number(data[0].total); 
+
+            const formatoTotal = total.toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            });
+
+            const ctx = document.getElementById('VentasSemana');
+
+            new Chart(ctx, {
+                type: 'line', 
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Ventas de la Semana',
+                        data: salesData,
+                        borderColor: '#895645',  
+                        backgroundColor: '#bf9578', 
+                        fill: true,  
+                        tension: 0.3,  
+                        pointBorderColor:'#5b3b33' ,
+                        pointBackgroundColor: '#5b3b33',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Ventas en MXN'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();  
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Fechas'
+                            },
+                            ticks: {
+                                autoSkip: true, 
+                                maxRotation: 45, 
+                                minRotation: 45
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    return context[0].label;
+                                },
+                                label: function (context) {
+                                    const value = context.parsed.y.toLocaleString('en-US', {
+                                        style: 'currency',
+                                        currency: 'USD'
+                                    });
+                                    return `${context.dataset.label}: ${value}`;
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: `Total Ventas: ${formatoTotal}`,
+                            font: {
+                                size: 16
+                            }
+                        },
+                    }
+                }
+            });
+
+            } else {
+                console.error("Error: Datos recibidos no válidos.");
+            }
+        })
+        .catch(error => {
+            console.error("Error al obtener los datos del API:", error);
+        });
+   
+}
+
 
 function GalletaRecomendada() {
     api.getJSON('/dashboard/profit_margin')
     .then(data => {
+        let contenidoHTML = `
+            <li><strong>Galleta recomendada:</strong> Sin datos</li>
+            <li><strong>Margen de utilidad:</strong> Sin datos</li>
+            <li><strong>Existencias actuales:</strong> Sin datos</li>
+        `;
+
         if (data && Array.isArray(data) && data.length > 0) {
             const galleta = data[0];
+            const nombreGalleta = galleta.cookie_name || 'Sin datos';
+            const margenUtilidad = galleta.margin != null 
+            ? Number(galleta.margin).toFixed(2) 
+            : 'Sin datos';
+            const existencias = galleta.stock ?? 'Sin datos';
 
-            const nombreGalleta = galleta.cookie_name;
-            const margenUtilidad = galleta.margin;
-            const existencias = galleta.stock;
-
-            // Actualizamos el contenido del HTML con los datos
-            document.querySelector('ul').innerHTML = `
+            contenidoHTML = `
                 <li><strong>Galleta recomendada:</strong> ${nombreGalleta}</li>
-                <li><strong>Margen de utilidad:</strong> ${margenUtilidad}%</li>
+                <li><strong>Margen de utilidad:</strong> ${margenUtilidad} %</li>
                 <li><strong>Existencias actuales:</strong> ${existencias}</li>
             `;
-        } else {
-            console.error("Error: Datos recibidos no válidos o vacíos.");
         }
+
+        document.querySelector('ul').innerHTML = contenidoHTML;
     })
     .catch(error => {
         console.error("Error al obtener los datos del API:", error);
+        document.querySelector('ul').innerHTML = `
+            <li><strong>Galleta recomendada:</strong> Sin datos</li>
+            <li><strong>Margen de utilidad:</strong> Sin datos</li>
+            <li><strong>Existencias actuales:</strong> Sin datos</li>
+        `;
     });
-};
+}
 
-
-function toggleCardDisplay(cardId, cardErrorId, showError) {
-    const card = document.getElementById(cardId);
-    const cardError = document.getElementById(cardErrorId);
-    if (showError) {
-        card.style.display = 'none';
-        cardError.style.display = 'block';
-    } else {
-        card.style.display = 'block';
-        cardError.style.display = 'none';
-    }
-};
 
 window.cargarGraficasDashboard = cargarGraficasDashboard;
-window.GraficaVentasDiarias = GraficaVentasDiarias;
+//window.GraficaVentasDiarias = GraficaVentasDiarias;
 window.GraficaProMasVendidos = GraficaProMasVendidos;
 window.GraficaPreMasVendidos = GraficaPreMasVendidos;
 window.GraficaCostoGalleta = GraficaCostoGalleta;
 window.GalletaRecomendada = GalletaRecomendada;
+window.GraficaVentasSemana = GraficaVentasSemana;

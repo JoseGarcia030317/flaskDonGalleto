@@ -221,7 +221,7 @@ function buscarInsumoId(id_insumo) {
             abrirModal('editar');
             const select = document.getElementById('cmb_unidad');
             select.innerHTML = `<option value="${data.unidad.id_unidad}">
-                                  ${data.unidad.nombre} (${data.simbolo})
+                                  ${data.unidad.nombre} (${data.unidad.simbolo})
                                </option>`;
 
             document.getElementById('insumo_id').value = data.id_insumo;

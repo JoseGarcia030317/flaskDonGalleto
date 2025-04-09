@@ -327,6 +327,8 @@ class GalletaCRUD:
                         else_=-InventarioGalleta.cantidad
                     )
                 ).label("existencias")
+            ).filter(
+                InventarioGalleta.estatus == 1
             ).group_by(InventarioGalleta.galleta_id).subquery()
 
             # Consulta principal: se hace outer join para incluir todas las galletas activas

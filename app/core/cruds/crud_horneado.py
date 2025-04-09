@@ -18,7 +18,6 @@ class HorneadoCRUD:
     __STATUS_SOLICITADO__ = 4 #se encuentra en espera de ser aceptado (iniciar) o rechazado
     __STATUS_RECHAZADO__ = 5  #no genera ningun impacto en insumos
     
-
     def get_all_horneados(self, id_horneado:int = None, state:int = None):
         """
         Obtiene todos los horneados activos junto con su receta e insumos asociados.
@@ -115,6 +114,12 @@ class HorneadoCRUD:
             with Session() as session:
                 # Se obtiene el horneado por su ID
                 horneado = session.query(Horneado).filter(Horneado.id_horneado == id_horneado).first()
+                if horneado is None:
+                    return {
+                        "estatus": 404,
+                        "message": "Horneado no encontrado"
+                    }
+
                 if horneado:
                     # Se cambia el estado a rechazado
                     horneado.estatus = self.__STATUS_RECHAZADO__
@@ -135,13 +140,18 @@ class HorneadoCRUD:
             with Session() as session:
                 # Se obtiene el horneado por su ID
                 horneado = session.query(Horneado).filter(Horneado.id_horneado == id_horneado).first()
-                
+                if horneado is None:
+                    return {
+                        "estatus": 404,
+                        "message": "Horneado no encontrado"
+                    }
+
                 # Se valida si la receta esta completa para ejecutarse
                 explosion_insumos = ExplosionInsumos(horneado.receta_id)
                 insumos_requeridos_no_validos = explosion_insumos.validar_existencias()
                 if insumos_requeridos_no_validos:
                     return {
-                        "status": 400,
+                        "estatus": 400,
                         "message": "No hay suficientes insumos para el horneado",
                         "insumos_requeridos_no_validos": insumos_requeridos_no_validos
                     }
@@ -169,6 +179,12 @@ class HorneadoCRUD:
             with Session() as session:
                 # Se obtiene el horneado por su ID
                 horneado = session.query(Horneado).filter(Horneado.id_horneado == id_horneado).first()
+                if horneado is None:
+                    return {
+                        "estatus": 404,
+                        "message": "Horneado no encontrado"
+                    }
+
                 if horneado:
                     # Se aumenta las existencias de las galletas producidas
                     explosion_insumos = ExplosionInsumos(horneado.receta_id)
@@ -205,7 +221,7 @@ class HorneadoCRUD:
                 if insumos_requeridos_no_validos:
                     session.rollback()
                     return {
-                        "status": 400,
+                        "estatus": 400,
                         "message": "No hay suficientes insumos para el horneado",
                         "insumos_requeridos_no_validos": insumos_requeridos_no_validos
                     }
@@ -217,6 +233,36 @@ class HorneadoCRUD:
                 return {"id_horneado": nuevo_horneado.id_horneado, "estatus": "Proceso"}
         except Exception as e:
             logger.error("Error al crear el horneado: %s", e)
+            raise e
+
+    def cancelar_horneado(self, id_horneado: int) -> dict:
+        """
+        Cancela un horneado. Solo revierte el consumo de insumos y cambia el estatus a cancelado.
+        """
+        try:
+            Session = DatabaseConnector().get_session
+            with Session() as session:
+                # Se obtiene el horneado por su ID
+                horneado = session.query(Horneado).filter(Horneado.id_horneado == id_horneado).first()
+                if horneado is None:
+                    return {
+                        "estatus": 404,
+                        "message": "Horneado no encontrado"
+                    }
+
+                if horneado:
+                    # Se cancela el descuento de las existencias de los insumos requeridos
+                    explosion_insumos = ExplosionInsumos(horneado.receta_id)
+                    explosion_insumos.cancelar_descuento_existencias_insumos(id_horneado, session)
+
+                    # Se cambia el estado a cancelado
+                    horneado.estatus = self.__STATUS_CANCELADO__
+                    session.commit()
+                    return {"id_horneado": horneado.id_horneado, "estatus": "Cancelado"}
+                else:
+                    return False
+        except Exception as e:
+            logger.error("Error al cancelar el horneado: %s", e)
             raise e
 
 class ExplosionInsumos:

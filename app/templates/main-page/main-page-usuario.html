@@ -8,7 +8,7 @@
     {% for modulo in modulos %}
     <label class="cursor-pointer mb-6">
       <input type="radio" name="menu-item-bar" class="peer hidden" onclick="{{ modulo.funcion }}" {% if loop.first
-        %}checked{% endif %}>
+        %}checked{% endif %} data-index="{{ loop.index0 }}">
       <a class="block px-6 py-1 text-nav text-[#3C1D0C] bg-transparent 
                   hover:bg-[rgba(145,90,23,0.15)] hover:text-black
                   peer-checked:bg-[rgba(145,90,23,0.15)] peer-checked:text-black">
@@ -38,10 +38,23 @@
 {% endfor %}
 <script>
   window.addEventListener('DOMContentLoaded', () => {
-    const firstRadio = document.querySelector('input[name="menu-item-bar"]');
-    if (firstRadio) {
-      firstRadio.click();
+    const radios = Array.from(document.querySelectorAll('input[name="menu-item-bar"]'));
+    const guardado = localStorage.getItem('selectedRadioIndex');
+    let radioClick;
+    if (guardado !== null && radios[guardado]) {
+      radioClick = radios[guardado];
+    } else {
+      radioClick = radios[0];
     }
+    radioClick.click();
+    radios.forEach(radio => {
+      radio.addEventListener('change', () => {
+        const idx = radio.dataset.index;
+        localStorage.setItem('selectedRadioIndex', idx);
+      });
+    });
   });
 </script>
+
+
 {% endblock %}

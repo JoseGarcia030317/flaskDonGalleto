@@ -8,9 +8,39 @@ let galletasDisponibles = []
 const TIPOS_VENTA = {
     piezas: { id: 2, label: 'Por pieza', descuento: 0 },
     gramaje: { id: 1, label: 'Por gramaje', descuento: 0 },
-    medio: { id: 3, label: 'Bolsa medio kilo', descuento: 0.05 },
+    medio: { id: 3, label: 'Bolsa 700 g', descuento: 0.05 },
     kilo: { id: 4, label: 'Bolsa kilo', descuento: 0.10 }
 };
+
+function abrirModal() {
+    const backdrop = document.getElementById('modalBackdrop');
+    const modalForm = document.getElementById('modalForm');
+
+    backdrop.classList.remove('hidden');
+    modalForm.classList.remove('hidden')
+}
+
+// Función para filtrar la tabla
+function filtrarTabla() {
+    const textoBusqueda = document.querySelector('input[name="buscar-insumo"]').value.toLowerCase();
+    const filas = document.querySelectorAll('#tbody_insumos tr');
+    filas.forEach(fila => {
+        const textoFila = fila.textContent.toLowerCase();
+
+        if (textoFila.includes(textoBusqueda)) {
+            fila.style.display = '';
+        } else {
+            fila.style.display = 'none';
+        }
+    });
+}
+
+// Funcino para cerrar los distintos modales
+function cerrarModal() {
+    document.getElementById('modalBackdrop').classList.add('hidden');
+    document.getElementById('modalForm').classList.add('hidden');
+    document.querySelector('input[name="buscar-insumo"]').value = '';
+}
 
 // Funcion para obtener el tipo de venta selccionado, inicia en piezas
 function getTipoVenta() {
@@ -42,7 +72,7 @@ function calcCantidadGalletas(tipoKey, factor, gramosPorPieza) {
             cantidad = factor / gramosPorPieza;
             break;
         case 'medio':
-            cantidad = (factor * 500) / gramosPorPieza;
+            cantidad = (factor * 700) / gramosPorPieza;
             break;
         case 'kilo':
             cantidad = (factor * 1000) / gramosPorPieza;
@@ -65,26 +95,31 @@ function handleCardClick(galleta) {
 
     // 1) Determinar precioUnit, step y max según tipoKey
     let precioUnit, step, max;
+    let allowDecimals = false;
     switch (tipoKey) {
         case 'piezas':
             precioUnit = precioPieza;
             step = 1;
             max = exist;
+            allowDecimals = false;
             break;
         case 'gramaje':
             precioUnit = precioPieza / gramos;
             step = gramos;
             max = exist * gramos;
+            allowDecimals = true;
             break;
         case 'medio':
-            precioUnit = precioPieza * (500 / gramos) * (1 - descuento);
+            precioUnit = precioPieza * (700 / gramos) * (1 - descuento);
             step = 1;
-            max = Math.floor((exist * gramos) / 500);
+            max = Math.floor((exist * gramos) / 700);
+            allowDecimals = false;
             break;
         case 'kilo':
             precioUnit = precioPieza * (1000 / gramos) * (1 - descuento);
             step = 1;
             max = Math.floor((exist * gramos) / 1000);
+            allowDecimals = false;
             break;
     }
 
@@ -114,6 +149,11 @@ function handleCardClick(galleta) {
 
     // 6) Crear o actualizar la fila
     const tbody = document.getElementById('tbody_producto');
+    const stepAttr = allowDecimals ? 'any' : step;
+    const inputMode = allowDecimals ? 'decimal' : 'numeric';
+    const oninputAttr = allowDecimals
+        ? ''
+        : 'this.value = this.value.replace(/\\D/g, \'\')';
     if (!fila) {
         // Crear nueva fila
         fila = document.createElement('tr');
@@ -134,9 +174,11 @@ function handleCardClick(galleta) {
                 type="number"
                 class="w-16 mx-auto text-center border rounded input-cant"
                 value="${step}"
-                step="${step}"
+                step="${stepAttr}"
                 max="${max}"
                 min="${step}"
+                inputmode="${inputMode}"
+                oninput="${oninputAttr}"
             />
             </td>
             <td class="p-2 text-center">${tipoLabel}</td>
@@ -147,6 +189,24 @@ function handleCardClick(galleta) {
             </button>
             </td>
         `;
+
+        const inputCant = fila.querySelector('.input-cant');
+        inputCant.addEventListener('change', () => {
+            let val = Number(inputCant.value);
+            if (!allowDecimals) {
+                val = Math.floor(val);
+            }
+            if (val < step) val = step;
+            if (val > max) val = max;
+            inputCant.value = val;
+
+            fila.querySelector('.cell-subtotal').textContent = (val * precioUnit).toFixed(2);
+
+            const nuevaG = calcCantidadGalletas(tipoKey, val, gramos);
+            fila.dataset.cantidadGalletas = nuevaG;
+
+            recalcTotal();
+        });
 
         // Botón borrar
         fila.querySelector('.btn-remove')
@@ -248,7 +308,7 @@ function getPiezasGalletaSeleccionada(galletaId, excludeRow = null) {
     let sum = 0;
     document.querySelectorAll('#tbody_producto tr').forEach(row => {
         if (row === excludeRow) return;
-        const [, idStr] = row.id.split('-'); // ["row","<galletaId>","<tipoId>"]
+        const [, idStr] = row.id.split('-');
         if (parseInt(idStr, 10) !== galletaId) return;
 
         const key = row.dataset.tipoVentaKey;
@@ -324,31 +384,85 @@ function generarCards(galletas) {
         const totalGramos = existencias * gramosPorPieza;
         const totalDinero = (existencias * precioPorPieza).toFixed(2);
         const paquetes1kg = Math.floor(totalGramos / 1000);
-        const paquetesMedioKg = Math.floor(totalGramos / 500);
+        const paquetesMedioKg = Math.floor(totalGramos / 700);
 
         const card = document.createElement('div');
         card.className = 'border border-gray-200 rounded-lg overflow-hidden bg-[#efe6dc] shadow-sm hover:shadow-md transition-shadow';
         card.innerHTML = `
-                <div class="flex p-4 h-[190px] cursor-pointer">
-                    <div class="w-1/5 flex items-center justify-center bg-[#efe6dc] rounded-lg">
+            <div class="flex p-4 h-[190px]">
+                <div class="w-1/5 flex flex-col items-center justify-between bg-[#efe6dc] rounded-lg">
+                    <div class="w-full flex items-center justify-center">
                         <img src="../../../static/images/galleta ejemplo.png" alt="${galleta.nombre_galleta}" class="h-20 w-20 object-contain">
                     </div>
-                    <div class="w-4/5 pl-4 flex flex-col justify-between">
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-800">${galleta.nombre_galleta} (${parseFloat(galleta.gramos_galleta).toFixed(2)} g)</h3>
-                            <p class="text-sm text-gray-500 mt-1">Existencias: ${galleta.existencias}</p>
-                        </div>
-                        <p class="text-base font-bold text-gray-900">$${galleta.precio_unitario}</p>
-                        <div class="text-sm text-gray-700 space-y-1">
-                            <p><strong>Total gramos:</strong> ${totalGramos} g; <strong>Total en $:</strong> $${parseFloat(totalDinero).toFixed(2)}</p>
-                            <Paquetes><strong>Paquetes 1 kg:</strong> ${paquetes1kg}; <strong>Paquetes ½ kg:</strong> ${paquetesMedioKg}</p>
-                        </div>
+                    <div class="w-full flex items-center justify-center mt-2">
+                        <button onclick="buscarGalletaPorId(${galleta.id_galleta})" class="align-middle cursor-pointer">
+                            <img src="../../../static/images/info.png" class="w-7 h-7">
+                        </button>
                     </div>
                 </div>
+
+                <div class="w-4/5 pl-4 flex flex-col justify-between cursor-pointer" id="seccion-derecha">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800">${galleta.nombre_galleta} (${parseFloat(galleta.gramos_galleta).toFixed(2)} g)</h3>
+                        <p class="text-sm text-gray-500 mt-1">Existencias: ${galleta.existencias}</p>
+                    </div>
+                    <p class="text-base font-bold text-gray-900">$${galleta.precio_unitario}</p>
+                    <div class="text-sm text-gray-700 space-y-1">
+                        <p><strong>Total gramos:</strong> ${totalGramos} g; <strong>Total en $:</strong> $${parseFloat(totalDinero).toFixed(2)}</p>
+                        <p><strong>Paquetes 1 kg:</strong> ${paquetes1kg}; <strong>Paquetes 700 g:</strong> ${paquetesMedioKg}</p>
+                    </div>
+                </div>
+            </div>
         `;
-        card.addEventListener('click', () => handleCardClick(galleta));
+        const seccion = card.querySelector("#seccion-derecha");
+        seccion.addEventListener('click', () => handleCardClick(galleta));
+
         container.appendChild(card);
     });
+}
+
+// funcion para buscar la galleta por id así como sus recetas
+function buscarGalletaPorId(id_galleta) {
+    tabs.mostrarLoader();
+    api.postJSON('/galletas/get_galleta_by_id', { id_galleta })
+        .then(data => {
+            if (data.id_galleta) {
+                buscarInsumos(data.recetas);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error.message);
+            Swal.fire('Error', error.message || 'Error al cargar la galleta', 'error');
+        });
+}
+
+// Funcion para mostrar los insumos en la vista
+function buscarInsumos(recetas) {
+    const tbody = document.getElementById('tbody_insumos');
+    tbody.innerHTML = '';
+    api.getJSON('/insumos/get_all_insumos_unidad')
+        .then(data => {
+            const recetaBase = recetas.find(receta => receta.receta_base === 1);
+            let infoInsumos = recetaBase.detalle_receta.map(detalle => {
+                const insumo = data.find(i => String(i.id_insumo) === String(detalle.insumo_id));
+                return { ...insumo };
+            });
+
+            infoInsumos.forEach(insumoReceta => {
+                tbody.innerHTML += `
+                <tr data-id="${insumoReceta.id_insumo}" class="hover:bg-gray-100">
+                    <td class="p-3 text-center">${insumoReceta.nombre}</td>
+                    <td class="p-3 text-center">${insumoReceta.descripcion}</td>
+                </tr>
+            `;
+            })
+            abrirModal();
+        })
+        .catch(error => {
+            console.error('Error:', error.message);
+            Swal.fire('Error', error.message || 'Error al cargar insumos', 'error');
+        })
+        .finally(() => tabs.ocultarLoader());
 }
 
 // Funcion para limipar la vista de galletas
@@ -366,6 +480,10 @@ function limpiarVistaVenta() {
 }
 
 window.cargarGalletas = cargarGalletas;
+window.filtrarTabla = filtrarTabla;
 window.filtrarCards = filtrarCards;
 window.recalcTotal = recalcTotal;
 window.registrarVenta = registrarVenta;
+window.buscarGalletaPorId = buscarGalletaPorId;
+window.abrirModal = abrirModal;
+window.cerrarModal = cerrarModal;

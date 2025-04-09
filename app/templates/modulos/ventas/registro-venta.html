@@ -73,7 +73,7 @@
                                 class="absolute opacity-0 w-0 h-0 peer cursor-pointer">
                             <span
                                 class="px-4 py-2 border rounded-full border-gray-300 peer-checked:bg-[#efe6dc] peer-checked:border-[#d4c8bb] transition-colors cursor-pointer">
-                                Paquete 1/2 Kg
+                                Paquete 700 g
                             </span>
                         </label>
                     </div>
@@ -118,11 +118,51 @@
         </div>
     </div>
 
-    <!-- loader -->
-    <div id="loader" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" hidden>
-        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
-            <img src="../../../static/images/LogoGalleto.png" alt="Cargando..." class="h-16 w-16 animate-spin">
-            <span class="mt-4 text-gray-700 font-semibold">Cargando...</span>
+    <!-- Modal para visualizar los insumos de la receta -->
+    <div id="modalBackdrop" class=" hidden fixed inset-0 bg-black/50 z-50">
+        <div id="modalForm"
+            class="hidden bg-white rounded-lg p-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[40rem]">
+            <!-- Encabezado del modal -->
+            <div class="bg-[#efe6dc] rounded-t-lg p-4 -m-6 mb-4 flex justify-center items-center relative">
+                <h2 id="modalTitulo" class="text-black font-semibold text-center">Insumos de la galleta</h2>
+                <button onclick="cerrarModal()" class="text-black hover:text-gray-700 absolute right-4 cursor-pointer">
+                    <img src="../../../static/images/cerrar.png" class="w-6 h-6">
+                </button>
+            </div>
+
+            <!-- Campo de búsqueda -->
+            <div class="relative w-96 mx-auto mb-4">
+                <input type="text" placeholder="Buscar..." name="buscar-insumo" oninput="filtrarTabla()"
+                    class="w-full pl-4 pr-10 py-1 border border-[#8A5114] rounded-full">
+
+                <!-- Icono de lupa -->
+                <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <img src="./../../../static/images/magnifying glass.png" class="w-6 h-6">
+                </div>
+            </div>
+
+            <!-- Tabla para los detalles del pedido (venta) -->
+            <div class="h-[10rem] overflow-y-auto">
+                <table class="w-full table-auto border-collapse mb-4 rounded-t-lg">
+                    <thead>
+                        <tr class="bg-[#efe6dc] align-middle">
+                            <th class="p-2 text-center text-[#915A17]">NOMBRE</th>
+                            <th class="p-2 text-center text-[#915A17]">DESCRIPCI&Oacute;N</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody_insumos">
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+</div>
+
+<!-- loader -->
+<div id="loader" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" hidden>
+    <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
+        <img src="../../../static/images/LogoGalleto.png" alt="Cargando..." class="h-16 w-16 animate-spin">
+        <span class="mt-4 text-gray-700 font-semibold">Cargando...</span>
+    </div>
+</div>
 </div>

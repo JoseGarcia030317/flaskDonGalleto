@@ -25,10 +25,9 @@ function rechazarPedido() {
         confirmButtonColor: '#3C1D0C',
         cancelButtonColor: '#6c757d'
     });
-
 }
 
-function rechazarPedido() {
+function rechazarPedidoi() {
     return Swal.fire({
         title: "¿Estás seguro que deseas rechazar el pedido?",
         imageUrl: "../../../static/images/warning.png",
@@ -42,7 +41,6 @@ function rechazarPedido() {
             cancelButton: "flex items-center gap-3 px-6 py-3 border-2 border-[#DAA520] bg-white text-[#DAA520] rounded-full hover:bg-[#f5f5f5] transition-colors"
         }
     });
-
 }
 
 function confirmarPedido() {
@@ -63,15 +61,9 @@ function confirmarYRegistrarVenta() {
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Registrar venta',
-        cancelButtonText: 'Cancelar'
-      title: '¿Confirmas la venta?',
-      text: 'Estas por generar una nueva venta',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Registrar venta',
-      cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#3C1D0C',
-      cancelButtonColor: '#6c757d'
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#3C1D0C',
+        cancelButtonColor: '#6c757d'
     });
 }
 
@@ -160,7 +152,7 @@ function alertaFaltaDeInsumos(texto) {
 }
 
 function corteCajaInicio() {
-    return Swal.fire({ // ¡Debe retornar directamente la promesa!
+    return Swal.fire({
         title: 'Corte de caja inicial requerido',
         input: 'number',
         inputLabel: 'No hay un corte de caja registrado. Ingrese el monto inicial de efectivo',
@@ -184,7 +176,8 @@ function corteCajaInicio() {
 export const alertas = {
     confirmarEliminar: () => confirmarEliminar(),
     rechazarPedido: () => rechazarPedido(),
-    confirmarPedido : () => confirmarPedido(),
+    rechazarPedidoi: () => rechazarPedidoi(),
+    confirmarPedido: () => confirmarPedido(),
     procesoTerminadoExito: () => procesoTerminadoExito(),
     alertaWarning: (mensaje) => alertaWarning(mensaje),
     procesoTerminadoSinExito: () => procesoTerminadoSinExito(),
@@ -195,7 +188,7 @@ export const alertas = {
     confirmarProcesoFinalizar: () => confirmarProcesoFinalizar(),
     corteCajaInicio: () => corteCajaInicio(),
     confirmarYRegistrarVenta: () => confirmarYRegistrarVenta(),
-    corteCajaInicio : () => corteCajaInicio(),
-    confirmarYRegistrarVenta : () => confirmarYRegistrarVenta(),
+    corteCajaInicio: () => corteCajaInicio(),
+    confirmarYRegistrarVenta: () => confirmarYRegistrarVenta(),
     alertaFaltaDeInsumos: (mensaje) => alertaFaltaDeInsumos(mensaje)
 }

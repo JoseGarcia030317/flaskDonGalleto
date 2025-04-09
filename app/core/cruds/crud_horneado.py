@@ -97,13 +97,14 @@ class HorneadoCRUD:
         horneado.estatus = state
 
         explosion_insumos = ExplosionInsumos(json_horneado.get("receta_id"))
-        insumo_existencias = explosion_insumos.validar_existencias()
-        if insumo_existencias:
-            return {
-                "status": 400,
-                "message": "No hay suficientes existencias de los insumos requeridos",
-                "insumos_faltantes": insumo_existencias
-            }
+        if state != 4:
+            insumo_existencias = explosion_insumos.validar_existencias()
+            if insumo_existencias:
+                return {
+                    "status": 400,
+                    "message": "No hay suficientes existencias de los insumos requeridos",
+                    "insumos_faltantes": insumo_existencias
+                }
         try:
             Session = DatabaseConnector().get_session
             with Session() as session:

@@ -13,28 +13,37 @@ function cargarAlmacen() {
     api.getJSON('almacen/list_compras')
         .then(data => {
             tbody.innerHTML = '';
-            data.forEach(compra => {
-                tbody.innerHTML +=  `
-                <div class="w-full flex py-4 px-3 mb-3 border border-[#8A5114] justify-between rounded-xl bg-white shadow-md">
+            if(data.length >0){
+
+                data.forEach(compra => {
+                    tbody.innerHTML +=  `
+                    <div class="w-full flex py-4 px-3 mb-3 border border-[#8A5114] justify-between rounded-xl bg-white shadow-md">
                     <div>
-                        <span class="text-[#915A17]">${convertirFecha(compra.fecha_compra)}</span>
-                        <p class="text-xl">Compra ${compra.clave_compra} - ${compra.proveedor}</p> 
+                    <span class="text-[#915A17]">${convertirFecha(compra.fecha_compra)}</span>
+                    <p class="text-xl">Compra ${compra.clave_compra} - ${compra.proveedor}</p> 
                     </div>
-                <button onclick="abrirCompra(${compra.id_compra})" class="flex items-center justify-center space-x-1 px-3 py-0 bg-white text-[#8A5114] border-2 border-[#6B3D0C] rounded-full hover:bg-[#6B3D0C] hover:text-white focus:outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7">
+                    <button onclick="abrirCompra(${compra.id_compra})" class="flex items-center justify-center space-x-1 px-3 py-0 bg-white text-[#8A5114] border-2 border-[#6B3D0C] rounded-full hover:bg-[#6B3D0C] hover:text-white focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                     </svg>
                     </button>                                  
                     </div>
+                    `;
+                });
+            } else {
+                tbody.innerHTML = `
+                    <div class="flex justify-center items-center h-full">
+                        <p class="text-gray-500 font-medium text-xl">No hay compras pendientes</p>
+                    </div>
                 `;
-            });
-        })
-        .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar compras', 'error');
-        })
-        .finally(() => tabs.desbloquearTabs());
-}
+            }
+            })
+            .catch(error => {
+                console.error('Error:', error.message);
+                Swal.fire('Error', error.message || 'Error al cargar compras', 'error');
+            })
+            .finally(() => tabs.desbloquearTabs());
+        }
 
 function abrirModal(){
     const backdrop = document.getElementById('modalBackdropAlmacen');
@@ -96,7 +105,7 @@ function validarFormulario(){
     const insumos = document.querySelectorAll("#insumos input[required]");
     let esValido = true;
     for (let input of insumos) { 
-        if (!input.value.trim()) { 
+        if (!input.value.trim() || Number(input.value) < 0) { 
             input.classList.add("border-red-500"); // Agregar borde rojo si hay error
             alertas.alertaWarning("Verifica que la información de insumos se encuentre completa.");
             esValido = false; // DETIENE la función inmediatamente

@@ -1,7 +1,7 @@
 <div id="mermas-content" class="p-2">
     <div class="items-center justify-center w-full">
         <!-- Barra de búsqueda y botón añadir -->
-        <div class="flex justify-between mb-2 max-w-4xl">
+        <div class="flex justify-between mb-2 mx-auto">
             <!-- Campo de búsqueda -->
             <div class="relative w-96 mx-auto">
                 <input type="text" name="buscar" placeholder="Buscar..." oninput="filtrarTabla()"
@@ -60,7 +60,7 @@
                 <div class="grid grid-cols-1 gap-4">
                     <div>
                         <label class="block text-[#895645] mb-1">Insumo</label>
-                        <select type="text" id="cmb_insumo" name="insumo"
+                        <select type="text" id="cmb_insumo" name="insumo" onchange="cambiarMaxSelectProducto()"
                             class="w-full p-2 border border-[#895645] rounded-full" required>
                         </select>
                         <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
@@ -83,7 +83,7 @@
                     <!-- Cantidad (pzas) -->
                     <div>
                         <label class="block text-[#895645] mb-1">Cantidad</label>
-                        <input type="number" min="1" name="cantidad"
+                        <input type="number" min="1" name="cantidad" oninput="validarCantidadInput(event)"
                             class="w-full p-2 border border-[#895645] rounded-full" required></input>
                         <span class="error-message text-red-500 text-sm mt-1 hidden"></span>
                     </div>

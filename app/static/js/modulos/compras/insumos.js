@@ -111,7 +111,7 @@ function cargarSelectUnidad() {
 
 function cargarInsumos() {
     const tbody = document.getElementById('tbody_insumos');
-    tabs.mostrarEsqueletoTabla(tbody, 5,5);
+    tabs.mostrarEsqueletoTabla(tbody, 5,6);
     cargarSelectUnidad()
 
     api.getJSON('/insumos/get_all_insumos_unidad')
@@ -123,6 +123,7 @@ function cargarInsumos() {
             <tr data-id="${insumo.id_insumo}" class="hover:bg-gray-100">
                 <td class="p-3 text-center">${insumo.nombre}</td>
                 <td class="p-3 text-center">${insumo.descripcion}</td>
+                <td class="p-3 text-center">$${insumo.precio_unitario}</td>
                 <td class="p-3 text-center">${insumo.existencias || 0}</td>
                 <td class="p-3 text-center">${insumo.unidad + ' (' + insumo.simbolo + ')'}</td>
                 <td class="p-3 flex justify-center">
@@ -220,7 +221,7 @@ function buscarInsumoId(id_insumo) {
             abrirModal('editar');
             const select = document.getElementById('cmb_unidad');
             select.innerHTML = `<option value="${data.unidad.id_unidad}">
-                                  ${data.unidad.nombre} (${data.unidad.simbolo})
+                                  ${data.unidad.nombre} (${data.simbolo})
                                </option>`;
 
             document.getElementById('insumo_id').value = data.id_insumo;

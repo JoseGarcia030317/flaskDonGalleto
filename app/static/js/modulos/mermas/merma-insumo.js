@@ -124,10 +124,39 @@ function cargarSelectInsumos() {
     select.innerHTML = '<option value="">Seleccione un insumo</option>';
     insumosDisponibles.forEach(insumo => {
         select.innerHTML += `
-                    <option value="${insumo.id_insumo}">
-                        ${insumo.nombre} (${insumo.unidad.simbolo})
+                    <option value="${insumo.id_insumo}" data-existencias="${insumo.existencias}">
+                        ${insumo.nombre} (${insumo.simbolo})
                     </option>`;
     });
+}
+
+// Funcion para actualizar el max del campo de la cantidad de merma de producto
+function cambiarMaxSelectProducto() {
+    const select = document.getElementById('cmb_insumo');
+    const inputCantidad = document.querySelector('input[name="cantidad"]');
+    const opcionSeleccionada = select.options[select.selectedIndex];
+    
+    if (opcionSeleccionada.value) {
+        inputCantidad.max = Number(opcionSeleccionada.dataset.existencias);
+    }
+}
+
+// Funcion para validar la cantidad tecleada en el campo de cantidad
+function validarCantidadInput(event) {
+    const input = event.target;
+    const maxPermitido = Number(input.max);
+    let valorActual = Number(input.value);
+
+    // Validar si es número válido
+    if (isNaN(valorActual)) {
+        input.value = '';
+        return;
+    }
+
+    // Corregir si excede el máximo
+    if (valorActual > maxPermitido) {
+        input.value = maxPermitido;
+    }
 }
 
 // Funcion para cargar las mermas de insumos al iniciar la aplicacion
@@ -270,7 +299,10 @@ function limpiarFormulario() {
     const cmb_motivo_merma = document.getElementById('cmb_motivo_merma');
     cmb_motivo_merma.value = '';
 
-    document.querySelector('input[name="cantidad"]').value = '';
+    const cantidad = document.querySelector('input[name="cantidad"]');
+    cantidad.value = '';
+    cantidad.max = Number(0);
+    
     document.querySelector('textarea[name="observaciones"]').value = '';
 
     limpiarErrores();
@@ -284,3 +316,5 @@ window.buscarMermaInsumoId = buscarMermaInsumoId;
 window.abrirModal = abrirModal;
 window.cerrarModal = cerrarModal;
 window.filtrarTabla = filtrarTabla;
+window.cambiarMaxSelectProducto = cambiarMaxSelectProducto;
+window.validarCantidadInput = validarCantidadInput;

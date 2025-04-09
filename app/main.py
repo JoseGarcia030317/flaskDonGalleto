@@ -39,6 +39,7 @@ from routes.almacen_bp import almacen_bp
 from routes.horneado_bp import horneado_bp
 from routes.ventas_bp import ventas_bp
 from routes.pedidos_bp import pedidos_bp
+from routes.corte_caja_bp import corte_caja_bp
 
 # Inicializar extensiones de Flask
 # db = SQLAlchemy()
@@ -105,6 +106,8 @@ app.register_blueprint(almacen_bp)
 app.register_blueprint(horneado_bp)
 app.register_blueprint(ventas_bp)
 app.register_blueprint(pedidos_bp)
+app.register_blueprint(corte_caja_bp)
+
 # Ruta raíz de la aplicacion
 @app.route("/")
 def inicio():

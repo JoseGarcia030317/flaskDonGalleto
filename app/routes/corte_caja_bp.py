@@ -31,3 +31,13 @@ def cerrar_caja():
         return corte_caja.cerrar_corte_caja(data)
     except Exception as e:
         return {"status": 500, "message": str(e)}, 500
+    
+@corte_caja_bp.route("/corte_caja/get_all_corte_caja", methods=['GET'])
+def get_all_corte_caja():
+    """
+    Obtener los cierres caja.
+    """
+    try:
+        return corte_caja.get_all_corte_caja()
+    except Exception as e:
+        return {"status": 500, "message": str(e)}, 500

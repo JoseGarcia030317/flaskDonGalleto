@@ -1,12 +1,12 @@
 <div class="p-2">
-    <!-- Seccion para iniciar el proceso de corte de caja -->
+    <!-- Seccion para iniciar el proceso de corte de caja 
     <div class=" grid grid-cols-1 w-full" id="seccion-btn-agregar-corte">
         <button id="btn-agregar" onclick="solicitarCorteCaja()"
             class="text-white p-2 rounded-full cursor-pointer justify-items-end">
             <img src="../../../static/images/plus.png" class="w-7 h-7">
         </button>
     </div>
-
+    -->
     <!-- Seccion para mostrar el contenido del corte de caja -->
     <div class="p-2 space-y-4" id="corte-caja-content" hidden>
         <!-- Encabezado del corte -->
@@ -14,15 +14,15 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                 <div class="bg-white p-3 rounded-lg">
                     <p class="text-sm text-[#3C1D0C]">Fecha y Hora</p>
-                    <p id="fecha-hora" class="font-bold">25/10/2023 14:30</p>
+                    <p id="fecha-hora" class="font-bold"></p>
                 </div>
                 <div class="bg-white p-3 rounded-lg">
                     <p class="text-sm text-[#3C1D0C]">Usuario</p>
-                    <p id="usuario" class="font-bold">Juan Pérez</p>
+                    <p id="usuario" class="font-bold"></p>
                 </div>
                 <div class="bg-white p-3 rounded-lg">
                     <p class="text-sm text-[#3C1D0C]">Monto Inicial</p>
-                    <p id="monto-inicial" class="font-bold">$1,500.00</p>
+                    <p id="monto-inicial" class="font-bold"></p>
                 </div>
             </div>
         </div>
@@ -36,11 +36,11 @@
                         <div class="flex gap-4 mt-2">
                             <div>
                                 <span class="text-sm">Total:</span>
-                                <span class="font-bold">$3,250.00</span>
+                                <span id="label-total-ventas" class="font-bold"></span>
                             </div>
                             <div>
                                 <span class="text-sm">Canceladas:</span>
-                                <span class="text-red-600">2 ($150.00)</span>
+                                <span id="label-total-ventas-canceladas" class="text-red-600"></span>
                             </div>
                         </div>
                     </div>
@@ -56,10 +56,10 @@
                 </div>
                 <!-- Ejemplo de fila -->
                 <div class="grid grid-cols-4 gap-2 p-4 border-b">
-                    <span>09:30</span>
-                    <span>#00125</span>
-                    <span class="text-green-600">Completada</span>
-                    <span class="text-right">$150.00</span>
+                    <span></span>
+                    <span></span>
+                    <span class="text-green-600"></span>
+                    <span class="text-right"></span>
                 </div>
             </div>
         </div>
@@ -117,7 +117,7 @@
         </div>
 
         <!-- Modal de Cierre -->
-        <div id="modal-cierre" class="fixed bg-black/50 hidden items-center justify-center">
+        <div id="modal-cierre" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center">
             <div class="bg-white rounded-lg w-full max-w-md mx-4">
                 <div class="bg-[#efe6dc] p-4 rounded-t-lg">
                     <h3 class="text-lg font-bold text-[#3C1D0C]">Resumen Final del Corte</h3>
@@ -126,23 +126,23 @@
                 <div class="p-4 space-y-4">
                     <div class="grid grid-cols-2 gap-4 items-center">
                         <div class="text-right text-[#3C1D0C]">Monto Inicial:</div>
-                        <div class="font-bold">$1,500.00</div>
+                        <div id="monto_inicial" class="font-bold"></div>
 
                         <div class="text-right text-[#3C1D0C]">Ventas Efectivo:</div>
-                        <div class="font-bold">$2,100.00</div>
+                        <div id="venta_efectivo" class="font-bold"></div>
 
                         <div class="text-right text-[#3C1D0C]">Egresos:</div>
-                        <div class="font-bold">$750.00</div>
+                        <div id="egresos" class="font-bold"></div>
 
                         <div class="text-right text-[#3C1D0C] font-bold">Total Esperado:</div>
-                        <div class="font-bold text-green-600">$2,850.00</div>
+                        <div id="total_esperado" class="font-bold text-green-600"></div>
 
                         <div class="text-right text-[#3C1D0C] font-bold">Total Real:</div>
                         <input type="number" step="0.01" class="font-bold border rounded px-2 py-1 text-right"
                             id="total-real-input" placeholder="0.00" oninput="calcularDiferencia()">
 
                         <div class="text-right text-[#3C1D0C] font-bold">Diferencia:</div>
-                        <div id="diferencia" class="font-bold text-red-600">-$50.00</div>
+                        <div id="diferencia" class="font-bold text-red-600"></div>
                     </div>
 
                     <div class="flex justify-end gap-2 mt-4">

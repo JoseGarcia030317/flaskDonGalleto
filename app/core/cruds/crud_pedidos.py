@@ -159,7 +159,7 @@ class PedidosCRUD:
                         Galleta.id_galleta,
                         PedidoDetalle.factor_venta,
                         Galleta.nombre_galleta,
-                        Galleta.precio_unitario,
+                        PedidoDetalle.precio_unitario,
                         PedidoDetalle.tipo_venta_id,
                         TipoVenta.nombre
                     ).all()

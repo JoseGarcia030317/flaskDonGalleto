@@ -31,31 +31,3 @@ def get_all_pedidos():
         return jsonify(pedidos.get_all_pedidos())
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500
-
-
-@pedidos_bp.route('/pedidos/cancelar_pedido', methods=['POST'])
-def cancelar_pedido():
-    try:
-        data = request.get_json()
-        return jsonify(pedidos.cancelar_pedido(data))
-    except Exception as e:
-        return jsonify({"status": 500, "message": str(e)}), 500
-
-
-@pedidos_bp.route('/pedidos/consultar_detalle_pedido', methods=['POST'])
-def consultar_detalle_pedido():
-    try:
-        data = request.get_json()
-        return jsonify(pedidos.consultar_detalle_pedido(data))
-    except Exception as e:
-        return jsonify({"status": 500, "message": str(e)}), 500
-
-
-@pedidos_bp.route('/pedidos/consultar_detalle_pedido', methods=['POST'])
-def consultar_detalle_pedido():
-    try:
-        data = request.get_json()
-        return jsonify(pedidos.consultar_detalle_pedido(data))
-    except Exception as e:
-        return jsonify({"status": 500, "message": str(e)}), 500
-

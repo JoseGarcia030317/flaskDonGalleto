@@ -66,7 +66,6 @@ class VentaDetalle(Base):
 
     __table_args__ = (
         PrimaryKeyConstraint('id_venta', 'galleta_id', name='uq_venta_detalle_id_venta_galleta_id'),
-        {'schema': 'DB_DONGALLETO'}
     )
 
     def __repr__(self):

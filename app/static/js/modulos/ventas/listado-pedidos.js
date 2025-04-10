@@ -71,21 +71,20 @@ function inicializarModuloListadoPedidos() {
 
 function cargarTablaPedidos() {
     const tbody = document.getElementById('tbody_listado_pedidos');
-    tabs.mostrarEsqueletoTabla(tbody, 5, 6);
+    tabs.mostrarEsqueletoTabla(tbody, 5, 5);
     return api.getJSON('/pedidos/get_all_pedidos')
         .then(data => {
             tbody.innerHTML = '';
             data.forEach(venta => {
                 const fecha = new Date(venta.fecha);
                 tbody.innerHTML += `
-                    <tr data-id="${venta.id_venta}" class="hover:bg-gray-100">
+                    <tr data-id="${venta.id_pedido}" class="hover:bg-gray-100">
                     <td class="p-3 text-center">${fecha.toLocaleString('es-ES', opcionesFecha)}</td>
-                    <td class="p-3 text-center">${venta.clave_venta}</td>
-                    <td class="p-3 text-center">${venta.observacion || ''}</td>
-                    <td class="p-3 text-center">${venta.descuento || 0}%</td>
-                    <td class="p-3 text-center">${venta.cliente || '—'}</td>
+                    <td class="p-3 text-center">${venta.clave_pedido}</td>
+                    <td class="p-3 text-center">${venta.nombre_cliente || '—'}</td>
+                    <td class="p-3 text-center">${parseFloat(venta.total_pedido)}</td>
                     <td class="p-3 flex justify-center">
-                        <button onclick="buscarPedidoPorId(${venta.id_venta})" class="cursor-pointer">
+                        <button onclick="buscarPedidoPorId(${venta.id_pedido})" class="cursor-pointer">
                         <img src="../../../static/images/info.png" class="w-7 h-7">
                         </button>
                     </td>
@@ -103,14 +102,14 @@ function cargarTablaPedidos() {
 // Buscar un pedido por su id
 function buscarPedidoPorId(id) {
     tabs.mostrarLoader();
-    api.postJSON('/pedidos/get_pedido_by_id', { id_venta: id })
+    api.postJSON('/pedidos/get_pedidos_by_id', { id_pedido: id })
         .then(data => {
-            if (data.id_venta) {
+            if (data.id_pedido) {
                 pedidoActual = data;
                 cargarPedidoEnModal(data);
                 abrirModal();
             } else {
-                alertas.alertaError('Pedido no encontrado');
+                alertas.alertaWarning('Pedido no encontrado');
             }
         })
         .catch(error => {
@@ -121,25 +120,23 @@ function buscarPedidoPorId(id) {
 }
 
 function cargarPedidoEnModal(pedido) {
-    document.querySelector("input[name='pedido_id']").value = pedido.id_venta;
-    document.querySelector("label[name='clave']").textContent = pedido.clave_venta;
+    document.querySelector("input[name='pedido_id']").value = pedido.id_pedido;
+    document.querySelector("label[name='clave']").textContent = pedido.clave_pedido;
     document.querySelector("label[name='fecha']").textContent = new Date(pedido.fecha).toLocaleString('es-ES', opcionesFecha);
-    document.querySelector("label[name='descuento']").textContent = (pedido.descuento || 0) + '%';
-    document.querySelector("label[name='observaciones']").textContent = pedido.observacion || '';
-    document.querySelector("label[name='cliente']").textContent = pedido.cliente || '';
-    document.querySelector("label[name='total']").textContent = '$' + (pedido.total_venta || 0).toFixed(2);
+    document.querySelector("label[name='cliente']").textContent = pedido.nombre_cliente || '';
+    document.querySelector("label[name='total']").textContent = '$' + (pedido.total_pedido || 0).toFixed(2);
 
     const tbodyDetalles = document.getElementById('tbody_pedido_detalle');
     tbodyDetalles.innerHTML = '';
     pedido.detalles.forEach(det => {
         const fila = document.createElement('tr');
         fila.innerHTML = `
-        <td class="p-3 text-center">${det.producto_id}</td>
-        <td class="p-3 text-center">${det.tipo_venta || '—'}</td>
-        <td class="p-3 text-center">${det.precio_unitario.toFixed(2)}</td>
-        <td class="p-3 text-center">${det.cantidad}</td>
-        <td class="p-3 text-center">$${(det.precio_unitario * det.cantidad).toFixed(2)}</td>
-      `;
+            <td class="p-3 text-center">${det.galleta_nombre}</td>
+            <td class="p-3 text-center">${det.tipo_venta || '—'}</td>
+            <td class="p-3 text-center">${det.precio_unitario.toFixed(2)}</td>
+            <td class="p-3 text-center">${Number(det.factor_venta)}</td>
+            <td class="p-3 text-center">$${(det.subtotal).toFixed(2)}</td>
+        `;
         tbodyDetalles.appendChild(fila);
     });
 }
@@ -173,7 +170,6 @@ function aceptarPedido() {
             if (err !== 'cancelado') console.error(err);
         });
 }
-
 
 function rechazarPedido() {
     alertas.rechazarPedido()

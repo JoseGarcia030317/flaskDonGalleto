@@ -23,9 +23,8 @@
                 <tr class="bg-[#efe6dc] align-middle">
                     <th class="p-2 text-center text-[#915A17]">FECHA</th>
                     <th class="p-2 text-center text-[#915A17]">CLAVE</th>
-                    <th class="p-2 text-center text-[#915A17]">OBSERVACIONES</th>
-                    <th class="p-2 text-center text-[#915A17]">DESCUENTO</th>
                     <th class="p-2 text-center text-[#915A17]">CLIENTE</th>
+                    <th class="p-2 text-center text-[#915A17]">TOTAL</th>
                     <th class="p-2 text-center text-[#915A17]">ACCIONES</th>
                 </tr>
             </thead>
@@ -49,10 +48,10 @@
             <!-- Formulario -->
             <form id="mermaProductoForm" class="space-y-4">
                 <!-- Campo para id de merma de producto -->
-                <input type="number" name="pedido_id" value="0" hidden>
+                <input type="number" name="pedido_id" value="0">
 
                 <!-- Primera fila: clave y fecha -->
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-4 gap-4">
                     <!-- Campo clave -->
                     <div>
                         <label class="block text-[#895645] mb-1">Clave</label>
@@ -65,31 +64,16 @@
                         <label name="fecha" class="block text-black mb-1"></label>
                     </div>
 
-                    <!-- Campo Descuento -->
-                    <div>
-                        <label class="block text-[#895645] mb-1">Descuento (%)</label>
-                        <label name="descuento" class="block text-black mb-1"></label>
-                    </div>
-                </div>
-
-                <!-- Segunda fila: clave y fecha -->
-                <div class="grid grid-cols-3 gap-4">
-                    <!-- Campo cliente -->
-                    <div>
-                        <label class="block text-[#895645] mb-1">Cliente</label>
-                        <label name="cliente" class="block text-black mb-1"></label>
-                    </div>
-
                     <!-- Campo total -->
                     <div>
                         <label class="block text-[#895645] mb-1">Total del pedido</label>
                         <label name="total" class="block text-black mb-1"></label>
                     </div>
 
-                    <!-- Campo observaciones -->
+                    <!-- Campo cliente -->
                     <div>
-                        <label class="block text-[#895645] mb-1">Observaciones</label>
-                        <label name="observaciones" class="block text-black mb-1"></label>
+                        <label class="block text-[#895645] mb-1">Cliente</label>
+                        <label name="cliente" class="block text-black mb-1"></label>
                     </div>
                 </div>
             </form>
@@ -126,6 +110,14 @@
                     </button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- loader -->
+    <div id="loader" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" hidden>
+        <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
+            <img src="../../../static/images/LogoGalleto.png" alt="Cargando..." class="h-16 w-16 animate-spin">
+            <span class="mt-4 text-gray-700 font-semibold">Cargando...</span>
         </div>
     </div>
 </div>

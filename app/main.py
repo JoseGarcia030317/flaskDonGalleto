@@ -113,8 +113,6 @@ app.register_blueprint(pedidos_bp)
 app.register_blueprint(corte_caja_bp)
 
 # Ruta raíz de la aplicacion
-
-
 @app.route("/")
 def inicio():
     if not current_user.is_authenticated:
@@ -175,8 +173,6 @@ def check_authentication():
         return redirect(url_for(login_manager.login_view))
 
 # Configurar Flask-Login
-
-
 @login_manager.user_loader
 def load_user(user_id):
     if user_id:

@@ -274,8 +274,7 @@ async function consultarInsumos() {
             if (data) insumosDisponibles = data;
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar insumos', 'error');
+            Swal.fire('Error', 'Error al cargar insumos', 'error');
         });
 }
 
@@ -301,8 +300,7 @@ function cargarGalletas() {
             }
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar las galletas', 'error');
+            Swal.fire('Error', 'Error al cargar las galletas', 'error');
         })
         .finally(() => tabs.desbloquearTabs());
 }
@@ -357,8 +355,7 @@ function buscarGalletaPorId(id_galleta) {
             }
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar la galleta', 'error');
+            Swal.fire('Error', 'Error al cargar la galleta', 'error');
         })
         .finally(() => tabs.ocultarLoader());
 }
@@ -478,8 +475,7 @@ function agregarGalleta() {
             }
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al guardar la galleta', 'error');
+            Swal.fire('Error', 'Error al guardar la galleta', 'error');
         })
         .finally(() => tabs.ocultarLoader());
 }
@@ -525,12 +521,11 @@ function editarGalleta() {
                 cerrarModalPrincipal();
                 cargarGalletas();
             } else {
-                throw new Error(response?.message || 'Error en la actualización');
+                throw new Error('Error en la actualización');
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            Swal.fire('Error', error.message || 'Error al actualizar la galleta', 'error');
+            Swal.fire('Error', 'Error al actualizar la galleta', 'error');
         })
         .finally(() => tabs.ocultarLoader());
 }
@@ -538,28 +533,28 @@ function editarGalleta() {
 // Funcion para eliminar una galleta de la bd
 function eliminarGalleta(id_galleta) {
     alertas.confirmarEliminar()
-        .then(resultado => {
-            if (!resultado.isConfirmed) return Promise.reject('cancelado');
-
-            tabs.mostrarLoader();
-            return api.postJSON('/galletas/delete_galleta', { id_galleta: id_galleta });
-        })
-        .then(data => {
-            if ((data?.status === 200 || data?.status === 201) && data?.id_galleta) {
-                alertas.procesoTerminadoExito();
-                cerrarModalPrincipal();
-                cargarGalletas();
-            } else {
-                throw new Error(data?.error || 'Error al eliminar la galleta');
-            }
-        })
-        .catch(error => {
-            if (error !== 'cancelado') {
-                console.error('Error eliminando galleta:', error);
-                Swal.fire('Error', error.message || 'No se pudo eliminar la galleta', 'error');
-            }
-        })
-        .finally(() => tabs.ocultarLoader());
+    .then(resultado => {
+        if (!resultado.isConfirmed) return Promise.reject('cancelado');
+        
+        tabs.mostrarLoader();
+        return api.postJSON('/galletas/delete_galleta', { id_galleta: id_galleta });
+    })
+    .then(data => {
+        if ((data?.status === 200 || data?.status === 201) && data?.id_galleta) {
+            alertas.procesoTerminadoExito();
+            cerrarModalPrincipal();
+            cargarGalletas();
+        } else {
+            throw new Error(data?.error || 'Error al eliminar la galleta');
+        }
+    })
+    .catch(error => {
+        if (error !== 'cancelado') {
+            console.error('Error eliminando galleta:', error);
+            Swal.fire('Error', 'No se pudo eliminar la galleta', 'error');
+        }
+    })
+    .finally(() => tabs.ocultarLoader());
 }
 
 // Obtener datos de la galleta del formulario del modal principal

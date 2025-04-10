@@ -87,8 +87,7 @@ function consultarInsumos() {
             if (data) insumosDisponibles = data;
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar insumos', 'error');
+            Swal.fire('Error', 'Error al cargar insumos', 'error');
         }).finally( () => tabs.desbloquearTabs());
 }
 

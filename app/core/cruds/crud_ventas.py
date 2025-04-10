@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from utils.connectiondb import DatabaseConnector
 from core.classes.Tb_ventas import Venta, VentaDetalle, TipoVenta
 from core.classes.Tb_galletas import Galleta, InventarioGalleta
@@ -25,6 +26,7 @@ class VentaCRUD:
                 venta = Venta(
                     observacion=data["observacion"],
                     descuento=data["descuento"],
+                    id_pedido=data.get("id_pedido")
                 )
                 session.add(venta)
                 session.flush()
@@ -228,4 +230,55 @@ class VentaCRUD:
         except Exception as e:
             logger.error("Error al cancelar la venta: %s", e)
             raise e from e
-    
+        
+    def list_ventas_all_by_state(self) -> list:
+        """
+        Obtiene el listado completo de ventas activas, incluyendo sus detalles.
+        Retorna una lista vacía si no hay registros.
+        """
+
+        try:
+            Session = DatabaseConnector().get_session
+            with Session() as session:
+               fecha_actual = datetime.now().date()
+                # Subconsulta: total por venta (suma de precio_unitario * factor_venta)
+               subquery_total = session.query(
+                VentaDetalle.id_venta.label("id_venta"),
+                func.sum(VentaDetalle.precio_unitario * VentaDetalle.factor_venta).label("total_venta")
+            ).group_by(VentaDetalle.id_venta).subquery()
+
+            # Consulta principal con filtro por fecha (solo ventas del día actual)
+            ventas_query = session.query(
+                Venta.id_venta,
+                Venta.clave_venta,
+                Venta.observacion,
+                Venta.descuento,
+                Venta.fecha,
+                Venta.estatus,
+                Venta.id_pedido,
+                func.coalesce(subquery_total.c.total_venta, 0).label("total_venta")
+            ).outerjoin(
+                subquery_total, Venta.id_venta == subquery_total.c.id_venta
+            ).filter(
+                func.date(Venta.fecha) == fecha_actual
+            )
+
+            # Convertir los resultados en una lista de diccionarios
+            result = []
+            for venta in ventas_query:
+                result.append({
+                    "id_venta": venta.id_venta,
+                    "clave_venta": venta.clave_venta,
+                    "observacion": venta.observacion,
+                    "descuento": venta.descuento,
+                    "fecha": venta.fecha,
+                    "estatus": venta.estatus,
+                    "total_venta": float(venta.total_venta),
+                    "id_pedido": venta.id_pedido
+                })
+
+                return result
+
+        except Exception as e:
+            logger.error("Error al obtener las ventas: %s", e)
+            raise e from e

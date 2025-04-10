@@ -71,32 +71,30 @@ function cargarTablaVentas() {
                     </td>
                 </tr>
             `;
-            });
-        })
-        .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar el historial de ventas', 'error');
-        })
-        .finally(() => tabs.desbloquearTabs());
+        });
+    })
+    .catch(error => {
+        Swal.fire('Error', 'Error al cargar el historial de ventas', 'error');
+    })
+    .finally(() => tabs.desbloquearTabs());
 }
 
 // Buscar un venta por su id
 function buscarVentaPorId(id) {
     tabs.mostrarLoader();
-    api.postJSON('/ventas/get_venta_by_id', { id_venta: id })
-        .then(data => {
-            if (data.id_venta) {
-                cargarVentaEnModal(data)
-                abrirModal()
-            } else {
-                alertas.mostrarError('venta no encontrada')
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar el la venta', 'error');
-        })
-        .finally(() => tabs.ocultarLoader());
+    api.postJSON('/ventas/get_venta_by_id', {id_venta : id})
+    .then(data => {
+        if (data.id_venta) {
+            cargarVentaEnModal(data)
+            abrirModal()
+        } else {
+            alertas.mostrarError('venta no encontrada')
+        }
+    })
+    .catch(error => {
+        Swal.fire('Error', 'Error al cargar el la venta', 'error');
+    })
+    .finally(() => tabs.ocultarLoader());
 }
 
 function cargarVentaEnModal(venta) {
@@ -236,8 +234,7 @@ function generarPdfTicket() {
           }
       })
       .catch(error => {
-          console.error('Error:', error.message);
-          Swal.fire('Error', error.message || 'Error al imprimir ticket', 'error');
+          Swal.fire('Error', 'Error al imprimir ticket', 'error');
       })
       .finally(() => tabs.ocultarLoader());
 }

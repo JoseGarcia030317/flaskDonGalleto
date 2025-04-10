@@ -114,8 +114,7 @@ function consultarInsumos() {
             return data;
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar insumos', 'error');
+            Swal.fire('Error', 'Error al cargar insumos', 'error');
         });
 }
 
@@ -193,8 +192,7 @@ function cargarMermaInsumo() {
             document.getElementById('btn-agregar').disabled = false;
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar mermas de insumos', 'error');
+            Swal.fire('Error', 'Error al cargar mermas de insumos', 'error');
         })
         .finally(() => tabs.desbloquearTabs());
 }
@@ -232,8 +230,7 @@ function guardarMermaInsumo() {
             limpiarFormulario();
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al guardar merma insumo', 'error');
+            Swal.fire('Error', 'Error al guardar merma insumo', 'error');
         })
         .finally(() => tabs.ocultarLoader());
 }
@@ -257,8 +254,7 @@ function buscarMermaInsumoId(id_merma) {
             }
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar merma del insumo', 'error');
+            Swal.fire('Error', 'Error al cargar merma del insumo', 'error');
         })
         .finally(() => tabs.ocultarLoader());
 }
@@ -279,13 +275,12 @@ function eliminarMermaInsumo(id_merma) {
             cargarMermaInsumo();
             limpiarFormulario()
         } else {
-            Swal.fire('Error', data.error || 'Error al eliminar merma del insumo', 'error');
+            Swal.fire('Error', 'Error al eliminar merma del insumo', 'error');
         }
     })
     .catch(error => {
         if (error !== 'cancelado') {
-            console.error('Error:', error.message || error);
-            Swal.fire('Error', error.message || 'Error al eliminar', 'error');
+            Swal.fire('Error', 'Error al eliminar', 'error');
         }
     })
     .finally(() => tabs.ocultarLoader());

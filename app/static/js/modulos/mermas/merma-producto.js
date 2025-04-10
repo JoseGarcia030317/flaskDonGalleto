@@ -115,8 +115,7 @@ function consultarProductos() {
             return data;
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar productos', 'error');
+            Swal.fire('Error', 'Error al cargar productos', 'error');
         });
 }
 
@@ -196,8 +195,7 @@ function cargarMermaProducto() {
             document.getElementById('btn-agregar').disabled = false;
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar mermas de productos', 'error');
+            Swal.fire('Error', 'Error al cargar mermas de productos', 'error');
         })
         .finally(() => tabs.desbloquearTabs());
 }
@@ -235,8 +233,7 @@ function guardarMermaProducto() {
             limpiarFormulario();
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al guardar merma producto', 'error');
+            Swal.fire('Error', 'Error al guardar merma producto', 'error');
         })
         .finally(() => tabs.ocultarLoader());
 }
@@ -260,8 +257,7 @@ function buscarMermaProductoId(id_merma) {
             }
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar merma del producto', 'error');
+            Swal.fire('Error', 'Error al cargar merma del producto', 'error');
         })
         .finally(() => tabs.ocultarLoader());
 }
@@ -299,13 +295,12 @@ function eliminarMermaProducto(id_merma) {
             cargarMermaProducto();
             limpiarFormulario();
         } else {
-            Swal.fire('Error', data.error || 'Error al eliminar merma del producto', 'error');
+            Swal.fire('Error', 'Error al eliminar merma del producto', 'error');
         }
     })
     .catch(error => {
         if (error !== 'cancelado') {
-            console.error('Error:', error.message || error);
-            Swal.fire('Error', error.message || 'Error al eliminar', 'error');
+            Swal.fire('Error', 'Error al eliminar', 'error');
         }
     });
 }

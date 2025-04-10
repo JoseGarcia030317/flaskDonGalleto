@@ -18,7 +18,7 @@ const handleResponse = async (response) => {
     // Manejar otros errores HTTP
     if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || `Error HTTP: ${response.status}`);
+        throw new Error(`Error HTTP: ${response.status}`);
     }
 
     return response;

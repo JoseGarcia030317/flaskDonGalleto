@@ -104,8 +104,7 @@ function cargarSelectUnidad() {
         });
     })
     .catch(error => {
-        console.error('Error:', error.message);
-        Swal.fire('Error', error.message || 'Error al cargar unidades', 'error');
+        Swal.fire('Error', 'Error al cargar unidades', 'error');
     })
 }
 
@@ -141,8 +140,7 @@ function cargarInsumos() {
         document.getElementById('btn-agregar').disabled = false;
     })
     .catch(error => {
-        console.error('Error:', error.message);
-        Swal.fire('Error', error.message || 'Error al cargar insumos', 'error');
+        Swal.fire('Error', 'Error al cargar insumos', 'error');
     })
     .finally(() => tabs.desbloquearTabs());
 
@@ -179,8 +177,7 @@ function guardarInsumo() {
         }
     })
     .catch(error => {
-        console.error('Error:', error.message);
-        Swal.fire('Error', error.message || 'Error al guardar insumo', 'error');
+        Swal.fire('Error', 'Error al guardar insumo', 'error');
     })
     .finally(() => tabs.ocultarLoader());
 }
@@ -205,8 +202,7 @@ function eliminarInsumo(id_insumo) {
     })
     .catch(error => {
         if (error !== 'cancelado') {
-            console.error('Error:', error.message || error);
-            Swal.fire('Error', error.message || 'Error al eliminar', 'error');
+            Swal.fire('Error', 'Error al eliminar', 'error');
         }
     })
     .finally(() => tabs.ocultarLoader());
@@ -231,8 +227,7 @@ function buscarInsumoId(id_insumo) {
 
     })
     .catch(error => {
-        console.error('Error:', error.message);
-        Swal.fire('Error', error.message || 'Error al cargar insumo', 'error');
+        Swal.fire('Error', 'Error al cargar insumo', 'error');
     })
     .finally(() => tabs.ocultarLoader());
 }

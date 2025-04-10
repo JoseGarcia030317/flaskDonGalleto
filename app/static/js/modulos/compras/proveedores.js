@@ -151,8 +151,7 @@ function cargarProveedores() {
             document.getElementById('btn-agregar').disabled = false;
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar proveedores', 'error');
+            Swal.fire('Error', 'Error al cargar proveedores', 'error');
         })
         .finally(() => tabs.desbloquearTabs());
 }
@@ -192,8 +191,7 @@ function guardarProveedor() {
             }
         })
         .catch(error => {
-            console.error('Error:', error.message);
-        Swal.fire('Error', error.message || 'Error al guardar proveedor', 'error');
+        Swal.fire('Error', 'Error al guardar proveedor', 'error');
         })
         .finally(() => tabs.ocultarLoader());
 }
@@ -214,13 +212,12 @@ function eliminarProveedor(id_proveedor) {
             cargarProveedores();
             limpiarFormulario();
         } else {
-            Swal.fire('Error', data.error || 'Error al eliminar proveedor', 'error');
+            Swal.fire('Error', 'Error al eliminar proveedor', 'error');
         }
     })
     .catch(error => {
         if (error !== 'cancelado') {
-            console.error('Error:', error.message || error);
-            Swal.fire('Error', error.message || 'Error al eliminar', 'error');
+            Swal.fire('Error', 'Error al eliminar', 'error');
         }
     })
     .finally(() => tabs.ocultarLoader());
@@ -241,8 +238,7 @@ function buscarProveedorId(id_proveedor) {
         }
     })
     .catch(error => {
-        console.error('Error:', error.message);
-        Swal.fire('Error', error.message || 'Error al cargar insumo', 'error');
+        Swal.fire('Error', 'Error al cargar insumo', 'error');
     })
     .finally(() => tabs.ocultarLoader());
 }

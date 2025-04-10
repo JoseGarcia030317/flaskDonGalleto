@@ -47,7 +47,7 @@ def get_pedidos_by_id():
 def cancelar_pedido():
     try:
         data = request.get_json()
-        return jsonify(pedidos.cancelar_pedido(data))
+        return jsonify(pedidos.cancelar_pedido(data["id_pedido"]))
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500
 

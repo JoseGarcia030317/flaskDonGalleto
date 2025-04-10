@@ -40,3 +40,10 @@ def get_pedidos_by_id(id_pedido):
         logger.error(f"Error al obtener el pedido: {e}")
         raise e
     
+def cancelar_pedido(id_pedido):
+    """Obtiene el pedido por ID"""
+    try:
+        return crud.cancelar_pedido(id_pedido)
+    except Exception as e:
+        logger.error(f"Error al obtener el pedido: {e}")
+        raise e

@@ -207,3 +207,35 @@ class PedidosCRUD:
         except Exception as e:
             logger.error(f"Error al obtener el pedido: {e}", exc_info=True)
             raise
+
+    def cancelar_pedido(self, id_pedido):
+        """
+        Realiza una baja lógica de un pedido por su id, cambiando el campo 'estatus' a 3.
+        Retorna un dict con el insumo actualizado o {} si no se encuentra.
+        """
+        Session = DatabaseConnector().get_session
+        with Session() as session:
+            pedido = session.query(Pedido).filter_by(id_pedido=id_pedido, estatus=1).first()
+            if pedido:
+                try:
+                    pedido.estatus = 3  # Baja lógica
+                    session.commit()
+
+                    return {
+                        "status": 200,
+                        "message": "Pedido cancelado correctamente.",
+                        "pedido": {
+                            "id_pedido": pedido.id_pedido,
+                            "clave_pedido": pedido.clave_pedido,
+                            "fecha": str(pedido.fecha), 
+                            "estatus": pedido.estatus
+                        }
+                    }
+                except Exception as e:
+                    session.rollback()
+                    raise e
+            return {
+                "status": 404,
+                "message": "Pedido no encontrado o ya cancelado.",
+                "pedido": {}
+            }

@@ -14,5 +14,11 @@ def crear_pedido(data: dict) -> dict:
         logger.error(f"Error al crear el pedido: {e}")
         raise e
 
-
+def consultar_historial_pedidos(id_cliente: int) -> dict:
+    """Consulta el historial de pedidos de un cliente"""
+    try:
+        return crud.consultar_historial_pedidos(id_cliente)
+    except Exception as e:
+        logger.error(f"Error al consultar el historial de pedidos: {e}")
+        raise e
 

@@ -1,7 +1,8 @@
 from flask_login import UserMixin
-from sqlalchemy import Column, Integer, String, UniqueConstraint, PrimaryKeyConstraint
+from sqlalchemy import Column, Integer, String, UniqueConstraint, PrimaryKeyConstraint, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 import bcrypt
+from datetime import datetime
 
 
 Base = declarative_base()
@@ -89,3 +90,25 @@ class Modulo(Base):
     def __repr__(self):
         return f"<Modulo(id_modulo={self.id_modulo}, descripcion={self.descripcion}, ruta={self.ruta}, funcion={self.funcion}, estatus={self.estatus})>"
 
+
+class TbLoginBloqueos(Base):
+    __tablename__ = 'Tb_login_bloqueos'
+    
+    id_bloqueo = Column(Integer, primary_key=True, autoincrement=True)
+    id_cliente = Column(Integer, nullable=True)
+    id_usuario = Column(Integer, nullable=True)
+    fecha_bloqueo = Column(DateTime, nullable=True)
+    message = Column(String(50), nullable=True)
+
+    def __init__(self, id_cliente=None, id_usuario=None, message=None):
+        self.id_cliente = id_cliente
+        self.id_usuario = id_usuario
+        # Asignamos la fecha actual como objeto datetime para que coincida con el tipo DateTime
+        self.fecha_bloqueo = datetime.now()
+        self.message = message if message else 'Usuario bloqueado por 5 minutos'
+
+    def __repr__(self):
+        return (f"<TbLoginBloqueos(id_cliente={self.id_cliente}, "
+                f"id_usuario={self.id_usuario}, "
+                f"fecha_bloqueo={self.fecha_bloqueo}, "
+                f"message='{self.message}')>")

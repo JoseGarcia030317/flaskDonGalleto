@@ -26,4 +26,14 @@ def cerrar_corte_caja(data: dict) -> dict:
     except Exception as e:
         logger.error("Error al cerrar el corte de caja: %s", e)
         raise e from e
+    
+def get_all_corte_caja():
+    """
+    Cierra un corte de caja.
+    """
+    try:
+        return crud.get_all_corte_caja()
+    except Exception as e:
+        logger.error("Error al obtener el corte de caja: %s", e)
+        raise e from e
 

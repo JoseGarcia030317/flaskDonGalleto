@@ -1,12 +1,13 @@
 from datetime import datetime
 import json
 import logging
+from datetime import datetime
 from typing import List
 from utils.connectiondb import DatabaseConnector
 from core.classes.Tb_corteCaja import CorteCaja, DetalleCorte
 from core.classes.Tb_usuarios import Usuario
 from flask_login import current_user
-from sqlalchemy import text
+from sqlalchemy import text, desc, func
 
 logger = logging.getLogger(__name__)
 
@@ -171,6 +172,43 @@ class CorteCajaCrud:
                     }
         except Exception as e:
             logger.error(f"Error al cerrar el corte de caja: {e}", exc_info=True)
+            raise
+
+    def get_all_corte_caja(self):
+        session = DatabaseConnector().get_session
+        try:
+            with session() as session:
+                query = session.query(
+                    CorteCaja, 
+                    Usuario
+                    ).join(
+                    Usuario, CorteCaja.id_usuario_inicio == Usuario.id_usuario
+                    ).order_by(desc(CorteCaja.fecha_inicio)).limit(10)
+                
+                registros = query.all()
+
+                rows_dict = []
+                for obj in registros:
+                    row_dict = {
+                        "id_corte": obj.CorteCaja.id_corte,
+                        "fecha_inicio": obj.CorteCaja.fecha_inicio.strftime('%Y-%m-%d %H:%M:%S') if obj.CorteCaja.fecha_inicio else None,
+                        "fecha_fin": obj.CorteCaja.fecha_fin.strftime('%Y-%m-%d %H:%M:%S') if obj.CorteCaja.fecha_fin else None,
+                        "saldo_inicial": float(obj.CorteCaja.saldo_inicial) if obj.CorteCaja.saldo_inicial is not None else None,
+                        "saldo_final": float(obj.CorteCaja.saldo_final) if obj.CorteCaja.saldo_final is not None else None,
+                        "saldo_real": float(obj.CorteCaja.saldo_real) if obj.CorteCaja.saldo_real is not None else None,
+                        "saldo_diferencia": float(obj.CorteCaja.saldo_diferencia) if obj.CorteCaja.saldo_diferencia is not None else None,
+                        "nombre_usuario_inicio": obj.Usuario.nombre + " " + obj.Usuario.apellido_pat + " " + obj.Usuario.apellido_mat,
+                        "nombre_usuario_cierre": (
+                            obj.Usuario.nombre + " " + obj.Usuario.apellido_pat + " " + obj.Usuario.apellido_mat
+                            if obj.CorteCaja.fecha_fin else None
+                        ),
+                        "estatus": obj.CorteCaja.estatus
+                    }
+                    rows_dict.append(row_dict)
+
+                return rows_dict
+        except Exception as e:
+            logger.error(f"Error al obtener los cortes de caja: {e}", exc_info=True)
             raise
         
         

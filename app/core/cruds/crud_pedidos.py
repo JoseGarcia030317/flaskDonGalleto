@@ -218,7 +218,7 @@ class PedidosCRUD:
             pedido = session.query(Pedido).filter_by(id_pedido=id_pedido, estatus=1).first()
             if pedido:
                 try:
-                    pedido.estatus = 3  # Baja lógica
+                    pedido.estatus = 3
                     session.commit()
 
                     return {

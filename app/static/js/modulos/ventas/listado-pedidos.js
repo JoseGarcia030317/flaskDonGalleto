@@ -176,18 +176,18 @@ function rechazarPedido() {
         .then(res => {
             if (!res.isConfirmed) return Promise.reject('cancelado');
             tabs.mostrarLoader();
-            const id_venta = Number(document.querySelector("input[name='pedido_id']").value);
-            return api.postJSON('/pedidos/rechazar_pedido', { id_venta });
+            const id_venta = parseInt(document.querySelector("input[name='pedido_id']").value);
+            return api.postJSON('/pedidos/cancelar_pedido', { id_pedido: id_venta });
         })
         .then(resp => {
             tabs.ocultarLoader();
-            if (resp.status === 200 && resp.id_venta) {
-                alertas.procesoTerminadoExito('Pedido rechazado');
-                cargarTablaPedidos();
-                cerrarModal();
+            if (resp.status === 200 && resp.pedido.id_pedido) {
+                alertas.procesoTerminadoExito();
             } else {
-                Swal.fire('Error', resp.error || 'No se pudo rechazar el pedido', 'error');
+                alertas.alertaWarning('No se pudo rechazar el pedido')
             }
+            cargarTablaPedidos();
+            cerrarModal();
         })
         .catch(err => {
             tabs.ocultarLoader();

@@ -205,11 +205,6 @@ def load_user(user_id):
 #     """Manejo de error CSRFError - Recurso no encontrado."""
 #     return jsonify({"error": "Token CSRF inválido", "detalle": str(e)}), 400
 
-
-
-
-
-
 @app.errorhandler(404)
 def handle_404(error):
     """Manejo de error 404 - Recurso no encontrado."""

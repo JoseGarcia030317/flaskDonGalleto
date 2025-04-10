@@ -163,8 +163,8 @@ function validarFormularioEmpresa() {
         erroresEmpresa.contraseniaEmp = "La contraseña debe contener al menos una letra minúscula";
     } else if (!/\d/.test(empresas.contrasenia)) {
         erroresEmpresa.contraseniaEmp = "La contraseña debe contener al menos un número";
-    } else if (!/[@$!%*?&]/.test(empresas.contrasenia)) {
-        erroresEmpresa.contraseniaEmp = "La contraseña debe contener al menos un carácter especial (@, $, !, %, *, ?, &)";
+    } else if (!/[@$!%*]/.test(empresas.contrasenia)) {
+        erroresEmpresa.contraseniaEmp = "La contraseña debe contener al menos un carácter especial (@, $, !, %, *)";
     }
 
     return Object.keys(erroresEmpresa).length === 0 ? null : erroresEmpresa;

@@ -131,18 +131,31 @@ function cargarCarrito() {
         id_cliente: 1
     };
 
-   Swal.fire({
-     title: '¡Pedido registrado!',
-     text: 'Tu pedido ha sido registrado exitosamente.',
-     icon: 'success',
-     confirmButtonColor: '#6f473d',
-     confirmButtonText: 'Aceptar'
-   });
-
-    // Aquí podrías hacer un fetch o axios.post a tu API de ventas
-    // fetch('/ventas/guardar', { method: 'POST', body: JSON.stringify(venta), ... })
-
-   
+    // Enviar el pedido al backend
+    api.postJSON('/pedidos/crear_pedido', venta)
+      .then(response => {
+        Swal.fire({
+          title: '¡Pedido registrado!',
+          text: 'Tu pedido ha sido registrado exitosamente.',
+          icon: 'success',
+          confirmButtonColor: '#6f473d',
+          confirmButtonText: 'Aceptar'
+        }).then(() => {
+          // Vaciar el carrito después de confirmar la compra
+          localStorage.removeItem('carrito');
+          cargarCarrito();
+        });
+      })
+      .catch(error => {
+        console.error('Error al crear el pedido:', error);
+        Swal.fire({
+          title: 'Error',
+          text: 'Hubo un problema al registrar tu pedido. Por favor, intenta nuevamente.',
+          icon: 'error',
+          confirmButtonColor: '#6f473d',
+          confirmButtonText: 'Aceptar'
+        });
+      });
   }
 
 // Asignar funciones globalmente para que sean accesibles en el HTML

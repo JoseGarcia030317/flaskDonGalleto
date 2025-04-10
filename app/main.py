@@ -11,7 +11,7 @@ from flasgger import Swagger
 from core.logic import login
 from core.classes.Tb_usuarios import Usuario
 from core.classes.Tb_clientes import Cliente
-
+import os
 # Blueprints para renderizar HTML
 from routes.routes_templates.auth import auth_bp
 from routes.routes_templates.main_page_bp import main_page_bp
@@ -52,6 +52,8 @@ cors = CORS()
 # Inicializar la aplicacion con las configuraciones de .env
 app = Flask(__name__)
 app.config.from_object(Config)
+
+
 
 # db.init_app(app)
 login_manager.init_app(app)
@@ -167,6 +169,10 @@ def load_user(user_id):
 #     """Manejo de error CSRFError - Recurso no encontrado."""
 #     return jsonify({"error": "Token CSRF inválido", "detalle": str(e)}), 400
 
+
+
+
+
 @app.errorhandler(404)
 def handle_404(error):
     """Manejo de error 404 - Recurso no encontrado."""
@@ -215,4 +221,4 @@ def ratelimit_error(e):
 #     }), 401
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)

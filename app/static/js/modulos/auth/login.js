@@ -44,7 +44,7 @@ function validarFormulario() {
         apellido_mat: document.querySelector('input[name="apellido_mat"]').value,
         telefono: document.querySelector('input[name="telefono"]').value,
         correo: document.querySelector('input[name="correo"]').value,
-        contrasenia: document.querySelector('input[name="contraseniaR"]').value
+        contrasenia: document.querySelector('input[name="contraseniaForm"]').value
     };
 
     const errores = {};
@@ -58,8 +58,16 @@ function validarFormulario() {
     if (!cliente.correo || !/^\S+@\S+\.\S+$/.test(cliente.correo)) {
         errores.correo = "Ingresa un correo válido";
     }
-    if (!cliente.contrasenia || cliente.contrasenia.length < 6) {
-        errores.contrasenia = "La contraseña debe tener al menos 6 caracteres";
+    if (!cliente.contrasenia || cliente.contrasenia.length < 8) {
+        errores.contraseniaForm = "La contraseña debe tener al menos 8 caracteres";
+    } else if (!/[A-Z]/.test(cliente.contrasenia)) {
+        errores.contraseniaForm = "La contraseña debe contener al menos una letra mayúscula";
+    } else if (!/[a-z]/.test(cliente.contrasenia)) {
+        errores.contraseniaForm = "La contraseña debe contener al menos una letra minúscula";
+    } else if (!/\d/.test(cliente.contrasenia)) {
+        errores.contraseniaForm = "La contraseña debe contener al menos un número";
+    } else if (!/[@$!%*?&]/.test(cliente.contrasenia)) {
+        errores.contraseniaForm = "La contraseña debe contener al menos un carácter especial (@, $, !, %, *, ?, &)";
     }
 
     return Object.keys(errores).length === 0 ? null : errores;
@@ -82,7 +90,7 @@ async function registrarUsuario() {
         empresa: "", // Campo vacío este viene en empresa
         tipo: 1, // Valor por defecto Cliente = 1 Empresa = 2
         correo: document.querySelector('input[name="correo"]').value,
-        contrasenia: document.querySelector('input[name="contraseniaR"]').value,
+        contrasenia: document.querySelector('input[name="contraseniaForm"]').value,
         estatus: 1
     };
 
@@ -140,15 +148,23 @@ function validarFormularioEmpresa() {
     const erroresEmpresa = {};
 
     // Validaciones 
-    if (!empresas.empresa) erroresEmpresa.nombre_empresa= "El nombre es requerido";
+    if (!empresas.empresa) erroresEmpresa.nombre_empresa = "El nombre es requerido";
     if (!empresas.telefono || !/^\d{10}$/.test(empresas.telefono)) {
         erroresEmpresa.telefono_empresa = "El teléfono debe tener 10 dígitos";
     }
     if (!empresas.correo || !/^\S+@\S+\.\S+$/.test(empresas.correo)) {
         erroresEmpresa.correo_empresa = "Ingresa un correo válido";
     }
-    if (!empresas.contrasenia || empresas.contrasenia.length < 6) {
-        erroresEmpresa.contraseniaEmp = "La contraseña debe tener al menos 6 caracteres";
+    if (!empresas.contrasenia || empresas.contrasenia.length < 8) {
+        erroresEmpresa.contraseniaEmp = "La contraseña debe tener al menos 8 caracteres";
+    } else if (!/[A-Z]/.test(empresas.contrasenia)) {
+        erroresEmpresa.contraseniaEmp = "La contraseña debe contener al menos una letra mayúscula";
+    } else if (!/[a-z]/.test(empresas.contrasenia)) {
+        erroresEmpresa.contraseniaEmp = "La contraseña debe contener al menos una letra minúscula";
+    } else if (!/\d/.test(empresas.contrasenia)) {
+        erroresEmpresa.contraseniaEmp = "La contraseña debe contener al menos un número";
+    } else if (!/[@$!%*]/.test(empresas.contrasenia)) {
+        erroresEmpresa.contraseniaEmp = "La contraseña debe contener al menos un carácter especial (@, $, !, %, *)";
     }
 
     return Object.keys(erroresEmpresa).length === 0 ? null : erroresEmpresa;

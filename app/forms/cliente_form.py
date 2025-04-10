@@ -24,8 +24,10 @@ class ClienteForm(FlaskForm):
     empresa = StringField('Empresa') 
     tipo = StringField('Tipo de Cliente')
     correo = EmailField('Correo', validators=[DataRequired(), Email()])
-    contrasenia = PasswordField('Contraseña', validators=[
-        DataRequired(),
-        Length(min=6, message='La contraseña debe tener al menos 6 caracteres')
-    ])
+    contraseniaForm = PasswordField('Contraseña', validators=[
+    DataRequired(),
+    Length(min=8, message='La contraseña debe tener al menos 8 caracteres'),
+    Regexp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', 
+           message='La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial')
+])
     submit = SubmitField('Guardar')

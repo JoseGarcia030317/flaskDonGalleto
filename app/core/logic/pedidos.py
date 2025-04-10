@@ -22,3 +22,26 @@ def consultar_historial_pedidos(id_cliente: int) -> dict:
         logger.error(f"Error al consultar el historial de pedidos: {e}")
         raise e
 
+def get_all_pedidos() -> dict:
+    """Obtiene todos los pedidos de la base de datos"""
+    try:
+        return crud.get_all_pedidos()
+    except Exception as e:
+        logger.error(f"Error al obtener todos los pedidos: {e}")
+        raise e
+    
+def get_pedidos_by_id(id_pedido):
+    """Obtiene el pedido por ID"""
+    try:
+        return crud.get_pedidos_by_id(id_pedido)
+    except Exception as e:
+        logger.error(f"Error al obtener el pedido: {e}")
+        raise e
+    
+def cancelar_pedido(id_pedido):
+    """Obtiene el pedido por ID"""
+    try:
+        return crud.cancelar_pedido(id_pedido)
+    except Exception as e:
+        logger.error(f"Error al obtener el pedido: {e}")
+        raise e

@@ -82,7 +82,7 @@ function cargarTablaPedidos() {
                     <td class="p-3 text-center">${fecha.toLocaleString('es-ES', opcionesFecha)}</td>
                     <td class="p-3 text-center">${venta.clave_pedido}</td>
                     <td class="p-3 text-center">${venta.nombre_cliente || '—'}</td>
-                    <td class="p-3 text-center">${parseFloat(venta.total_pedido)}</td>
+                    <td class="p-3 text-center">$${parseFloat(venta.total_pedido)}</td>
                     <td class="p-3 flex justify-center">
                         <button onclick="buscarPedidoPorId(${venta.id_pedido})" class="cursor-pointer">
                         <img src="../../../static/images/info.png" class="w-7 h-7">
@@ -142,6 +142,7 @@ function cargarPedidoEnModal(pedido) {
 }
 
 function aceptarPedido() {
+    const id_pedido = Number(document.querySelector("input[name='pedido_id']").value);
     alertas.confirmarPedido()
         .then(res => {
             if (!res.isConfirmed) return Promise.reject('cancelado');
@@ -149,26 +150,42 @@ function aceptarPedido() {
             if (!convertido) return Promise.reject('stock insuficiente');
 
             tabs.mostrarLoader();
-            const id_venta = Number(document.querySelector("input[name='pedido_id']").value);
-            return api.postJSON('/pedidos/aceptar_pedido', {
-                id_venta,
-                detalles: convertido
-            });
+            const payload = {
+                observacion: '',
+                descuento: 0,
+                id_pedido: id_pedido,
+                detalle_venta: convertido
+            }
+            return api.postJSON('/ventas/guardar_venta', payload);
         })
         .then(resp => {
-            tabs.ocultarLoader();
-            if (resp.status === 200 && resp.id_venta) {
-                alertas.procesoTerminadoExito('Pedido aceptado');
-                cargarTablaPedidos();
-                cerrarModal();
+            if (resp.message === 'Venta guardada correctamente') {
+                cambiarEstatusPedido(id_pedido);
             } else {
                 Swal.fire('Error', resp.error || 'No se pudo aceptar el pedido', 'error');
             }
+            
         })
         .catch(err => {
             tabs.ocultarLoader();
             if (err !== 'cancelado') console.error(err);
         });
+}
+
+function cambiarEstatusPedido(id_pedido) {
+    api.postJSON('/pedidos/aceptar_pedido', {id_pedido : id_pedido})
+    .then(data => {
+        if (data.status === 200 && data.pedido.id_pedido) {
+            alertas.procesoTerminadoExito();
+            cargarTablaPedidos();
+            cerrarModal();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire('Error','Error al registrar la venta', 'error');
+    })
+    .finally(() => tabs.desbloquearTabs());
 }
 
 function rechazarPedido() {
@@ -222,15 +239,16 @@ function validarYConvertirPedido(pedido) {
             return false;
         }
 
-        const galleta = galletasDisponibles.find(g => g.id_galleta === item.producto_id);
+        const galleta = galletasDisponibles.find(g => g.id_galleta === item.galleta_id);
         if (!galleta) {
-            alertas.alertaWarning(`Galleta no encontrada (id=${item.producto_id})`);
+            alertas.alertaWarning(`Galleta no encontrada (id=${item.galleta_id})`);
             return false;
         }
 
         const exist = Number(galleta.existencias);
         const gramos = Number(galleta.gramos_galleta);
-        const piezas = calcCantidadGalletas(tipoKey, item.cantidad, gramos);
+        const factor_venta = Number(item.factor_venta);
+        const piezas = calcCantidadGalletas(tipoKey, factor_venta, gramos);
 
         if (piezas > exist) {
             alertas.alertaWarning(
@@ -241,9 +259,9 @@ function validarYConvertirPedido(pedido) {
         }
 
         detalleConvertido.push({
-            galleta_id: item.producto_id,
+            galleta_id: item.galleta_id,
             tipo_venta_id: item.tipo_venta_id,
-            factor_venta: item.cantidad,
+            factor_venta: factor_venta,
             cantidad_galletas: piezas,
             precio_unitario: item.precio_unitario
         });
@@ -263,7 +281,7 @@ function calcCantidadGalletas(tipoKey, factor, gramosPorPieza) {
             cantidad = factor / gramosPorPieza;
             break;
         case 'medio':
-            cantidad = (factor * 700) / gramosPorPieza;
+            cantidad = ((factor * 700) / gramosPorPieza) - 1;
             break;
         case 'kilo':
             cantidad = (factor * 1000) / gramosPorPieza;

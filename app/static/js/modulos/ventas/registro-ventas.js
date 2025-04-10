@@ -110,13 +110,13 @@ function handleCardClick(galleta) {
             allowDecimals = true;
             break;
         case 'medio':
-            precioUnit = precioPieza * (700 / gramos) * (1 - descuento);
+            precioUnit = precioPieza * Math.floor(700 / gramos) * (1 - descuento);
             step = 1;
             max = Math.floor((exist * gramos) / 700);
             allowDecimals = false;
             break;
         case 'kilo':
-            precioUnit = precioPieza * (1000 / gramos) * (1 - descuento);
+            precioUnit = precioPieza * Math.floor(1000 / gramos) * (1 - descuento);
             step = 1;
             max = Math.floor((exist * gramos) / 1000);
             allowDecimals = false;

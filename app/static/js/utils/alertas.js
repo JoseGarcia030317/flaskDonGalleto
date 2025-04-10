@@ -78,13 +78,12 @@ function procesoTerminadoExito() {
 }
 
 function alertaWarning(mensaje) {
-    console.log("mensaje: " + mensaje);
     Swal.fire({
         position: "center",
         icon: "warning",
         title: mensaje,
         showConfirmButton: false,
-        timer: 1500
+        timer: 2000
     });
 }
 

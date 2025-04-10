@@ -51,6 +51,14 @@ def cancelar_pedido():
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500
 
+@pedidos_bp.route('/pedidos/aceptar_pedido', methods=['POST'])
+def aceptar_pedido():
+    try:
+        data = request.get_json()
+        return jsonify(pedidos.aceptar_pedido(data["id_pedido"]))
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500
+
 
 @pedidos_bp.route('/pedidos/consultar_detalle_pedido', methods=['POST'])
 def consultar_detalle_pedido():

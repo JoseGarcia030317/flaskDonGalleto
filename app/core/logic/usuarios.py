@@ -10,7 +10,9 @@ def create_user(user_data: str | dict) -> dict:
     Crea un nuevo usuario a partir de datos en JSON o diccionario.
     """
     try:
-        return crud.create(user_data)
+        response = crud.create(user_data)
+        logger.info(f"Se ha registrado el usuario")
+        return response
     except Exception as e:
         logger.error("Error al crear el usuario: %s", e)
         raise e from e

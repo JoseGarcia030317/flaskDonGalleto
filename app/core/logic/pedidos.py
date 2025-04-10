@@ -9,7 +9,9 @@ crud = PedidosCRUD()
 def crear_pedido(data: dict) -> dict:
     """Crea un nuevo pedido en la base de datos"""
     try:
-        return crud.guardar_pedido(data)
+        response = crud.guardar_pedido(data)
+        logger.info("Se ha creado un pedido")
+        return response
     except Exception as e:
         logger.error(f"Error al crear el pedido: {e}")
         raise e

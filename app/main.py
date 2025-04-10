@@ -1,9 +1,12 @@
 import copy
+from logging.handlers import RotatingFileHandler
+import os
+import logging
 from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_cors import CORS
 from forms.login_form import LoginForm
 from extensions import limiter
-from flask_login import LoginManager, current_user, logout_user
+from flask_login import LoginManager, current_user, logout_user, user_logged_in, user_logged_out
 from flask_talisman import Talisman
 from flask_wtf.csrf import CSRFProtect, CSRF, CSRFError
 from config import Config
@@ -64,6 +67,7 @@ limiter.init_app(app)
 # Definición de ruta para usuario no autenticados, cuando se inicia la aplicacion
 login_manager.login_view = "mod_landingpage_bp.landing_page"
 login_manager.session_protection = "strong"
+login_manager.login_message = "Por favor, inicia sesión para entrar"
 
 # Headers de seguridad, restringue recursos externos, en
 # este caso solo permite recursos de la aplicacion y
@@ -109,6 +113,8 @@ app.register_blueprint(pedidos_bp)
 app.register_blueprint(corte_caja_bp)
 
 # Ruta raíz de la aplicacion
+
+
 @app.route("/")
 def inicio():
     if not current_user.is_authenticated:
@@ -126,6 +132,38 @@ def inicio():
         # if current_user.tipo == 5:
         #     return redirect(url_for("main_page_bp.mp_almacenista"))
 
+
+# Configuración de los logs
+if not os.path.exists('logs'):
+    os.makedirs('logs')
+
+file_handler = RotatingFileHandler(
+    'logs/app.log',
+    maxBytes=5*1024*1024,
+    backupCount=2,
+    encoding='utf-8'
+)
+file_handler.setLevel(logging.INFO)
+file_handler.setFormatter(logging.Formatter(
+    '%(asctime)s - %(levelname)s - %(name)s - %(message)s'
+))
+
+# Filtro simplificado sin clase
+file_handler.addFilter(lambda record: all(
+    text not in record.getMessage() 
+    for text in ['/static/', 'Detected change', 'Restarting']
+))
+
+root_logger = logging.getLogger()
+root_logger.setLevel(logging.INFO)
+root_logger.addHandler(file_handler)
+
+# Silenciar werkzeug en producción
+if app.debug:
+    logging.getLogger('werkzeug').setLevel(logging.WARNING)
+
+app.logger.info('Aplicación iniciada. Logger configurado.')
+
 @app.before_request
 def make_session_permanent():
     session.permanent = True
@@ -137,6 +175,8 @@ def check_authentication():
         return redirect(url_for(login_manager.login_view))
 
 # Configurar Flask-Login
+
+
 @login_manager.user_loader
 def load_user(user_id):
     if user_id:
@@ -167,15 +207,18 @@ def load_user(user_id):
 #     """Manejo de error CSRFError - Recurso no encontrado."""
 #     return jsonify({"error": "Token CSRF inválido", "detalle": str(e)}), 400
 
+
 @app.errorhandler(404)
 def handle_404(error):
     """Manejo de error 404 - Recurso no encontrado."""
     return render_template('errores/404.html'), 404
 
+
 @app.errorhandler(500)
 def handle_500(error):
     """Manejo de error 500 - Error interno del servidor."""
     return jsonify({"code": 500, "error": "Internal server error"}), 500
+
 
 @app.errorhandler(403)
 def forbidden_error(e):
@@ -183,7 +226,7 @@ def forbidden_error(e):
 
     # Determinar si el cliente prefiere JSON sobre HTML
     prefers_json = request.accept_mimetypes.best == 'application/json'
-    
+
     if prefers_json:
         return jsonify({
             "error": "Acceso denegado",
@@ -194,6 +237,7 @@ def forbidden_error(e):
     flash("No tienes permisos para este recurso. Vuelve a ingresar", "danger")
     return redirect(url_for('auth_bp.login'))
     # return jsonify({"error": "No puedes acceder a esa ruta, mejor vuelve."}), 403
+
 
 @app.errorhandler(429)
 def ratelimit_error(e):
@@ -213,6 +257,7 @@ def ratelimit_error(e):
 #         "error": "Token de autorización no proporcionado o inválido",
 #         "mensaje": "Por favor, proporciona un token válido para acceder a este recurso."
 #     }), 401
+
 
 if __name__ == '__main__':
     app.run(debug=True)

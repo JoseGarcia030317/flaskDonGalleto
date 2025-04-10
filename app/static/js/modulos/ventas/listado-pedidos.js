@@ -12,6 +12,22 @@ const opcionesFecha = {
     second: 'numeric'
 };
 
+const TIPOS_VENTA = {
+    piezas: { id: 2, label: 'Por pieza', descuento: 0 },
+    gramaje: { id: 1, label: 'Por gramaje', descuento: 0 },
+    medio: { id: 3, label: 'Bolsa 700 g', descuento: 0.05 },
+    kilo: { id: 4, label: 'Bolsa kilo', descuento: 0.10 }
+};
+
+let galletasDisponibles = [];
+let pedidoActual = null;
+
+// Obtener encontrar el tipo de venta desde tipo_venta_id
+const VENTA_ID_TO_KEY = Object.entries(TIPOS_VENTA).reduce((map, [key, { id }]) => {
+    map[id] = key;
+    return map;
+}, {});
+
 // ====================================================================
 // Funciones para manejar el DOM y mostrar modales
 // ====================================================================
@@ -50,34 +66,35 @@ function filtrarTabla() {
 // Funcion para carar el apartado de listado de pedidos
 function inicializarModuloListadoPedidos() {
     cargarTablaPedidos();
+    cargarGalletasDisponibles();
 }
 
 function cargarTablaPedidos() {
-    const tbody = document.getElementById("tbody_listado_pedidos");
+    const tbody = document.getElementById('tbody_listado_pedidos');
     tabs.mostrarEsqueletoTabla(tbody, 5, 6);
-    api.getJSON('/pedidos/get_all_pedidos')
+    return api.getJSON('/pedidos/get_all_pedidos')
         .then(data => {
             tbody.innerHTML = '';
             data.forEach(venta => {
                 const fecha = new Date(venta.fecha);
                 tbody.innerHTML += `
                     <tr data-id="${venta.id_venta}" class="hover:bg-gray-100">
-                        <td class="p-3 text-center">${fecha.toLocaleString('es-ES', opcionesFecha)}</td>    
-                        <td class="p-3 text-center">${venta.clave_venta}</td>
-                        <td class="p-3 text-center">${venta.observacion}</td>
-                        <td class="p-3 text-center">${venta.descuento || 0}</td>
-                        <td class="p-3 text-center">${venta.cliente} || Chuchito</td>
-                        <td class="p-3 flex justify-center">
-                            <button onclick="buscarPedioPorId(${venta.id_venta})" class="align-middle cursor-pointer">
-                                <img src="../../../static/images/info.png" class="w-7 h-7">
-                            </button>
-                        </td>
+                    <td class="p-3 text-center">${fecha.toLocaleString('es-ES', opcionesFecha)}</td>
+                    <td class="p-3 text-center">${venta.clave_venta}</td>
+                    <td class="p-3 text-center">${venta.observacion || ''}</td>
+                    <td class="p-3 text-center">${venta.descuento || 0}%</td>
+                    <td class="p-3 text-center">${venta.cliente || '—'}</td>
+                    <td class="p-3 flex justify-center">
+                        <button onclick="buscarPedidoPorId(${venta.id_venta})" class="cursor-pointer">
+                        <img src="../../../static/images/info.png" class="w-7 h-7">
+                        </button>
+                    </td>
                     </tr>
                 `;
             });
         })
         .catch(error => {
-            console.error('Error:', error.message);
+            console.error('Error:', error);
             Swal.fire('Error', error.message || 'Error al cargar el listado de pedidos', 'error');
         })
         .finally(() => tabs.desbloquearTabs());
@@ -89,96 +106,177 @@ function buscarPedidoPorId(id) {
     api.postJSON('/pedidos/get_pedido_by_id', { id_venta: id })
         .then(data => {
             if (data.id_venta) {
+                pedidoActual = data;
                 cargarPedidoEnModal(data);
                 abrirModal();
             } else {
-                alertas.mostrarError('venta no encontrada');
+                alertas.alertaError('Pedido no encontrado');
             }
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar la venta', 'error');
+            console.error('Error:', error);
+            Swal.fire('Error', error.message || 'Error al cargar el pedido', 'error');
         })
+        .finally(() => tabs.ocultarLoader());
 }
 
 function cargarPedidoEnModal(pedido) {
     document.querySelector("input[name='pedido_id']").value = pedido.id_venta;
-    document.querySelector("label[name='clave']").innerHTML = pedido.clave_venta;
-    document.querySelector("label[name='fecha']").innerHTML = pedido.fecha;
-    document.querySelector("label[name='descuento']").innerHTML = pedido.descuento || 0;
-    document.querySelector("label[name='observaciones']").innerHTML = pedido.observacion;
-    document.querySelector("label[name='cliente']").innerHTML = pedido.cliente || 'Chuchito'
-    document.querySelector("label[name='total']").innerHTML = "$" + (venta.total_venta).toFixed(2);
+    document.querySelector("label[name='clave']").textContent = pedido.clave_venta;
+    document.querySelector("label[name='fecha']").textContent = new Date(pedido.fecha).toLocaleString('es-ES', opcionesFecha);
+    document.querySelector("label[name='descuento']").textContent = (pedido.descuento || 0) + '%';
+    document.querySelector("label[name='observaciones']").textContent = pedido.observacion || '';
+    document.querySelector("label[name='cliente']").textContent = pedido.cliente || '';
+    document.querySelector("label[name='total']").textContent = '$' + (pedido.total_venta || 0).toFixed(2);
 
-    const tbodyDetalles = document.querySelector("#tbody_pedido_detalle");
+    const tbodyDetalles = document.getElementById('tbody_pedido_detalle');
     tbodyDetalles.innerHTML = '';
-    pedido.detalles.forEach(detalle => {
+    pedido.detalles.forEach(det => {
         const fila = document.createElement('tr');
         fila.innerHTML = `
-            <td class="p-3 text-center">${detalle.producto_id}</td>
-            <td class="p-3 text-center">${detalle.tipo_venta || 'Sin tipo de venta'}</td>
-            <td class="p-3 text-center">${detalle.precio_unitario}</td>
-            <td class="p-3 text-center">${detalle.cantidad}</td>
-            <td class="p-3 text-center">$${(detalle.precio_unitario * detalle.cantidad).toFixed(2)}</td>
-        `;
+        <td class="p-3 text-center">${det.producto_id}</td>
+        <td class="p-3 text-center">${det.tipo_venta || '—'}</td>
+        <td class="p-3 text-center">${det.precio_unitario.toFixed(2)}</td>
+        <td class="p-3 text-center">${det.cantidad}</td>
+        <td class="p-3 text-center">$${(det.precio_unitario * det.cantidad).toFixed(2)}</td>
+      `;
         tbodyDetalles.appendChild(fila);
     });
 }
 
 function aceptarPedido() {
     alertas.confirmarPedido()
-        .then(resultado => {
-            if (!resultado.isConfirmed) {
-                return Promise.reject('cancelado')
-            }
+        .then(res => {
+            if (!res.isConfirmed) return Promise.reject('cancelado');
+            const convertido = validarYConvertirPedido(pedidoActual);
+            if (!convertido) return Promise.reject('stock insuficiente');
+
             tabs.mostrarLoader();
-            const id_pedido = parseInt(document.querySelector("input[name='pedido_id']").value);
-            return api.postJSON('/pedidos/aceptar_pedido', { id_venta: id_pedido });
+            const id_venta = Number(document.querySelector("input[name='pedido_id']").value);
+            return api.postJSON('/pedidos/aceptar_pedido', {
+                id_venta,
+                detalles: convertido
+            });
         })
-        .then(data => {
-            if (data.id_venta && data.status === 200) {
-                tabs.ocultarLoader();
-                alertas.procesoTerminadoExito();
+        .then(resp => {
+            tabs.ocultarLoader();
+            if (resp.status === 200 && resp.id_venta) {
+                alertas.procesoTerminadoExito('Pedido aceptado');
                 cargarTablaPedidos();
+                cerrarModal();
             } else {
-                Swal.fire('Error', data.error || 'Error al aceptar el pedido', 'error');
+                Swal.fire('Error', resp.error || 'No se pudo aceptar el pedido', 'error');
             }
         })
-        .catch(error => {
-            if (error !== 'cancelado') {
-                console.error('Error:', error.message || error);
-                Swal.fire('Error', error.message || 'Error al aceptar el pedido', 'error');
-            }
+        .catch(err => {
+            tabs.ocultarLoader();
+            if (err !== 'cancelado') console.error(err);
         });
 }
+
 
 function rechazarPedido() {
     alertas.rechazarPedido()
-        .then(resultado => {
-            if (!resultado.isConfirmed) {
-                return Promise.reject('cancelado');
-            }
+        .then(res => {
+            if (!res.isConfirmed) return Promise.reject('cancelado');
             tabs.mostrarLoader();
-            let id_pedido = parseInt(document.querySelector("input[name='pedido_id']").value);
-            return api.postJSON('/pedidos/rechazar_pedido', { id_pedido: id_pedido });
+            const id_venta = Number(document.querySelector("input[name='pedido_id']").value);
+            return api.postJSON('/pedidos/rechazar_pedido', { id_venta });
         })
-        .then(data => {
-            if (data.id_venta && data.status === 200) {
-                tabs.ocultarLoader();
-                alertas.procesoTerminadoExito();
+        .then(resp => {
+            tabs.ocultarLoader();
+            if (resp.status === 200 && resp.id_venta) {
+                alertas.procesoTerminadoExito('Pedido rechazado');
                 cargarTablaPedidos();
+                cerrarModal();
             } else {
-                Swal.fire('Error', data.error || 'Error al rechazar el pedido', 'error');
+                Swal.fire('Error', resp.error || 'No se pudo rechazar el pedido', 'error');
             }
         })
-        .catch(error => {
-            if (error !== 'cancelado') {
-                console.error('Error:', error.message || error);
-                Swal.fire('Error', error.message || 'Error al rechazar el pedido', 'error');
-            }
+        .catch(err => {
+            tabs.ocultarLoader();
+            if (err !== 'cancelado') console.error(err);
         });
 }
 
+// consultas las galletas disponibles
+function cargarGalletasDisponibles() {
+    return api.getJSON('/galletas/get_all_galletas')
+        .then(data => {
+            galletasDisponibles = data;
+        })
+        .catch(err => {
+            console.error('Error al cargar galletas:', err);
+            alertas.alertaError('No se pudo cargar el inventario de galletas');
+        })
+        .finally(() => tabs.desbloquearTabs());
+}
+
+// ====================================================================
+// Funciones para las conversiones y calculos necesarios
+// ====================================================================
+// funcion para las validacion de existencias del pedido y convertirlo a piezas de galleta
+function validarYConvertirPedido(pedido) {
+    const detalleConvertido = [];
+
+    for (const item of pedido.detalles) {
+        const tipoKey = VENTA_ID_TO_KEY[item.tipo_venta_id];
+        if (!tipoKey) {
+            alertas.alertaWarning(`Tipo de venta desconocido (id=${item.tipo_venta_id})`);
+            return false;
+        }
+
+        const galleta = galletasDisponibles.find(g => g.id_galleta === item.producto_id);
+        if (!galleta) {
+            alertas.alertaWarning(`Galleta no encontrada (id=${item.producto_id})`);
+            return false;
+        }
+
+        const exist = Number(galleta.existencias);
+        const gramos = Number(galleta.gramos_galleta);
+        const piezas = calcCantidadGalletas(tipoKey, item.cantidad, gramos);
+
+        if (piezas > exist) {
+            alertas.alertaWarning(
+                `Stock insuficiente para "${galleta.nombre_galleta}": ` +
+                `pides ${piezas} piezas, pero solo hay ${exist}.`
+            );
+            return false;
+        }
+
+        detalleConvertido.push({
+            galleta_id: item.producto_id,
+            tipo_venta_id: item.tipo_venta_id,
+            factor_venta: item.cantidad,
+            cantidad_galletas: piezas,
+            precio_unitario: item.precio_unitario
+        });
+    }
+
+    return detalleConvertido;
+}
+
+// funcion para calcular la cantidad de galletas dependiendo del facto de venta, el tipo de venta
+function calcCantidadGalletas(tipoKey, factor, gramosPorPieza) {
+    let cantidad;
+    switch (tipoKey) {
+        case 'piezas':
+            cantidad = factor;
+            break;
+        case 'gramaje':
+            cantidad = factor / gramosPorPieza;
+            break;
+        case 'medio':
+            cantidad = (factor * 700) / gramosPorPieza;
+            break;
+        case 'kilo':
+            cantidad = (factor * 1000) / gramosPorPieza;
+            break;
+        default:
+            cantidad = factor;
+    }
+    return Math.floor(cantidad);
+}
 
 window.inicializarModuloListadoPedidos = inicializarModuloListadoPedidos;
 window.buscarPedidoPorId = buscarPedidoPorId;

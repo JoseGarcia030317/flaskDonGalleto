@@ -269,8 +269,6 @@ async function inicializarModuloGalletas() {
 
 // Funcion para cargar los insumos inicialmente
 async function consultarInsumos() {
-    const container = document.getElementById('galletas-container');
-    tabs.mostrarEsqueletoCardGalleta(container);
     await api.getJSON('/insumos/get_all_insumos_unidad')
         .then(data => {
             if (data) insumosDisponibles = data;
@@ -367,7 +365,6 @@ function buscarGalletaPorId(id_galleta) {
 
 // Función para cargar datos de galleta en formulario
 function cargarGalletaEnFormulario(galleta) {
-    console.log(JSON.stringify(galleta));
     galleta = normalizarReceta(galleta);
     // Campos principales
     document.querySelector('input[name="galleta_id"]').value = galleta.id_galleta;

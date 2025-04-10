@@ -11,17 +11,23 @@ logging.basicConfig(level=logging.INFO)
 def get_all_users():
     """Obtiene todos los usuarios de la base de datos."""
     crud = UsuarioCRUD()
-    return crud.list_all()
+    response = crud.list_all()
+    logger.info("Se han obtenido todos los usuarios")
+    return response
 
 def get_user_by_id(id_usuario):
     """Obtiene un usuario por su id."""
     crud = UsuarioCRUD()
-    return crud.read(id_usuario)
+    response =  crud.read(id_usuario)
+    logger.info("Se ha obtenido un usuario")
+    return response
 
 def get_cliente_by_id(id_cliente):
     """Obtiene un cliente por su id."""
     crud = ClienteCRUD()
-    return crud.read(id_cliente)
+    response = crud.read(id_cliente)
+    logger.info("Se ha obtenido un cliente")
+    return response
 
 def autenticar_usuario(usr, pwd):
     """Verifica las credenciales de un usuario. 
@@ -32,10 +38,11 @@ def autenticar_usuario(usr, pwd):
     if "@" in usr:
         crud = ClienteCRUD()
         usuario = crud.authenticate(usr, pwd)
+        logger.info("Se ha autenticado un cliente")
     else:
         crud = UsuarioCRUD()
         usuario = crud.authenticate(usr, pwd)
-
+        logger.info("Se ha obtenido un usuario")
     if usuario:
         return usuario
     return {}
@@ -43,5 +50,6 @@ def autenticar_usuario(usr, pwd):
 def create_user(data):
     """Crea un nuevo usuario."""
     crud = UsuarioCRUD()
-    return crud.create(data)
-
+    response = crud.create(data)
+    logger.info("Se ha creado un usuario")
+    return response

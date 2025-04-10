@@ -12,7 +12,9 @@ def create_galleta(galleta_data: str | dict) -> dict:
     Crea una nueva galleta a partir de datos en JSON o diccionario.
     """
     try:
-        return crud.create(galleta_data)
+        response = crud.create(galleta_data)
+        logger.info("Se ha creado una galleta")
+        return response
     except Exception as e:
         logger.error("Error al crear la galleta: %s", e)
         raise e
@@ -22,7 +24,9 @@ def update_galleta(id_galleta: int, galleta_data: str | dict) -> dict:
     Actualiza una galleta existente a partir de datos en JSON o diccionario.
     """
     try:
-        return crud.update(id_galleta, galleta_data)
+        response = crud.update(id_galleta, galleta_data)
+        logger.info("Se ha actualizado una galleta")
+        return response
     except Exception as e:
         logger.error("Error al actualizar la galleta: %s", e)
         raise e
@@ -32,7 +36,9 @@ def get_all_galletas() -> dict:
     Obtiene todas las galletas existentes.
     """
     try:
-        return crud.get_all_galletas()
+        response = crud.get_all_galletas()
+        logger.info("Se han obtenido todas las galletas")
+        return response
     except Exception as e:
         logger.error("Error al obtener todas las galletas: %s", e)
         raise e
@@ -42,7 +48,9 @@ def get_galleta_by_id(id_galleta: int) -> dict:
     Obtiene una galleta existente a partir de su ID.    
     """
     try:
-        return crud.get_by_id(id_galleta)
+        response = crud.get_by_id(id_galleta)
+        logger.info("Se ha obtenido una galleta")
+        return response
     except Exception as e:
         logger.error("Error al obtener la galleta: %s", e)
         raise e     
@@ -52,7 +60,9 @@ def delete_galleta(id_galleta: int) -> dict:
     Elimina una galleta existente a partir de su ID.
     """
     try:
-        return crud.delete(id_galleta)
+        response = crud.delete(id_galleta)
+        logger.info("Se ha eliminado una galleta")
+        return response
     except Exception as e:
         logger.error("Error al eliminar la galleta: %s", e)
         raise e

@@ -10,7 +10,9 @@ crud = VentaCRUD()
 def guardar_venta(data: dict):
     """Guarda una venta en la base de datos"""
     try:    
-        return crud.guardar_venta(data)
+        response = crud.guardar_venta(data)
+        logger.info("Se ha guardado una venta.")
+        return response
     except Exception as e:
         logger.error("Error al guardar la venta: %s", e)
         raise e from e
@@ -18,7 +20,9 @@ def guardar_venta(data: dict):
 def get_all_tipo_venta():
     """Obtiene todos los tipos de venta de la base de datos"""
     try:
-        return crud.get_all_tipo_venta()
+        response = crud.get_all_tipo_venta()
+        logger.info("Se han obtenido todos los tipos de venta.")
+        return response
     except Exception as e:
         logger.error("Error al obtener los tipos de venta: %s", e)
         raise e from e
@@ -26,7 +30,9 @@ def get_all_tipo_venta():
 def get_all_ventas():
     """Obtiene todas las ventas de la base de datos"""
     try:
-        return crud.get_all_ventas()
+        response = crud.get_all_ventas()
+        logger.info("Se han obtenido todas las ventas.")
+        return response
     except Exception as e:
         logger.error("Error al obtener las ventas: %s", e)
         raise e from e
@@ -34,7 +40,9 @@ def get_all_ventas():
 def get_venta_by_id(data: dict):
     """Obtiene una venta por su ID"""
     try:
-        return crud.get_venta_by_id(data["id_venta"])
+        response = crud.get_venta_by_id(data["id_venta"])
+        logger.info("Se ha eliminado la venta")
+        return response
     except Exception as e:
         logger.error("Error al obtener la venta: %s", e)
         raise e from e
@@ -42,7 +50,9 @@ def get_venta_by_id(data: dict):
 def cancelar_venta(data: dict):
     """Cancela una venta"""
     try:
-        return crud.cancelar_venta(data["id_venta"])
+        response = crud.cancelar_venta(data["id_venta"])
+        logger.info("Se ha cancelado la venta")
+        return response
     except Exception as e:
         logger.error("Error al cancelar la venta: %s", e)
         raise e from e

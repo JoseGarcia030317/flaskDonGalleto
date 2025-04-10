@@ -82,7 +82,7 @@ class PedidosCRUD:
                         "tipo_venta": tipo_venta.nombre,
                         "precio_unitario": detalle.precio_unitario,
                         "factor_venta": detalle.factor_venta,
-                        "estado": ""
+                        "estado": pedido.estatus
                     })
                 
                 # Devolvemos un diccionario que encapsula la lista de pedidos

@@ -56,11 +56,20 @@ function consultarGalletas() {
               galletaDiv.innerHTML = `
   
   
-        <img src="${rutaImagen}" alt="${galleta.nombre_galleta}" 
-             class="aspect-square w-full rounded-lg bg-gray-200 object-cover group-hover:opacity-75" 
-             onerror="this.onerror=null; this.src='static/images/galletas/default.jpg';" 
-             loading="lazy">
-        <h3 class="mt-4 text-sm text-gray-700">${galleta.nombre_galleta}</h3>
+<div class="rounded-lg overflow-hidden bg-white shadow-md">
+  <img src="${rutaImagen}" 
+       alt="${galleta.nombre_galleta}" 
+       class="aspect-square w-full bg-gray-200 object-cover group-hover:opacity-75" 
+       onerror="this.onerror=null; this.src='static/images/galletas/default.jpg';" 
+       loading="lazy">
+  
+  <!-- Contenedor blanco para la información -->
+  <div class="p-4 bg-white text-gray-800">
+    <h3 class="text-lg font-semibold">${galleta.nombre_galleta}</h3>
+    
+  </div>
+</div>
+        <p class="text-sm">INGREDIENTES: ${galleta.descripcion_galleta}</p>
         <p class="mt-1 text-lg font-medium text-gray-900">$ ${galleta.precio_unitario}</p>
         <div class="flex flex-col gap-2">
             <div class="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-[#8B4513] has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-[#8B4513]">
@@ -256,6 +265,8 @@ function agregarAlCarritoDesdeGalleta(id_producto, nombre, precio_unitario, boto
                   tipo_venta === 'medio_kilo' ? '1/2 kilo' : 'kilo'} de galletas`;
     mostrarNotificacion(mensaje);
 }
+
+
 
 // Asignar funciones globalmente para que sean accesibles en el HTML
 window.consultarGalletas = consultarGalletas;

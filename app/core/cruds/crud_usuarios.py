@@ -1,4 +1,4 @@
-from core.classes.Tb_usuarios import Usuario, TipoUsuario, Modulo, TipoUsuarioModulo
+from core.classes.Tb_usuarios import Usuario, TipoUsuario, Modulo, TipoUsuarioModulo, TbLoginBloqueos
 import json
 import bcrypt
 from utils.connectiondb import DatabaseConnector 
@@ -252,4 +252,26 @@ class UsuarioCRUD:
             except Exception as e:
                 session.rollback()
                 raise e
+
+    def bloquear_for_five_minutes(self, id_usuario=None, id_cliente=None, message=None):
+        """Se bloquea un usuario registrandolo en la tabla con fecha y hora actual"""
+        Session = DatabaseConnector().get_session
+        with Session() as session:
+            try:
+                bloqueo = TbLoginBloqueos(id_usuario=id_usuario, id_cliente=id_cliente, message=message)
+                session.add(bloqueo)
+                session.commit()
+                return {"status": 200, "message": "Usuario bloqueado por 5 minutos"}
+            except Exception as e:
+                session.rollback()
+                raise e
+
+    def verificar_bloqueo(self, id_usuario=None, id_cliente=None):
+        """Verifica si el usuario o cliente está bloqueado"""
+        Session = DatabaseConnector().get_session
+        with Session() as session:
+            if id_usuario:
+                bloqueo = session.query(TbLoginBloqueos).filter_by(id_usuario=id_usuario, ).first()
+            elif id_cliente:
+                bloqueo = session.query(TbLoginBloqueos).filter_by(id_cliente=id_cliente).first()
 

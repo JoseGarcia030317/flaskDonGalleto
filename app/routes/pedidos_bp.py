@@ -15,4 +15,12 @@ def crear_pedido():
     except Exception as e:
         return jsonify({"status": 500, "message": str(e)}), 500
 
+@pedidos_bp.route('/pedidos/consultar_historial_pedidos', methods=['POST'])
+def consultar_historial_pedidos():
+    try:
+        data = request.get_json()
+        id_cliente = current_user.id_cliente if current_user.is_authenticated else data["id_cliente"]
+        return jsonify(pedidos.consultar_historial_pedidos(id_cliente))
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500
 

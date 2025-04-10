@@ -91,3 +91,119 @@ class PedidosCRUD:
         except Exception as e:
             logger.error(f"Error al consultar el historial de pedidos: {e}", exc_info=True)
             raise
+
+    def get_all_pedidos(self) -> dict:
+        """
+        Obtiene todos los pedidos de la base de datos. con la suma de su total de detalle
+        """
+        Session = DatabaseConnector().get_session
+        try:
+            with Session() as session:
+                pedidos = session.query(
+                        Pedido.id_pedido,
+                        Pedido.clave_pedido,
+                        Pedido.fecha,
+                        Pedido.estatus, 
+                        func.concat(
+                                Cliente.nombre, " ", Cliente.apellido_pat, " ", Cliente.apellido_mat
+                                ).label("cliente"),
+                        func.sum(PedidoDetalle.factor_venta * PedidoDetalle.precio_unitario).label("total")
+                    ).join(
+                        PedidoDetalle, PedidoDetalle.id_pedido == Pedido.id_pedido
+                    ).join(
+                        Cliente, Pedido.id_cliente == Cliente.id_cliente
+                    ).filter(Pedido.estatus == 1).group_by(Pedido.id_pedido)
+                
+                pedidos = pedidos.all()
+
+                result = [];
+                for obj in pedidos:
+                    row_dict  = {
+                        "id_pedido": obj.id_pedido,
+                        "clave_pedido": obj.clave_pedido,
+                        "fecha": obj.fecha.strftime('%Y-%m-%d %H:%M:%S'),
+                        "estatus": obj.estatus,
+                        "nombre_cliente": obj.cliente,
+                        "total_pedido": obj.total
+                    }
+                    result.append(row_dict )
+                return result
+        except Exception as e:
+            logger.error(f"Error al obtener todos los pedidos: {e}", exc_info=True)
+            raise
+    
+
+    def get_pedidos_by_id(self, id_pedido):
+        """
+        Obtiene pedido por ID 
+        """
+        Session = DatabaseConnector().get_session
+        try:
+            with Session() as session:
+                 
+                subuery = session.query(
+                        Galleta.id_galleta,
+                        PedidoDetalle.factor_venta,
+                        Galleta.nombre_galleta,
+                        Galleta.precio_unitario,
+                        func.sum(PedidoDetalle.factor_venta * Galleta.precio_unitario).label("total_pedido"),
+                        PedidoDetalle.tipo_venta_id,
+                        TipoVenta.nombre.label("tipo_venta_nombre")
+                    ).join(
+                        PedidoDetalle, PedidoDetalle.galleta_id == Galleta.id_galleta
+                    ).join(
+                        TipoVenta, TipoVenta.id_tipo_venta == PedidoDetalle.tipo_venta_id
+                    ).filter(
+                        PedidoDetalle.id_pedido == id_pedido
+                    ).group_by(
+                        Galleta.id_galleta,
+                        PedidoDetalle.factor_venta,
+                        Galleta.nombre_galleta,
+                        Galleta.precio_unitario,
+                        PedidoDetalle.tipo_venta_id,
+                        TipoVenta.nombre
+                    ).all()
+                
+                query = session.query(
+                        Pedido.id_pedido,
+                        Pedido.clave_pedido,
+                        Pedido.fecha,
+                        Pedido.estatus, 
+                        func.concat(
+                                Cliente.nombre, " ", Cliente.apellido_pat, " ", Cliente.apellido_mat
+                                ).label("cliente"),
+                        func.sum(PedidoDetalle.factor_venta * PedidoDetalle.precio_unitario).label("total")
+                    ).join(
+                        PedidoDetalle, PedidoDetalle.id_pedido == Pedido.id_pedido
+                    ).join(
+                        Cliente, Pedido.id_cliente == Cliente.id_cliente
+                    ).filter(Pedido.id_pedido == id_pedido).group_by(Pedido.id_pedido).first()
+
+                if query:
+                    result = {
+                        "id_pedido": query.id_pedido,
+                        "clave_pedido": query.clave_pedido,
+                        "fecha": query.fecha.strftime('%Y-%m-%d'),
+                        "estatus": query.estatus,
+                        "nombre_cliente": query.cliente,
+                        "total_pedido": float(query.total),
+                        "detalles": [
+                            {
+                                "factor_venta": d.factor_venta,
+                                "galleta_id": d.id_galleta,
+                                "galleta_nombre": d.nombre_galleta,
+                                "precio_unitario": float(d.precio_unitario),
+                                "subtotal": float(d.total_pedido),
+                                "tipo_venta": d.tipo_venta_nombre,
+                                "tipo_venta_id": d.tipo_venta_id
+                            } for d in subuery
+                        ]
+                    }
+                else:
+                    result = {}
+
+                return result 
+
+        except Exception as e:
+            logger.error(f"Error al obtener el pedido: {e}", exc_info=True)
+            raise

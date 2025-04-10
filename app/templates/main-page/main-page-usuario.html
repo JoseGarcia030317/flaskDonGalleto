@@ -4,11 +4,15 @@
 
 {% block side_var %}
 <div>
+  <!-- Contenedor para fecha estática -->
+  <div id="fecha-hora-actual" class="px-6 py-4 text-center text-[#3C1D0C] font-medium">
+  </div>
+
   <nav class="space-y-2 bg-[#efe6dc] border-0 w-full">
     {% for modulo in modulos %}
     <label class="cursor-pointer mb-6">
-      <input type="radio" name="menu-item-bar" class="peer hidden" onclick="{{ modulo.funcion }}" {% if loop.first
-        %}checked{% endif %} data-index="{{ loop.index0 }}">
+      <input type="radio" name="menu-item-bar" class="peer hidden" onclick="{{ modulo.funcion }}" {% if loop.first %}
+        checked{% endif %} data-index="{{ loop.index0 }}">
       <a class="block px-6 py-1 text-nav text-[#3C1D0C] bg-transparent 
                   hover:bg-[rgba(145,90,23,0.15)] hover:text-black
                   peer-checked:bg-[rgba(145,90,23,0.15)] peer-checked:text-black">
@@ -33,20 +37,44 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    let fechaHora = localStorage.getItem('horaCarga');
+
+    if (!fechaHora) {
+      const ahora = new Date();
+      const año = ahora.getFullYear();
+      const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+      const dia = String(ahora.getDate()).padStart(2, '0');
+      const horas = String(ahora.getHours()).padStart(2, '0');
+      const minutos = String(ahora.getMinutes()).padStart(2, '0');
+
+      fechaHora = `${año}-${mes}-${dia}, ${horas}:${minutos}`;
+      localStorage.setItem('horaCarga', fechaHora);
+    }
+
+    document.getElementById('fecha-hora-actual').textContent = fechaHora;
+  });
+</script>
+
 {% for modulo in modulos %}
 <script type="module" src="../../static/js/modulos/{{ modulo.ruta }}"></script>
 {% endfor %}
+
 <script>
+  // Script para mantener el estado del menú
   window.addEventListener('DOMContentLoaded', () => {
     const radios = Array.from(document.querySelectorAll('input[name="menu-item-bar"]'));
     const guardado = localStorage.getItem('selectedRadioIndex');
     let radioClick;
+
     if (guardado !== null && radios[guardado]) {
       radioClick = radios[guardado];
     } else {
       radioClick = radios[0];
     }
     radioClick.click();
+
     radios.forEach(radio => {
       radio.addEventListener('change', () => {
         const idx = radio.dataset.index;
@@ -55,6 +83,4 @@
     });
   });
 </script>
-
-
 {% endblock %}

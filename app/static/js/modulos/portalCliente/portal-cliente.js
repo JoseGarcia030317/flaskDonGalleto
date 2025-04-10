@@ -50,7 +50,7 @@ function consultarGalletas() {
             const galletasContainer = document.getElementById('galletasContainer');
             galletasContainer.innerHTML = '';
             galletasContainer.className = 'mx-auto max-w-2xl sm:py-24 lg:max-w-7xl grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8';
-
+            console.log(response)
             response.forEach(galleta => {
                 const galletaDiv = document.createElement('div');
                 const rutaImagen = `static/images/galletas/${galleta.nombre_galleta}.jpg`;
@@ -74,7 +74,7 @@ function consultarGalletas() {
                             <div class="flex flex-col gap-2">
                                 <div class="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-[#8B4513] has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-[#8B4513]">
                                     <input type="number" name="cantidad" class="block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 border-r border-gray-300 placeholder:text-gray-400 focus:outline-none sm:text-sm/6" placeholder="Cantidad" min="1" value="1">
-                                    <select name="tipo_venta" class="w-[120px] border-l border-gray-200 rounded-md py-1.5 pr-2 pl-3 text-base text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-[#8B4513] sm:text-sm/6 border-[#8B4513]">
+                                    <select name="tipo_venta" class="w-[120px] border-l rounded-md py-1.5 pr-2 pl-3 text-base text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-[#8B4513] sm:text-sm/6 border-[#8B4513]">
                                         <option value="pieza">Pieza(s)</option>
                                         <option value="gramaje">Gramaje</option>
                                         <option value="medio_kilo">Paquete 700 g</option>

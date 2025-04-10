@@ -14,18 +14,18 @@
 </head>
 <body class="bg-gray-100 flex items-center justify-center h-screen">
     <div class="bg-white p-8 rounded-lg shadow-lg text-center">
-        <h1 class="text-4xl font-bold text-red-600 mb-4">Error 429</h1>
+        <h1 class="text-4xl font-bold text-red-600 mb-4">Bloqueo de cuenta</h1>
         <p class="text-gray-700 text-lg mb-6">
             Has excedido el límite de solicitudes. Por favor, espera unos momentos.
         </p>
         <p class="text-gray-600">
-            Serás redirigido automáticamente a la página de inicio de sesión en <span id="countdown" class="font-bold"></span> segundos.
+            Serás redirigido automáticamente a la página de inicio de sesión en <span id="countdown" class="font-bold">60</span> segundos.
         </p>
     </div>
 
     <script>
         // Contador regresivo
-        let timeLeft = 50;
+        let timeLeft = 60;
         const countdownElement = document.getElementById('countdown');
 
         const interval = setInterval(() => {

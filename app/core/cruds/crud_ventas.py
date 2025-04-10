@@ -26,6 +26,7 @@ class VentaCRUD:
                 venta = Venta(
                     observacion=data["observacion"],
                     descuento=data["descuento"],
+                    id_pedido=data.get("id_pedido")
                 )
                 session.add(venta)
                 session.flush()

@@ -14,9 +14,12 @@ const opcionesFecha = {
 // FUncion para inicializar el modulo y primero revisar si hay un corte de caja del dia
 async function inicializarModuloCorteCaja() {
     const corteVigente = await revisarCorteCaja();
+    console.log(corteVigente);
     if (corteVigente) { // Si hay un corte de caja
         document.getElementById('corte-caja-content').hidden = false;
-        // mostramos el corte caja en la vista
+        document.getElementById('fecha-hora').innerHTML = corteVigente.fecha_inicio;
+        document.getElementById('usuario').innerHTML = corteVigente.nombre_usuario_inicio;
+        document.getElementById('monto-inicial').innerHTML = '$' + corteVigente.saldo_inicial;
         cargarCorteCaja();
     } else { // No existe y hay que pedir crearlo
         document.getElementById('corte-caja-content').hidden = true;
@@ -27,9 +30,9 @@ async function inicializarModuloCorteCaja() {
 
 // Funcion que verifica si en BD hay un corte de caja con la fecha de hoy
 export async function revisarCorteCaja() {
-    const response = await api.getJSON('/horneado/list_horneados');
+    const response = await api.getJSON('corte_caja/get_all_corte_caja');
     if (response) { // Sí existe el corte, lo regresa
-        return response;
+        return response.find(corte => corte.estatus === 1);
     } else { // No existe corte
         console.error('Error al revisar el corte de caja');
         return null;
@@ -87,7 +90,7 @@ function cargarCorteCaja() {
 function consultarCompras() {
     tabs.mostrarLoader();
     api.postJSON('/compras/list_compras_by_estatus', {
-        estatus: [0,1],
+        estatus: [0,1,2],
         filtrar_por_fecha: "True"
     })
     .then(data => {
@@ -115,7 +118,7 @@ function formatCurrency(amount) {
 
 // Función para actualizar la card con los datos
 function actualizarCardCompras(compras) {
-    const comprasActivas = compras.filter(c => c.estatus === 1);
+    const comprasActivas = compras.filter(c => c.estatus === 1 || c.estatus === 2);
     const comprasCanceladas = compras.filter(c => c.estatus === 0);
     
     const totalActivas = comprasActivas.reduce((sum, compra) => sum + compra.total_compra, 0);

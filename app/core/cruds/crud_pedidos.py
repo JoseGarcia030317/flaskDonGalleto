@@ -91,3 +91,18 @@ class PedidosCRUD:
         except Exception as e:
             logger.error(f"Error al consultar el historial de pedidos: {e}", exc_info=True)
             raise
+
+    def get_all_pedidos(self) -> dict:
+        """
+        Obtiene todos los pedidos de la base de datos. con la suma de su total de detalle
+        """
+        Session = DatabaseConnector().get_session
+        try:
+            with Session() as session:
+                pedidos = session.query(Pedido).join(Cliente, Pedido.id_cliente == Cliente.id_cliente).all()
+                for pedido in pedidos:
+                    pedido.total = sum(detalle.precio_unitario * detalle.factor_venta for detalle in pedido.detalle)
+                return {"pedidos": pedidos}
+        except Exception as e:
+            logger.error(f"Error al obtener todos los pedidos: {e}", exc_info=True)
+            raise

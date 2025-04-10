@@ -167,15 +167,15 @@ class CorteCajaCrud:
                             "id_usuario_cierre": id_usuario_cierre
                         }
                     )
-                    session.commit()
 
-                    detalle = CorteCajaCrud.detalle_corte_cierre(data["id_corte"])
+                    session.commit()
+                    detalle = CorteCajaCrud.detalle_corte_cierre(corte_caja)
                     return  detalle
         except Exception as e:
             logger.error(f"Error al cerrar el corte de caja: {e}", exc_info=True)
             raise
 
-    def detalle_corte_cierre(id_corte):
+    def detalle_corte_cierre(corte_caja):
         try:
             Session = DatabaseConnector().get_session
             with Session() as session:
@@ -190,7 +190,7 @@ class CorteCajaCrud:
                         ).join(
                             CompraDetalle, Compra.id_compra == CompraDetalle.compra_id
                         ).filter(
-                            DetalleCorte.id_corte == id_corte
+                            DetalleCorte.id_corte == corte_caja.id_corte
                         ).group_by(
                             Compra.id_compra, Compra.clave_compra, DetalleCorte.id_corte
                         )
@@ -207,7 +207,7 @@ class CorteCajaCrud:
                 ).join(
                     VentaDetalle, Venta.id_venta == VentaDetalle.id_venta
                 ).filter(
-                    DetalleCorte.id_corte == id_corte
+                    DetalleCorte.id_corte == corte_caja.id_corte
                 ).group_by(
                     Venta.id_venta, Venta.clave_venta, DetalleCorte.id_corte
                 )
@@ -229,7 +229,7 @@ class CorteCajaCrud:
                 ).join(
                     Usuario, Usuario.id_usuario == CorteCaja.id_usuario_cierre
                 ).filter(
-                    CorteCaja.id_corte ==  id_corte
+                    CorteCaja.id_corte ==  corte_caja.id_corte
                 ).group_by(
                     CorteCaja.id_corte)
                 
@@ -258,8 +258,18 @@ class CorteCajaCrud:
                     return response
                 else:
                     return {
-                        "estatus": 404,
-                        "message": "Corte no encontrado",
+                        "estatus": 200,
+                        "message": "El corte fue realizado con exito",
+                        "saldo_inicial": corte_caja.saldo_inicial,
+                        "saldo_final": corte_caja.saldo_final,
+                        "total_ventas": 0,  # Sumar los montos de ventas
+                        "total_compras": 0,  # Sumar los montos de compras
+                        "saldo_real": corte_caja.saldo_real,
+                        "saldo_diferencia": corte_caja.saldo_diferencia,
+                        "id_usuario_cierre": corte_caja.id_usuario_cierre,
+                        "nombre_usuario": 0,
+                        "fecha": corte_caja.fecha_fin.strftime('%Y-%m-%d %H:%M:%S') if corte_caja.fecha_fin else None,
+                        "id_corte": corte_caja.id_corte,
                         "detalle_ventas": [],
                         "detalle_compras": []
                     }

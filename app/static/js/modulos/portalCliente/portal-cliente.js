@@ -56,7 +56,7 @@ function consultarGalletas() {
               galletaDiv.innerHTML = `
   
   
-        <div class="rounded-lg overflow-hidden bg-white shadow-md">
+<div class="rounded-lg overflow-hidden bg-white shadow-md">
   <img src="${rutaImagen}" 
        alt="${galleta.nombre_galleta}" 
        class="aspect-square w-full bg-gray-200 object-cover group-hover:opacity-75" 
@@ -66,11 +66,10 @@ function consultarGalletas() {
   <!-- Contenedor blanco para la información -->
   <div class="p-4 bg-white text-gray-800">
     <h3 class="text-lg font-semibold">${galleta.nombre_galleta}</h3>
-    <p class="text-sm">Aquí va una descripción o información adicional.</p>
+    
   </div>
 </div>
-
-        <h3 class="mt-4 text-sm text-gray-700">${galleta.nombre_galleta}</h3>
+        <p class="text-sm">INGREDIENTES: ${galleta.descripcion_galleta}</p>
         <p class="mt-1 text-lg font-medium text-gray-900">$ ${galleta.precio_unitario}</p>
         <div class="flex flex-col gap-2">
             <div class="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-[#8B4513] has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-[#8B4513]">

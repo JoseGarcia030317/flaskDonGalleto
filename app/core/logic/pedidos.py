@@ -30,3 +30,11 @@ def get_all_pedidos() -> dict:
         logger.error(f"Error al obtener todos los pedidos: {e}")
         raise e
     
+def get_pedidos_by_id(id_pedido):
+    """Obtiene el pedido por ID"""
+    try:
+        return crud.get_pedidos_by_id(id_pedido)
+    except Exception as e:
+        logger.error(f"Error al obtener el pedido: {e}")
+        raise e
+    

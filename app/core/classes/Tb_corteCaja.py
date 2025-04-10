@@ -8,7 +8,6 @@ Base = declarative_base()
 
 class CorteCaja(Base):
     __tablename__ = 'TB_CorteCaja'
-    __table_args__ = {'schema': 'DB_DONGALLETO'}  # Define el esquema de la tabla
 
     id_corte = Column(Integer, primary_key=True, autoincrement=True)
     fecha_inicio = Column(DateTime)
@@ -36,7 +35,6 @@ class CorteCaja(Base):
         
 class DetalleCorte(Base):
     __tablename__ = 'TB_CorteCajaDetalle'
-    __table_args__ = {'schema': 'DB_DONGALLETO'}
     
     id_corte = Column(Integer, primary_key=True)
     tipo_registro = Column(Integer)

@@ -6,7 +6,6 @@ Base = declarative_base()
 
 class Pedido(Base):
     __tablename__ = 'TB_Pedido'
-    __table_args__ = {'schema': 'DB_DONGALLETO'}
 
     id_pedido = Column(Integer, primary_key=True, autoincrement=True)
     clave_pedido = Column(String(65), nullable=False, unique=True)
@@ -37,7 +36,6 @@ def generar_clave_pedido(mapper, connection, target):
 
 class PedidoDetalle(Base):
     __tablename__ = 'TB_PedidoDetalle'
-    __table_args__ = {'schema': 'DB_DONGALLETO'}
 
     id_pedido = Column(Integer, primary_key=True)
     galleta_id = Column(Integer, primary_key=True)

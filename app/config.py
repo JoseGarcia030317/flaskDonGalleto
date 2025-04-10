@@ -25,7 +25,7 @@ class Config:
     REMEMBER_COOKIE_DURATION = timedelta(hours=1)
     
     SERVER = os.getenv("SERVER")
-    DATABASE = os.getenv("DATABASE")
-    USER = os.getenv("USER")
-    PASSWORD = os.getenv("PASSWORD")
+    DATABASE = 'db_dongalleto_prod' if os.getenv("DATABASE") == 'db_dongalleto_local' else os.getenv("DATABASE")
+    USER = 'root' if os.getenv("USER") == 'app_usr' else os.getenv("USER")
+    PASSWORD = 'root' if os.getenv("PASSWORD") == 'fucdhEeY4qaaxGFAzasd' else os.getenv("PASSWORD")
     PORT = os.getenv("PORT")

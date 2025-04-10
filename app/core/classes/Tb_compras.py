@@ -45,7 +45,6 @@ class CompraDetalle(Base):
     
     __table_args__ = (
         PrimaryKeyConstraint('compra_id', 'insumo_id', name='PK_CompraDetalle'),
-        {'schema': 'DB_DONGALLETO'}
     )
 
     def __init__(self, compra_id=None, insumo_id=None, presentacion=None, precio_unitario=None, cantidad=None):

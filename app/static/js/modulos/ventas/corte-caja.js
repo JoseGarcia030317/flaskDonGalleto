@@ -8,18 +8,29 @@ const opcionesFecha = {
     year: 'numeric'
 };
 
+const opcionesHora = {
+    hour: '2-digit',
+    minute: '2-digit'
+};
+
+let monto_inicial = 0;
+let ventas_efectivo = 0;
+let egresos = 0;
+let id_corte;
 // ========================================================================
 // Funciones para hacer las conexiones con la aplicaion Flask de corte de caja
 // =========================================================================
 // FUncion para inicializar el modulo y primero revisar si hay un corte de caja del dia
 async function inicializarModuloCorteCaja() {
+    id_corte = 0;
     const corteVigente = await revisarCorteCaja();
-    console.log(corteVigente);
-    if (corteVigente) { // Si hay un corte de caja
+        if (corteVigente && corteVigente != 'undefined') { // Si hay un corte de caja
+        id_corte = corteVigente.id_corte;
         document.getElementById('corte-caja-content').hidden = false;
         document.getElementById('fecha-hora').innerHTML = corteVigente.fecha_inicio;
         document.getElementById('usuario').innerHTML = corteVigente.nombre_usuario_inicio;
-        document.getElementById('monto-inicial').innerHTML = '$' + corteVigente.saldo_inicial;
+        monto_inicial = corteVigente.saldo_inicial;
+        document.getElementById('monto-inicial').innerHTML = '$' + monto_inicial;
         cargarCorteCaja();
     } else { // No existe y hay que pedir crearlo
         document.getElementById('corte-caja-content').hidden = true;
@@ -49,25 +60,18 @@ async function solicitarCorteCaja() {
         console.log('Operación cancelada por el usuario');
         return;
     }
-
     const montoInicial = result.value;
-
     if (montoInicial) {
-        const registroExitoso = await registrarCorteCaja(montoInicial);
-
-        if (registroExitoso) {
-            document.getElementById('corte-caja-content').hidden = false;
-            alertas.alertaRecetas('Corte de caja registrado correctamente');
-            cargarCorteCaja();
-        }
+        registrarCorteCaja(montoInicial);
+        inicializarModuloCorteCaja();
     }
 }
 
 // Funcion par registrar el corte de caja en BD
 async function registrarCorteCaja(monto) {
     try {
-        const response = await api.postJSON('/corte_caja/registrar', {
-            monto_inicial: parseFloat(monto),
+        const response = await api.postJSON('/corte_caja/iniciar_caja', {
+            saldo_inicial: parseFloat(monto),
             fecha: new Date().toISOString()
         });
         return response.success;
@@ -81,7 +85,7 @@ async function registrarCorteCaja(monto) {
 // Funcion para cargar corte de caja en el vista
 function cargarCorteCaja() {
     // cargar las ventas
-    // cargarVentas();
+    cargarVentas();
     // cargar las compras
     consultarCompras();
 }
@@ -99,8 +103,24 @@ function consultarCompras() {
         }
     })
     .catch(error => {
-        console.error('Error al obtener compras:', error);
         alertas.alertaRecetas('Error al cargar las compras');
+    })
+    .finally(() => {
+        tabs.ocultarLoader();
+        tabs.desbloquearTabs();
+    });
+}
+
+function cargarVentas() {
+    tabs.mostrarLoader();
+    api.getJSON('/ventas/get_venta_by_status')
+    .then(data => {
+        if (data) {
+            actualizarCardVentas(data);
+        }
+    })
+    .catch(error => {
+        alertas.alertaRecetas('Error al cargar las ventas');
     })
     .finally(() => {
         tabs.ocultarLoader();
@@ -123,9 +143,10 @@ function actualizarCardCompras(compras) {
     
     const totalActivas = comprasActivas.reduce((sum, compra) => sum + compra.total_compra, 0);
     const totalCanceladas = comprasCanceladas.reduce((sum, compra) => sum + compra.total_compra, 0);
-
+    
+    egresos = totalActivas;
     document.getElementById('label-total-compras').textContent = 
-        formatCurrency(totalActivas);
+        formatCurrency(egresos);
     document.getElementById('label-cantidad-compras').textContent = 
         comprasActivas.length;
     document.getElementById('label-total-canceladas').textContent = 
@@ -145,6 +166,32 @@ function actualizarCardCompras(compras) {
 
     comprasCanceladas.forEach(compra => {
         agregarFilaCompra(comprasBody, compra, opcionesFecha, true);
+    });
+}
+
+function actualizarCardVentas(ventas) {
+    const ventasActivas = ventas.filter(c => c.estatus === 1);
+    const ventasCanceladas = ventas.filter(c => c.estatus === 0);
+    
+    const totalActivas = ventasActivas.reduce((sum, venta) => sum + venta.total_venta, 0);
+    const totalCanceladas = ventasCanceladas.reduce((sum, venta) => sum + venta.total_venta, 0);
+
+    ventas_efectivo = totalActivas;
+    document.getElementById('label-total-ventas').textContent = formatCurrency(ventas_efectivo);
+    document.getElementById('label-total-ventas-canceladas').textContent = ventasCanceladas.length + " (" + formatCurrency(totalCanceladas) + ")";
+
+    const ventasBody = document.getElementById('ventas-body');
+    
+    while (ventasBody.children.length > 1) {
+        ventasBody.removeChild(ventasBody.lastChild);
+    }
+
+    ventasActivas.forEach(venta => {
+        agregarFilaVenta(ventasBody, venta, opcionesHora, false);
+    });
+
+    ventasCanceladas.forEach(venta => {
+        agregarFilaVenta(ventasBody, venta, opcionesHora, true);
     });
 }
 
@@ -168,6 +215,25 @@ function agregarFilaCompra(container, compra, opcionesFecha, esCancelada) {
     container.appendChild(fila);
 }
 
+function agregarFilaVenta(container, venta, opcionesHora, esCancelada) {
+    const fila = document.createElement('div');
+    fila.className = 'grid grid-cols-4 gap-2 p-4 border-b';
+    
+    // Formatear solo la fecha (DD/MM/YYYY)
+    const fecha = new Date(venta.fecha).toLocaleTimeString('es-ES', opcionesHora);
+
+    const colorTexto = esCancelada ? 'text-red-600' : 'text-[#3C1D0C]';
+    
+    fila.innerHTML = `
+        <span class="${colorTexto}">${fecha}</span>
+        <span class="${colorTexto}">${venta.clave_venta}</span>
+        <span class="${colorTexto}">${venta.estatus === 1 ? 'Completada' : 'Cancelada'}</span>
+        <span class="text-right ${colorTexto}">${formatCurrency(venta.total_venta)}</span>
+    `;
+    
+    container.appendChild(fila);
+}
+
 // Funcion para guardar el corte de caja en bd
 async function confirmarCierre() {
     const totalReal = document.getElementById('total-real-input').value;
@@ -176,14 +242,29 @@ async function confirmarCierre() {
         await alertas.alertaRecetas('Debe ingresar un monto válido');
         return;
     }
+    tabs.mostrarLoader();
+    api.postJSON('/corte_caja/cerrar_caja', {id_corte: id_corte, saldo_real: totalReal})
+    .then(data => {
+        if(data.estatus === 404){
+            Swal.error('Error', data.message, 'error');
+        } else {
+            alertas.procesoTerminadoExito();
+        }
+    })
+    .catch(error => {
+        alertas.alertaRecetas('Error al guardar el corte de caja');
+    })
+    .finally(() => {
+        tabs.ocultarLoader();
+        tabs.desbloquearTabs();
+    });
 }
 
 // Calcular total en el corte de caja en el modal
 function calcularDiferencia() {
     // Obtener valores numéricos
-    const totalEsperado = 2850.00; // Reemplazar con valor dinámico
     const totalReal = parseFloat(document.getElementById('total-real-input').value) || 0;
-    
+    const totalEsperado = document.getElementById('total_esperado').textContent;
     // Calcular diferencia
     const diferencia = totalReal - totalEsperado;
     
@@ -207,9 +288,16 @@ function toggleSection(tipo) {
 
 // Funcion para mostrar el modal del corte de caja con los calculos
 function mostrarModalCierre() {
-    document.getElementById('total-real-input').value = '';
-    document.getElementById('diferencia').textContent = '- $0.00';
+    let total_esperado = monto_inicial + ventas_efectivo - egresos;
+    let total_esperado_formato = Math.round(total_esperado * 100) / 100; // Devuelve un número
     document.getElementById('modal-cierre').classList.remove('hidden');
+    document.getElementById('total-real-input').value = '';
+    document.getElementById('monto_inicial').textContent = monto_inicial;
+    document.getElementById('venta_efectivo').textContent = ventas_efectivo;
+    document.getElementById('egresos').textContent = egresos;
+    document.getElementById('total_esperado').textContent = total_esperado_formato;
+    document.getElementById('diferencia').textContent = '- $0.00';
+    
 }
 
 // Funcion para cerrar el modal del corte de caja

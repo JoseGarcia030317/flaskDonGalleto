@@ -77,3 +77,11 @@ def get_tipo_usuario_by_id(id_tipo_usuario: int) -> dict:
         logger.error("Error al obtener el tipo de usuario con id %d: %s", id_tipo_usuario, e)
         raise
 
+def bloquear_for_five_minutes(id_usuario: int | None = None, id_cliente: int | None = None) -> dict:
+    """Bloquear un usuario por 5 minutos."""
+    try:
+        result = crud.bloquear_for_five_minutes(id_usuario, id_cliente)
+        return result
+    except Exception as e:
+        logger.error("Error al bloquear el usuario con id %d: %s", id_usuario, e)
+

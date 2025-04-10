@@ -6,6 +6,8 @@ from typing import List
 from utils.connectiondb import DatabaseConnector
 from core.classes.Tb_corteCaja import CorteCaja, DetalleCorte
 from core.classes.Tb_usuarios import Usuario
+from core.classes.Tb_ventas import Venta, VentaDetalle
+from core.classes.Tb_compras import Compra, CompraDetalle
 from flask_login import current_user
 from sqlalchemy import text, desc, func
 
@@ -166,12 +168,104 @@ class CorteCajaCrud:
                         }
                     )
                     session.commit()
-                    return  {
-                        "estatus": 200,
-                        "message": "El corte fue realizado con exito"
-                    }
+
+                    detalle = self.detalle_corte_cierre(id_corte)
+                    return  detalle
         except Exception as e:
             logger.error(f"Error al cerrar el corte de caja: {e}", exc_info=True)
+            raise
+
+    def detalle_corte_cierre(id_corte):
+        try:
+            Session = DatabaseConnector().get_session
+            with Session() as session:
+                compraSub = session.query(
+                            DetalleCorte.id_corte,
+                            Compra.id_compra,
+                            Compra.clave_compra,
+                            func.sum(CompraDetalle.precio_unitario * CompraDetalle.cantidad).label('monto_compra'),
+                            Compra.fecha_compra
+                        ).join(
+                            Compra, Compra.id_compra == DetalleCorte.id_compra
+                        ).join(
+                            CompraDetalle, Compra.id_compra == CompraDetalle.compra_id
+                        ).filter(
+                            DetalleCorte.id_corte == id_corte
+                        ).group_by(
+                            Compra.id_compra, Compra.clave_compra, DetalleCorte.id_corte
+                        )
+                
+                
+                ventSub = session.query(
+                    DetalleCorte.id_corte,
+                    Venta.id_venta,
+                    Venta.clave_venta,
+                    func.sum(VentaDetalle.factor_venta * VentaDetalle.precio_unitario).label('monto_venta'),
+                    Venta.fecha
+                ).join(
+                    Venta, Venta.id_venta == DetalleCorte.id_venta
+                ).join(
+                    VentaDetalle, Venta.id_venta == VentaDetalle.id_venta
+                ).filter(
+                    DetalleCorte.id_corte == id_corte
+                ).group_by(
+                    Venta.id_venta, Venta.clave_venta, DetalleCorte.id_corte
+                )
+
+                query = session.query(
+                    CorteCaja.id_corte,
+                    CorteCaja.fecha_fin,
+                    CorteCaja.saldo_inicial,
+                    CorteCaja.saldo_final,
+                    CorteCaja.saldo_real,
+                    CorteCaja.saldo_diferencia,
+                    CorteCaja.id_usuario_cierre,
+                    Usuario.usuario,
+                    CorteCaja.estatus,
+                    func.sum(DetalleCorte.monto_venta).label('total_monto_venta'),
+                    func.sum(DetalleCorte.monto_compra).label('total_monto_compra')
+                ).join(
+                    DetalleCorte, DetalleCorte.id_corte == CorteCaja.id_corte
+                ).join(
+                    Usuario, Usuario.id_usuario == CorteCaja.id_usuario_cierre
+                ).filter(
+                    CorteCaja.id_corte ==  id_corte
+                ).group_by(
+                    CorteCaja.id_corte)
+                
+                corte = query.one_or_none()
+
+                if corte:
+                    compras = [{"clave_compra": c.clave_compra, "monto_compra": c.monto_compra, "fecha_compra": c.fecha_compra.strftime('%Y-%m-%d')} for c in compraSub.all()]
+                    ventas = [{"clave_venta": v.clave_venta, "monto_venta": v.monto_venta, "fecha_venta": v.fecha.strftime('%Y-%m-%d')} for v in ventSub.all()]
+            
+                    response = {
+                        "estatus": 200,
+                        "message": "El corte fue realizado con exito",
+                        "saldo_inicial": corte.saldo_inicial,
+                        "saldo_final": corte.saldo_final,
+                        "total_ventas": corte.total_monto_venta,  # Sumar los montos de ventas
+                        "total_compras": corte.total_monto_compra,  # Sumar los montos de compras
+                        "saldo_real": corte.saldo_real,
+                        "saldo_diferencia": corte.saldo_diferencia,
+                        "id_usuario_cierre": corte.id_usuario_cierre,
+                        "nombre_usuario": corte.usuario,
+                        "fecha": corte.fecha_fin.strftime('%Y-%m-%d %H:%M:%S') if corte.fecha_fin else None,
+                        "id_corte": corte.id_corte,
+                        "detalle_ventas": ventas,
+                        "detalle_compras": compras
+                    }
+                    return response
+                else:
+                    return {
+                        "estatus": 404,
+                        "message": "Corte no encontrado",
+                        "detalle_ventas": [],
+                        "detalle_compras": []
+                    }
+
+        except Exception as e:
+            logger.error(f"Error al obtener detalle del corte de caja: {e}", exc_info=True)
             raise
 
     def get_all_corte_caja(self):

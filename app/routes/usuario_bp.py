@@ -3,6 +3,7 @@ from flasgger.utils import swag_from
 from flask_login import current_user, fresh_login_required, login_required
 from utils.decorators import role_required
 from core.logic import usuarios
+from core.logic import clientes
 
 usuario_bp = Blueprint('usuario_bp', __name__)
 
@@ -71,3 +72,15 @@ def get_tipo_usuario_by_id():
     data = request.get_json()
     id_tipo_usuario = data.get("id_tipo_usuario")
     return jsonify(usuarios.get_tipo_usuario_by_id(id_tipo_usuario))    
+
+
+@usuario_bp.route("/usuarios/bloquear_for_five_minutes", methods=['POST'])
+def bloquear_for_five_minutes():
+    data = request.get_json()
+    id_usuario = data.get("id_usuario")
+    id_cliente = data.get("id_cliente")
+
+    try:
+        return jsonify(usuarios.bloquear_for_five_minutes(id_usuario, id_cliente))
+    except Exception as e:
+        return jsonify({"status": 500, "message": str(e)}), 500

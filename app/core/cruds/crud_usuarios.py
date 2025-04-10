@@ -150,14 +150,24 @@ class UsuarioCRUD:
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            usuario = session.query(Usuario, TipoUsuario).join(
+            # Se utiliza outerjoin para garantizar que se devuelva el usuario aun si no hay registro en TipoUsuario.
+            usuario = session.query(Usuario, TipoUsuario).outerjoin(
                 TipoUsuario,
                 Usuario.tipo == TipoUsuario.id_tipo_usuario
             ).filter(
-                Usuario.usuario==username, 
-                Usuario.estatus==1
+                Usuario.usuario == username, 
+                Usuario.estatus == 1
             ).first()
-    
+
+            # Verifica que se haya obtenido un resultado.
+            if not usuario:
+                return {}
+
+            # Comprueba que la contraseña coincida.
+            if not bcrypt.checkpw(plain_password.encode('utf-8'), usuario.Usuario.contrasenia.encode('utf-8')):
+                return {}
+
+            # Consulta de módulos, que depende del campo usuario.Usuario.tipo.
             modules = session.query(Modulo).join(
                 TipoUsuarioModulo,
                 Modulo.id_modulo == TipoUsuarioModulo.id_modulo
@@ -168,25 +178,26 @@ class UsuarioCRUD:
                 TipoUsuario.id_tipo_usuario == usuario.Usuario.tipo
             ).all()
 
-            if not usuario:
-                return {}
-            
-            if not bcrypt.checkpw(plain_password.encode('utf-8'), usuario.Usuario.contrasenia.encode('utf-8')):
-                return {}
-            
             return {
-                    "id_usuario": usuario.Usuario.id_usuario,
-                    "nombre": usuario.Usuario.nombre,
-                    "apellido_pat": usuario.Usuario.apellido_pat,
-                    "apellido_mat": usuario.Usuario.apellido_mat,
-                    "telefono": usuario.Usuario.telefono,
-                    "tipo": usuario.Usuario.tipo,
-                    "usuario": usuario.Usuario.usuario,
-                    "contrasenia": usuario.Usuario.contrasenia,
-                    "estatus": usuario.Usuario.estatus,
-                    "tipo_usuario": usuario.TipoUsuario.nombre,
-                    "modules": [{"id_modulo": m.id_modulo, "descripcion": m.descripcion, "ruta": m.ruta, "funcion": m.funcion} for m in modules]
-                }
+                "id_usuario": usuario.Usuario.id_usuario,
+                "nombre": usuario.Usuario.nombre,
+                "apellido_pat": usuario.Usuario.apellido_pat,
+                "apellido_mat": usuario.Usuario.apellido_mat,
+                "telefono": usuario.Usuario.telefono,
+                "tipo": usuario.Usuario.tipo,
+                "usuario": usuario.Usuario.usuario,
+                "contrasenia": usuario.Usuario.contrasenia,
+                "estatus": usuario.Usuario.estatus,
+                "tipo_usuario": usuario.TipoUsuario.nombre if usuario.TipoUsuario else None,
+                "modules": [{
+                    "id_modulo": m.id_modulo,
+                    "descripcion": m.descripcion,
+                    "ruta": m.ruta,
+                    "funcion": m.funcion
+                } for m in modules]
+            }
+
+
 
     def list_tipo_usuarios(self):
         """

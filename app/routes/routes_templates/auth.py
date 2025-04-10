@@ -52,8 +52,10 @@ def login():
     if request.method == 'POST' and form.validate_on_submit():
         autentication = log.autenticar_usuario(form.usuario.data, form.contrasenia.data)
         user_data = copy.deepcopy(autentication)
-        user_data.pop("modules")
-        user_data.pop("tipo_usuario")
+
+        if user_data.get("modules"):
+            user_data.pop("modules")
+            user_data.pop("tipo_usuario")
         
         user = None
         # Se instancia el usuario como Cliente o Usuario según la presencia de "id_cliente"
@@ -71,7 +73,6 @@ def login():
         if user:
             login_user(user, remember=form.remember_me.data)
             session["modules"] = UsuarioCRUD().get_modules()
-            # return redirect(url_for(endpoint))
             return redirect(url_for('main_page_bp.mp_usuario'))
         else:
             flash("Usuario y/o contraseña incorrectos", "danger")

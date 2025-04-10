@@ -221,4 +221,4 @@ def ratelimit_error(e):
 #     }), 401
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)

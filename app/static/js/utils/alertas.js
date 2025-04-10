@@ -165,6 +165,7 @@ function corteCajaInicio() {
         cancelButtonText: 'Cancelar',
         confirmButtonColor: '#3C1D0C',
         cancelButtonColor: '#6c757d',
+        allowOutsideClick: false,  // Evita cerrar el alert al hacer click fuera
         inputValidator: (value) => {
             if (!value) return 'Debe ingresar un monto inicial';
             if (parseFloat(value) <= 0) return 'El monto debe ser mayor a cero!';

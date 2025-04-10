@@ -31,7 +31,7 @@ async function inicializarModuloCorteCaja() {
         document.getElementById('usuario').innerHTML = corteVigente.nombre_usuario_inicio;
         monto_inicial = corteVigente.saldo_inicial;
         document.getElementById('monto-inicial').innerHTML = '$' + monto_inicial;
-        cargarCorteCaja();
+        await cargarCorteCaja();
     } else { // No existe y hay que pedir crearlo
         document.getElementById('corte-caja-content').hidden = true;
         // pedir corte de caja
@@ -58,11 +58,12 @@ async function solicitarCorteCaja() {
 
     if (result.isDismissed) {
         console.log('Operación cancelada por el usuario');
+        inicializarModuloCorteCaja();
         return;
     }
     const montoInicial = result.value;
     if (montoInicial) {
-        registrarCorteCaja(montoInicial);
+        await registrarCorteCaja(montoInicial);
         inicializarModuloCorteCaja();
     }
 }
@@ -83,11 +84,11 @@ async function registrarCorteCaja(monto) {
 }
 
 // Funcion para cargar corte de caja en el vista
-function cargarCorteCaja() {
+async function cargarCorteCaja() {
     // cargar las ventas
-    cargarVentas();
+    await cargarVentas();
     // cargar las compras
-    consultarCompras();
+    await consultarCompras();
 }
 
 // Funccion para consultar las compras
@@ -249,6 +250,8 @@ async function confirmarCierre() {
             Swal.error('Error', data.message, 'error');
         } else {
             alertas.procesoTerminadoExito();
+            inicializarModuloCorteCaja()
+            cerrarModalCierre()
         }
     })
     .catch(error => {

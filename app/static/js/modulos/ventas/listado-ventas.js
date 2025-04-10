@@ -72,8 +72,7 @@ function cargarTablaVentas() {
         });
     })
     .catch(error => {
-        console.error('Error:', error.message);
-        Swal.fire('Error', error.message || 'Error al cargar el historial de ventas', 'error');
+        Swal.fire('Error', 'Error al cargar el historial de ventas', 'error');
     })
     .finally(() => tabs.desbloquearTabs());
 }
@@ -91,8 +90,7 @@ function buscarVentaPorId(id) {
         }
     })
     .catch(error => {
-        console.error('Error:', error.message);
-        Swal.fire('Error', error.message || 'Error al cargar el la venta', 'error');
+        Swal.fire('Error', 'Error al cargar el la venta', 'error');
     })
     .finally(() => tabs.ocultarLoader());
 }
@@ -210,8 +208,7 @@ function generarPdfTicket() {
           }
       })
       .catch(error => {
-          console.error('Error:', error.message);
-          Swal.fire('Error', error.message || 'Error al imprimir ticket', 'error');
+          Swal.fire('Error', 'Error al imprimir ticket', 'error');
       })
       .finally(() => tabs.ocultarLoader());
 }

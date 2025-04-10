@@ -106,8 +106,7 @@ function obtener_usuarios() {
         }  
     })
     .catch(error => {
-        console.error('Error:', error.message);
-        Swal.fire('Error', error.message || 'Error al cargar los usuarios', 'error');
+        Swal.fire('Error', 'Error al cargar los usuarios', 'error');
     });
 }
 
@@ -126,13 +125,12 @@ function eliminarUsuario(id_usuario) {
             alertas.procesoTerminadoExito();
             cargarUsuarios();
         } else {
-            Swal.fire('Error', data.error || 'Error al eliminar usuario', 'error');
+            Swal.fire('Error', 'Error al eliminar usuario', 'error');
         }
     })
     .catch(error => {
         if (error !== 'cancelado') {
-            console.error('Error:', error.message || error);
-            Swal.fire('Error', error.message || 'Error al eliminar', 'error');
+            Swal.fire('Error', 'Error al eliminar', 'error');
         }
     });
 };
@@ -173,8 +171,7 @@ function guardar_usuario(event){
             }
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al guardar usuaro', 'error');
+            Swal.fire('Error', 'Error al guardar usuaro', 'error');
         })
     
 };
@@ -191,8 +188,7 @@ function obtener_usuario_id(id_usuario){
             }
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al obtener usuario', 'error');
+            Swal.fire('Error', 'Error al obtener usuario', 'error');
         });
 }
 
@@ -247,8 +243,7 @@ function cargarSelectRol() {
         });
     })
     .catch(error => {
-        console.error('Error:', error.message);
-        Swal.fire('Error', error.message || 'Error al cargar unidades', 'error');
+        Swal.fire('Error', 'Error al cargar unidades', 'error');
     })
 };
 
@@ -268,8 +263,7 @@ function cargarSelectRolEdicion(idSeleccionado) {
             });
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar roles de usuario', 'error');
+            Swal.fire('Error', 'Error al cargar roles de usuario', 'error');
         });
 }
 

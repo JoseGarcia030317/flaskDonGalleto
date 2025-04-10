@@ -286,8 +286,7 @@ function registrarVenta() {
         })
         .catch(error => {
             if (error !== 'cancelado') {
-                console.error('Error:', error.message || error);
-                Swal.fire('Error', error.message || 'Error al generar la venta', 'error');
+                Swal.fire('Error', 'Error al generar la venta', 'error');
             }
         })
         .finally(() => tabs.ocultarLoader());
@@ -306,8 +305,7 @@ function cargarGalletas() {
             }
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar las galletas', 'error');
+            Swal.fire('Error', 'Error al cargar las galletas', 'error');
         })
         .finally(() => tabs.desbloquearTabs());
 }

@@ -1,4 +1,4 @@
-from core.classes.Tb_usuarios import Usuario, TipoUsuario, Modulo, TipoUsuarioModulo
+from core.classes.Tb_usuarios import Usuario, TipoUsuario, Modulo, TipoUsuarioModulo, TbLoginBloqueos
 import json
 import bcrypt
 from utils.connectiondb import DatabaseConnector 
@@ -150,14 +150,24 @@ class UsuarioCRUD:
         """
         Session = DatabaseConnector().get_session
         with Session() as session:
-            usuario = session.query(Usuario, TipoUsuario).join(
+            # Se utiliza outerjoin para garantizar que se devuelva el usuario aun si no hay registro en TipoUsuario.
+            usuario = session.query(Usuario, TipoUsuario).outerjoin(
                 TipoUsuario,
                 Usuario.tipo == TipoUsuario.id_tipo_usuario
             ).filter(
-                Usuario.usuario==username, 
-                Usuario.estatus==1
+                Usuario.usuario == username, 
+                Usuario.estatus == 1
             ).first()
-    
+
+            # Verifica que se haya obtenido un resultado.
+            if not usuario:
+                return {}
+
+            # Comprueba que la contraseña coincida.
+            if not bcrypt.checkpw(plain_password.encode('utf-8'), usuario.Usuario.contrasenia.encode('utf-8')):
+                return {}
+
+            # Consulta de módulos, que depende del campo usuario.Usuario.tipo.
             modules = session.query(Modulo).join(
                 TipoUsuarioModulo,
                 Modulo.id_modulo == TipoUsuarioModulo.id_modulo
@@ -168,25 +178,26 @@ class UsuarioCRUD:
                 TipoUsuario.id_tipo_usuario == usuario.Usuario.tipo
             ).all()
 
-            if not usuario:
-                return {}
-            
-            if not bcrypt.checkpw(plain_password.encode('utf-8'), usuario.Usuario.contrasenia.encode('utf-8')):
-                return {}
-            
             return {
-                    "id_usuario": usuario.Usuario.id_usuario,
-                    "nombre": usuario.Usuario.nombre,
-                    "apellido_pat": usuario.Usuario.apellido_pat,
-                    "apellido_mat": usuario.Usuario.apellido_mat,
-                    "telefono": usuario.Usuario.telefono,
-                    "tipo": usuario.Usuario.tipo,
-                    "usuario": usuario.Usuario.usuario,
-                    "contrasenia": usuario.Usuario.contrasenia,
-                    "estatus": usuario.Usuario.estatus,
-                    "tipo_usuario": usuario.TipoUsuario.nombre,
-                    "modules": [{"id_modulo": m.id_modulo, "descripcion": m.descripcion, "ruta": m.ruta, "funcion": m.funcion} for m in modules]
-                }
+                "id_usuario": usuario.Usuario.id_usuario,
+                "nombre": usuario.Usuario.nombre,
+                "apellido_pat": usuario.Usuario.apellido_pat,
+                "apellido_mat": usuario.Usuario.apellido_mat,
+                "telefono": usuario.Usuario.telefono,
+                "tipo": usuario.Usuario.tipo,
+                "usuario": usuario.Usuario.usuario,
+                "contrasenia": usuario.Usuario.contrasenia,
+                "estatus": usuario.Usuario.estatus,
+                "tipo_usuario": usuario.TipoUsuario.nombre if usuario.TipoUsuario else None,
+                "modules": [{
+                    "id_modulo": m.id_modulo,
+                    "descripcion": m.descripcion,
+                    "ruta": m.ruta,
+                    "funcion": m.funcion
+                } for m in modules]
+            }
+
+
 
     def list_tipo_usuarios(self):
         """
@@ -241,4 +252,26 @@ class UsuarioCRUD:
             except Exception as e:
                 session.rollback()
                 raise e
+
+    def bloquear_for_five_minutes(self, id_usuario=None, id_cliente=None, message=None):
+        """Se bloquea un usuario registrandolo en la tabla con fecha y hora actual"""
+        Session = DatabaseConnector().get_session
+        with Session() as session:
+            try:
+                bloqueo = TbLoginBloqueos(id_usuario=id_usuario, id_cliente=id_cliente, message=message)
+                session.add(bloqueo)
+                session.commit()
+                return {"status": 200, "message": "Usuario bloqueado por 5 minutos"}
+            except Exception as e:
+                session.rollback()
+                raise e
+
+    def verificar_bloqueo(self, id_usuario=None, id_cliente=None):
+        """Verifica si el usuario o cliente está bloqueado"""
+        Session = DatabaseConnector().get_session
+        with Session() as session:
+            if id_usuario:
+                bloqueo = session.query(TbLoginBloqueos).filter_by(id_usuario=id_usuario, ).first()
+            elif id_cliente:
+                bloqueo = session.query(TbLoginBloqueos).filter_by(id_cliente=id_cliente).first()
 

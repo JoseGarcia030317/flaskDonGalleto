@@ -39,8 +39,7 @@ function cargarAlmacen() {
             }
             })
             .catch(error => {
-                console.error('Error:', error.message);
-                Swal.fire('Error', error.message || 'Error al cargar compras', 'error');
+                Swal.fire('Error', 'Error al cargar compras', 'error');
             })
             .finally(() => tabs.desbloquearTabs());
         }

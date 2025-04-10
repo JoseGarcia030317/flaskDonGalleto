@@ -146,7 +146,7 @@ class PedidosCRUD:
                         PedidoDetalle.factor_venta,
                         Galleta.nombre_galleta,
                         Galleta.precio_unitario,
-                        func.sum(PedidoDetalle.factor_venta * Galleta.precio_unitario).label("total_pedido"),
+                        func.sum(PedidoDetalle.factor_venta * PedidoDetalle.precio_unitario).label("total_pedido"),
                         PedidoDetalle.tipo_venta_id,
                         TipoVenta.nombre.label("tipo_venta_nombre")
                     ).join(

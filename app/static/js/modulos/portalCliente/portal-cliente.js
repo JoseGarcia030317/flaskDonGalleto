@@ -55,44 +55,44 @@ function consultarGalletas() {
                 const galletaDiv = document.createElement('div');
                 const rutaImagen = `static/images/galletas/${galleta.nombre_galleta}.jpg`;
                 galletaDiv.innerHTML = `
-                <div class="rounded-lg overflow-hidden bg-white shadow-md">
-                <img src="${rutaImagen}" 
-                    alt="${galleta.nombre_galleta}" 
-                    class="aspect-square w-full bg-gray-200 object-cover group-hover:opacity-75" 
-                    onerror="this.onerror=null; this.src='static/images/galletas/default.jpg';" 
-                    loading="lazy">
-                
-                <!-- Contenedor blanco para la información -->
-                <div class="p-4 bg-white text-gray-800">
-                    <h3 class="text-lg font-semibold">${galleta.nombre_galleta}</h3>
-                    <p class="mt-1 text-lg font-medium text-gray-900">${galleta.gramos_galleta} g</p>
+                    <div class="rounded-lg overflow-hidden bg-white shadow-md">
+                    <img src="${rutaImagen}" 
+                        alt="${galleta.nombre_galleta}" 
+                        class="aspect-square w-full bg-gray-200 object-cover group-hover:opacity-75" 
+                        onerror="this.onerror=null; this.src='static/images/galletas/default.jpg';" 
+                        loading="lazy">
                     
-                </div>
-                </div>
-                        <p class="text-sm">INGREDIENTES: ${galleta.descripcion_galleta}</p>
-                        <p class="mt-1 text-lg font-medium text-gray-900">$ ${galleta.precio_unitario}</p>
-                        <div class="flex flex-col gap-2">
-                            <div class="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-[#8B4513] has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-[#8B4513]">
-                                <input type="number" name="cantidad" class="block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 border-r border-gray-300 placeholder:text-gray-400 focus:outline-none sm:text-sm/6" placeholder="Cantidad" min="1" value="1">
-                                <select name="tipo_venta" class="w-[120px] border-l border-gray-200 rounded-md py-1.5 pr-2 pl-3 text-base text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-[#8B4513] sm:text-sm/6 border-[#8B4513]">
-                                    <option value="pieza">Pieza(s)</option>
-                                    <option value="gramaje">Gramaje</option>
-                                    <option value="medio_kilo">Paquete 700 g</option>
-                                    <option value="kilo">Paquete Kg</option>
-                                </select>
-                            </div>
-
-                            <button class="w-full h-[40px] p-2 rounded-[10px] bg-[#540b0e] hover:bg-[#3a080a] text-white border-none font-['Poppins'] font-light cursor-pointer transition-colors duration-300 ease-in-out flex items-center justify-center" 
-                                onclick="event.stopPropagation(); agregarAlCarritoDesdeGalleta('${galleta.id_galleta}', '${galleta.nombre_galleta}', ${galleta.precio_unitario}, ${galleta.gramos_galleta}, this)">
-                                Agregar <img src="static/images/shop.png" alt="Agregar" class="ml-2 w-4 h-4">
-                            </button>
-                        </div>
+                    <!-- Contenedor blanco para la información -->
+                    <div class="p-4 bg-white text-gray-800">
+                        <h3 class="text-lg font-semibold">${galleta.nombre_galleta}</h3>
+                        <p class="mt-1 text-lg font-medium text-gray-900">${galleta.gramos_galleta} g</p>
+                        
                     </div>
+                    </div>
+                            <p class="text-sm">INGREDIENTES: ${galleta.descripcion_galleta}</p>
+                            <p class="mt-1 text-lg font-medium text-gray-900">$ ${galleta.precio_unitario}</p>
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-[#8B4513] has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-[#8B4513]">
+                                    <input type="number" name="cantidad" class="block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 border-r border-gray-300 placeholder:text-gray-400 focus:outline-none sm:text-sm/6" placeholder="Cantidad" min="1" value="1">
+                                    <select name="tipo_venta" class="w-[120px] border-l border-gray-200 rounded-md py-1.5 pr-2 pl-3 text-base text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-[#8B4513] sm:text-sm/6 border-[#8B4513]">
+                                        <option value="pieza">Pieza(s)</option>
+                                        <option value="gramaje">Gramaje</option>
+                                        <option value="medio_kilo">Paquete 700 g</option>
+                                        <option value="kilo">Paquete Kg</option>
+                                    </select>
+                                </div>
 
-                    <!-- Reverso -->
-                
-                </div>
-            `;
+                                <button class="w-full h-[40px] p-2 rounded-[10px] bg-[#540b0e] hover:bg-[#3a080a] text-white border-none font-['Poppins'] font-light cursor-pointer transition-colors duration-300 ease-in-out flex items-center justify-center" 
+                                    onclick="event.stopPropagation(); agregarAlCarritoDesdeGalleta('${galleta.id_galleta}', '${galleta.nombre_galleta}', ${galleta.precio_unitario}, ${galleta.gramos_galleta}, this)">
+                                    Agregar <img src="static/images/shop.png" alt="Agregar" class="ml-2 w-4 h-4">
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Reverso -->
+                    
+                    </div>
+                `;
                 galletasContainer.appendChild(galletaDiv);
             });
         })

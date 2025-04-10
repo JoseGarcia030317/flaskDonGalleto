@@ -110,8 +110,7 @@ function obtener_clientes() {
         }  
     })
     .catch(error => {
-        console.error('Error:', error.message);
-        Swal.fire('Error', error.message || 'Error al cargar los clientes', 'error');
+        Swal.fire('Error', 'Error al cargar los clientes', 'error');
     });
 };
 
@@ -129,13 +128,12 @@ function eliminarClientes(id_cliente) {
             alertas.procesoTerminadoExito();
             cargarClientes();
         } else {
-            Swal.fire('Error', data.error || 'Error al eliminar cliente', 'error');
+            Swal.fire('Error', 'Error al eliminar cliente', 'error');
         }
     })
     .catch(error => {
         if (error !== 'cancelado') {
-            console.error('Error:', error.message || error);
-            Swal.fire('Error', error.message || 'Error al cliente', 'error');
+            Swal.fire('Error', 'Error al cliente', 'error');
         }
     });
 };
@@ -180,8 +178,7 @@ function guardar_cliente(event){
             }
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al guardar cliente', 'error');
+            Swal.fire('Error', 'Error al guardar cliente', 'error');
         })
     
 };
@@ -200,8 +197,7 @@ function obtenerClientesById(id_cliente){
             }
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al obtener cliente', 'error');
+            Swal.fire('Error', 'Error al obtener cliente', 'error');
         });
 }
 

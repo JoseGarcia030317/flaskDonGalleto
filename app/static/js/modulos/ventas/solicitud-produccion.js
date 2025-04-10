@@ -39,8 +39,7 @@ async function consultarInsumos() {
             if (data) insumosDisponibles = data;
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar insumos', 'error');
+            Swal.fire('Error', 'Error al cargar insumos', 'error');
         });
 }
 
@@ -55,8 +54,7 @@ async function cargarGalletas() {
             }
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar las galletas', 'error');
+            Swal.fire('Error', 'Error al cargar las galletas', 'error');
         })
         .finally(() => tabs.desbloquearTabs());
 }
@@ -108,8 +106,7 @@ function buscarGalletaPorId(id_galleta) {
             }
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar la galleta', 'error');
+            Swal.fire('Error', 'Error al cargar la galleta', 'error');
         })
         .finally(() => tabs.ocultarLoader());
 }

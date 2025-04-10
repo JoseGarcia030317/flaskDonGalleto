@@ -182,11 +182,10 @@ function agregarHorneado(id_receta){
                     alertas.procesoTerminadoExito();
                     cerrarModal();
                 } else {
-                    alertas.mostrarAlerta('Error', data.message || 'Error al solicitar producción', 'error');
+                    alertas.mostrarAlerta('Error', 'Error al solicitar producción', 'error');
                 }
             })
             .catch(error => {
-                console.error('Error:', error.message);
                 alertas.procesoTerminadoSinExito();
             })
             .finally(() => tabs.ocultarLoader());

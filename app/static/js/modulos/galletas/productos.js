@@ -276,8 +276,7 @@ async function consultarInsumos() {
             if (data) insumosDisponibles = data;
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar insumos', 'error');
+            Swal.fire('Error', 'Error al cargar insumos', 'error');
         });
 }
 
@@ -303,8 +302,7 @@ function cargarGalletas() {
             }
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar las galletas', 'error');
+            Swal.fire('Error', 'Error al cargar las galletas', 'error');
         })
         .finally(() => tabs.desbloquearTabs());
 }
@@ -359,8 +357,7 @@ function buscarGalletaPorId(id_galleta) {
             }
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al cargar la galleta', 'error');
+            Swal.fire('Error', 'Error al cargar la galleta', 'error');
         })
         .finally(() => tabs.ocultarLoader());
 }
@@ -479,8 +476,7 @@ function agregarGalleta() {
             }
         })
         .catch(error => {
-            console.error('Error:', error.message);
-            Swal.fire('Error', error.message || 'Error al guardar la galleta', 'error');
+            Swal.fire('Error', 'Error al guardar la galleta', 'error');
         })
         .finally(() => tabs.ocultarLoader());
 }
@@ -526,12 +522,11 @@ function editarGalleta() {
                 cerrarModalPrincipal();
                 cargarGalletas();
             } else {
-                throw new Error(response?.message || 'Error en la actualización');
+                throw new Error('Error en la actualización');
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            Swal.fire('Error', error.message || 'Error al actualizar la galleta', 'error');
+            Swal.fire('Error', 'Error al actualizar la galleta', 'error');
         })
         .finally(() => tabs.ocultarLoader());
 }
@@ -557,7 +552,7 @@ function eliminarGalleta(id_galleta) {
     .catch(error => {
         if (error !== 'cancelado') {
             console.error('Error eliminando galleta:', error);
-            Swal.fire('Error', error.message || 'No se pudo eliminar la galleta', 'error');
+            Swal.fire('Error', 'No se pudo eliminar la galleta', 'error');
         }
     })
     .finally(() => tabs.ocultarLoader());

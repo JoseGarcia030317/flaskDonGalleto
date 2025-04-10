@@ -169,7 +169,7 @@ class CorteCajaCrud:
                     )
                     session.commit()
 
-                    detalle = self.detalle_corte_cierre(id_corte)
+                    detalle = CorteCajaCrud.detalle_corte_cierre(data["id_corte"])
                     return  detalle
         except Exception as e:
             logger.error(f"Error al cerrar el corte de caja: {e}", exc_info=True)
